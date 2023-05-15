@@ -1,0 +1,50 @@
+body{
+    margin:0;
+    padding:0;
+    background-color: #000;
+    font-family: Helvetica, Arial, sans-serif;
+    overflow: hidden;
+  }
+  #webgl{
+    margin:0;
+    padding:0;
+    vertical-align:bottom;
+  }
+  #domContainer{
+    margin:0;
+    padding:0;
+    z-index: 1;
+    position: absolute;
+    mix-blend-mode: multiply;
+  }
+  #domContainer2{
+    margin:0;
+    padding:0;
+    z-index: 2;
+    position: absolute;
+  }
+  .mainContainer{
+    z-index: 3;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .label{
+    display: inline-block;
+    background-color: #f00;
+    mix-blend-mode: difference;
+  }
+  #title{
+    position: absolute;
+    top: 50px;
+    left: 0;
+    z-index: 20;
+    color: #000;
+    font-size: 20px;
+    width: 100%;
+    background-color: rgba(0,0,0,0);
+    padding: 10px;
+    text-align: center;
+    /*text-align: justify;
+    text-align-last: justify;*/
+  }
