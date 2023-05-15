@@ -1,4 +1,5 @@
 import { DOMControl } from "../../dom/DOMControl";
+import { Params } from "../../proof/data/Params";
 import { MySVGLoader } from "../../shapes/MySVGLoader";
 import { IntersectionLine } from "../intersection/IntersectionLine";
 import { Particles } from "../particles/Particles";
@@ -34,7 +35,7 @@ export class DataManager{
     
     
     let loader = new MySVGLoader();
-    loader.init("moji3.svg",()=>{
+    loader.init(Params.PATH + "moji3.svg",()=>{
          callback();   
       });
     this.svg=loader;//.add(loader);

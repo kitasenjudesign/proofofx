@@ -2675,7 +2675,7 @@ class DOMControl {
         this.init();
     }
     init() {
-        this.title = new _AbsDOM__WEBPACK_IMPORTED_MODULE_3__.AbsDOM(document.getElementById("title"), 999);
+        this.title = new _AbsDOM__WEBPACK_IMPORTED_MODULE_3__.AbsDOM(document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.DOM_TITLE), 999);
         this.title.text =
             "PROOF OF X - KEY VISUAL #001 " +
                 " MINTED AT " +
@@ -2756,7 +2756,7 @@ class Main {
         this.clock = new three__WEBPACK_IMPORTED_MODULE_5__.Clock(true);
         this.clock.start();
         this.renderer = new three__WEBPACK_IMPORTED_MODULE_5__.WebGLRenderer({
-            canvas: document.querySelector('#webgl'),
+            canvas: document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.DOM_WEBGL),
             antialias: false,
             preserveDrawingBuffer: true
         });
@@ -2805,7 +2805,7 @@ class Main {
         this.rttMain.resetAll();
     }
     download() {
-        let dom = document.getElementById("webgl");
+        let dom = document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.DOM_WEBGL);
         let link = document.createElement('a');
         link.href = dom.toDataURL('image/png');
         let date = new Date(); // 現在の日時を取得
@@ -2867,7 +2867,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "DataManager": () => (/* binding */ DataManager)
 /* harmony export */ });
-/* harmony import */ var _shapes_MySVGLoader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shapes/MySVGLoader */ "./src/shapes/MySVGLoader.ts");
+/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../proof/data/Params */ "./src/proof/data/Params.ts");
+/* harmony import */ var _shapes_MySVGLoader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shapes/MySVGLoader */ "./src/shapes/MySVGLoader.ts");
+
 
 class DataManager {
     constructor() {
@@ -2881,8 +2883,8 @@ class DataManager {
     }
     init(callback) {
         //console.log(hoge);
-        let loader = new _shapes_MySVGLoader__WEBPACK_IMPORTED_MODULE_0__.MySVGLoader();
-        loader.init("moji3.svg", () => {
+        let loader = new _shapes_MySVGLoader__WEBPACK_IMPORTED_MODULE_1__.MySVGLoader();
+        loader.init(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.PATH + "moji3.svg", () => {
             callback();
         });
         this.svg = loader; //.add(loader);
@@ -3834,7 +3836,7 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
         // インデックスをgeometryに追加
         geometry.setIndex(new three__WEBPACK_IMPORTED_MODULE_6__.BufferAttribute(indices, 1));
         // マテリアルを作成        
-        let tex1 = new three__WEBPACK_IMPORTED_MODULE_6__.TextureLoader().load("./brush.png");
+        let tex1 = new three__WEBPACK_IMPORTED_MODULE_6__.TextureLoader().load(_proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.PATH + "brush.png");
         let mat = new three__WEBPACK_IMPORTED_MODULE_6__.ShaderMaterial({
             side: three__WEBPACK_IMPORTED_MODULE_6__.DoubleSide,
             uniforms: {
@@ -4544,6 +4546,10 @@ class Params {
         return (Params.bgColor.r * 255 << 16) + (Params.bgColor.g * 255 << 8) + Params.bgColor.b * 255;
     }
     static init() {
+        const webgl = document.getElementById(this.DOM_WEBGL);
+        this.PATH = webgl.dataset.baseurl;
+        console.log(webgl);
+        console.log("this.PATH", this.PATH);
         /*
         var attribute = {
             hash: "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c",
@@ -4629,10 +4635,14 @@ Params.bgColor = { r: 0.7, g: 0.7, b: 0.6 };
 Params.FILTER_FLIPFLOP = three__WEBPACK_IMPORTED_MODULE_3__.LinearFilter;
 Params.FILTER_DRAW = three__WEBPACK_IMPORTED_MODULE_3__.LinearFilter;
 Params.UPDATE_DISTANCE = 5;
+Params.PATH = "";
 Params.USER_NAME = "";
 Params.USER_HASH = "";
 Params.USER_TIME = 0;
 Params.maxLimit = 400;
+Params.DOM_WEBGL = "mainvisual_webgl";
+Params.DOM_TITLE = "mainvisual_title";
+Params.DOM_JS = "mainvisual_js";
 
 
 /***/ }),
@@ -59857,4 +59867,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle.js.map
+//# sourceMappingURL=mainvisual.js.map

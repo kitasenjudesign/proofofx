@@ -28,17 +28,27 @@ export class Params{
     static FILTER_DRAW      : THREE.TextureFilter = THREE.LinearFilter;
     static UPDATE_DISTANCE  : number=5;
 
+    public static PATH:string = "";
     public static USER_NAME:string="";
     public static USER_HASH:string="";
     public static USER_TIME:number=0;
     public static maxLimit: number = 400;
     
+    public static DOM_WEBGL="mainvisual_webgl";
+    public static DOM_TITLE="mainvisual_title"
+    public static DOM_JS="mainvisual_js"
+
     // Getter宣言
     public static get bgColorHex(): number {
         return (Params.bgColor.r*255 << 16) + (Params.bgColor.g*255 << 8) + Params.bgColor.b*255;
     }
  
     static init(){
+
+        const webgl = document.getElementById(this.DOM_WEBGL);
+        this.PATH = webgl.dataset.baseurl;
+        console.log(webgl);
+        console.log("this.PATH",this.PATH);
 
         /*
         var attribute = {

@@ -102,7 +102,7 @@ export class Brushes extends THREE.Mesh{
         geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
         // マテリアルを作成        
-        let tex1 = new THREE.TextureLoader().load("./brush.png");
+        let tex1 = new THREE.TextureLoader().load(Params.PATH+"brush.png");
         let mat = new THREE.ShaderMaterial({
             side: THREE.DoubleSide,
             uniforms: {

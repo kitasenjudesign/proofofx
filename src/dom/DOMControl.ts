@@ -13,7 +13,7 @@ export class DOMControl{
 
     init(){
         this.title = new AbsDOM(
-            document.getElementById("title"),
+            document.getElementById(Params.DOM_TITLE),
             999
         );
         this.title.text =

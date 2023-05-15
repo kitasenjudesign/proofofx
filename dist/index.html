@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.5">
+
     <title>PROOF OF X</title>
+
     <script type="text/javascript">
       var attribute = {
         //hash: "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c",
@@ -12,15 +14,23 @@
         mintedAt: 1681036222612
       };
     </script>
-    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./mainvisual/css/mainvisual.css">
   </head>
 
   <body>
-    <script src="./js/bundle.js"></script>    
-    <div id="title"></div>
-    <div class="mainContainer">
-      <canvas id="webgl"></canvas>
-    </div>
+
+    <!-- start - for main visual -->
+      <script 
+        src="./mainvisual/js/mainvisual.js" 
+        id="mainvisual_js"
+        >
+      </script>    
+      <div id="mainvisual_title"></div>
+      <div class="mainvisual_container">
+        <canvas id="mainvisual_webgl" data-baseURL="./mainvisual/img/"></canvas>
+      </div>
+    <!-- end - for main visual -->
+
   </body>
 
 </html>

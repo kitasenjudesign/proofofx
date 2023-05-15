@@ -52,7 +52,7 @@ export class Main{
         this.clock.start();
      
          this.renderer = new THREE.WebGLRenderer({
-             canvas: document.querySelector('#webgl'),
+             canvas: document.getElementById(Params.DOM_WEBGL),
              antialias: false,
              preserveDrawingBuffer : true
          });
@@ -129,7 +129,7 @@ export class Main{
 
     download(){
         
-        let dom = document.getElementById("webgl") as HTMLCanvasElement;
+        let dom = document.getElementById(Params.DOM_WEBGL) as HTMLCanvasElement;
         let link = document.createElement('a');
         link.href = dom.toDataURL('image/png');
 

@@ -10,9 +10,9 @@ module.exports = {
   // 出力ファイル設定
   output: {
     // 出力されるファイル名
-    filename: "bundle.js",
+    filename: "mainvisual.js",
     // 出力先ディレクトリ
-    path: path.resolve(__dirname, "dist/js")
+    path: path.resolve(__dirname, "dist/mainvisual/js")
   },
  
   // モジュール設定
