@@ -72,7 +72,10 @@ export class Particle{
         this.colR = col.r;
         this.colG = col.g;
         this.colB = col.b;
+        
         this.limit = 10 + Params.maxLimit*SRandom.random();
+        //if(SRandom.random()<0.1)this.limit= 10 + Params.maxLimit*SRandom.random()/4;
+
         this.position.x=point.x+5*(SRandom.random()-0.5);
         this.position.y=point.y+5*(SRandom.random()-0.5);
         this.count = 0;

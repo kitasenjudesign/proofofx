@@ -36,9 +36,6 @@ export class Main{
         console.log(r.nextFloat());
         console.log(r.nextFloat());
         console.log(r.nextFloat());*/
-        
-
-
         let dataManager = DataManager.getInstance();
         dataManager.init(()=>{
             this.init2();
@@ -102,11 +99,12 @@ export class Main{
          }, false)
          this.onWindowResize();
 
-         let d:DirectionalLight = new DirectionalLight(0xffffff);
-         d.position.x = 10;
-         d.position.y = 10;
-         this.scene.add(d);
-        this.control = new OrbitControls(this.camera, this.renderer.domElement);
+        let d:DirectionalLight = new DirectionalLight(0xffffff);
+        d.position.x = 10;
+        d.position.y = 10;
+        this.scene.add(d);
+
+        //this.control = new OrbitControls(this.camera, this.renderer.domElement);
 
         this.tick();
         
@@ -161,7 +159,7 @@ export class Main{
         //this.domControl.update();
 
         DataManager.getInstance().svg.update();
-        this.control.update();
+        //this.control.update();
         this.particles.update();
         this.rttMain.update( this.renderer );
 
@@ -187,6 +185,7 @@ export class Main{
        
         this.rttMain.resize(this.camera);
         this.particles.resize();
+
     }
 
 }

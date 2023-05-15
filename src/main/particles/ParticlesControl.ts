@@ -53,11 +53,13 @@ export class ParticleControl extends THREE.Object3D{
         if(this.showingMode=="line"){
             this.line.updateY();
             if(this.frameCount%Params.intervalEmitting==0){
+                this.line.updateCrossPoints();
                 let intesection = DataManager.getInstance().instersection;
                 for(let i=0;i<Params.numEmitting;i++){
                     let point = intesection.GetCurrentRandomPoint();
                     if(point){
-                        this.particles[(this.frameCount+i)%this.particles.length].show(point);    
+                        this.particles[this.particleIndex%this.particles.length].show(point);    
+                        this.particleIndex++;
                     }
                 }
             }

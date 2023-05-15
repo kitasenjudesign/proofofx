@@ -14,22 +14,34 @@
         mintedAt: 1681036222612
       };
     </script>
+    <style type="text/css">
+      body{
+          margin:0;
+          padding:0;
+          background-color: #000;
+          font-family: Helvetica, Arial, sans-serif;
+          overflow: hidden;
+      }
+    </style>
+    
     <link rel="stylesheet" href="./mainvisual/css/mainvisual.css">
+
   </head>
 
   <body>
 
-    <!-- start - for main visual -->
+    <!-- START - for main visual -->
       <script 
         src="./mainvisual/js/mainvisual.js" 
         id="mainvisual_js"
-        >
+        data-baseURL="./mainvisual/"
+      >
       </script>    
       <div id="mainvisual_title"></div>
       <div class="mainvisual_container">
-        <canvas id="mainvisual_webgl" data-baseURL="./mainvisual/img/"></canvas>
+        <canvas id="mainvisual_webgl"></canvas>
       </div>
-    <!-- end - for main visual -->
+    <!-- END - for main visual -->
 
   </body>
 

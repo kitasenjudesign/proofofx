@@ -11,7 +11,7 @@ export class MyGUI {
 
         this.gui = new GUI();
 
-        //this.gui.domElement.style.display="none";
+        this.gui.domElement.style.display="none";
 
         var uri = new URL(window.location.href);
         if(uri.hostname=="127.0.0.1"){

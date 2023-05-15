@@ -55,7 +55,7 @@ export class Particles extends THREE.Object3D{
         geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 
         let loader = new THREE.TextureLoader();
-        let tex = loader.load( './cross.png');
+        let tex = loader.load( Params.PATH + 'cross.png');
         tex.magFilter = THREE.NearestFilter;
         tex.minFilter = THREE.NearestFilter;
 
@@ -85,7 +85,6 @@ export class Particles extends THREE.Object3D{
         this.control = new ParticleControl();
         this.control.init(this);
 
-
         Params.gui.add(this.points,"visible").name("points.visible")
 
     }
@@ -97,6 +96,7 @@ export class Particles extends THREE.Object3D{
             let p = this.particles[i];
             p.reset();
         }
+        
     }
 
     update(){

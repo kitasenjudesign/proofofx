@@ -5,6 +5,7 @@ import { Params } from "../../proof/data/Params";
 import { DataManager } from "../data/DataManager";
 import { SRandom } from "../data/SRandom";
 import { Colors } from "../../proof/data/Colors";
+import { IntersectionPoint } from './IntersectionPoint';
 
 
 
@@ -23,6 +24,8 @@ export class IntersectionLine extends Object3D{
     count       :number = 0;
     currentIndex       :number = 0;
     currentCrossPoints :THREE.Vector2[] = [];
+    
+    linePoints:IntersectionPoint[] = [];
 
     material :LineBasicMaterial;
 
@@ -61,12 +64,21 @@ export class IntersectionLine extends Object3D{
             for(let j=0;j<this.shapes[i].length;j++){
                 
                 let shape = this.shapes[i][j];
-                let points = shape.getPoints(50);
+                console.log("length"+shape.getLength())
+                //let points = shape.getPoints(shape.getLength()/10);
+                let points = shape.getSpacedPoints(shape.getLength()/4);
+
 
                 for(let k=0;k<points.length-1;k++){
+                
                     let point1 = points[k];
                     let point2 = points[k+1];
 
+                    this.linePoints.push(new IntersectionPoint(
+                        point1.x * Params.SVG_SCALE,
+                        point1.y * -Params.SVG_SCALE
+                    ));
+                
                     let line = new LineSeg(
                         point1.x * Params.SVG_SCALE,
                         point1.y * -Params.SVG_SCALE,
@@ -74,6 +86,7 @@ export class IntersectionLine extends Object3D{
                         point2.y * -Params.SVG_SCALE
                     );
                     this.linesSegs.push(line);
+
                 }
 
             }
@@ -101,6 +114,8 @@ export class IntersectionLine extends Object3D{
 
     private GetCrossPoints():THREE.Vector2[]{
         this.currentIndex=0;
+
+        /*
         let crossPoints:THREE.Vector2[] = [];
         for(let i=0;i<this.linesSegs.length;i++){
             let seg = LineSeg.GetIntersectionLineSegments(
@@ -111,8 +126,22 @@ export class IntersectionLine extends Object3D{
                 crossPoints.push(seg);
             }
         }
+        */
+        let crossPoints:THREE.Vector2[] = [];
+        for(let i=0;i<this.linePoints.length;i++){
+            let pp = this.linePoints[i];
+            if(pp.y>this.yy && pp.enable){
+                
+                pp.enable=false;
 
-        
+                crossPoints.push(
+                    new Vector2(
+                        this.linePoints[i].x,
+                        this.linePoints[i].y
+                    )
+                );
+            }
+        }
 
         return crossPoints;
     }
@@ -120,8 +149,14 @@ export class IntersectionLine extends Object3D{
 
     reset(){
         this.yy=window.innerHeight/2;
+        for(let i=0;i<this.linePoints.length;i++){
+            this.linePoints[i].enable=true;
+        }
     }
     
+    public updateCrossPoints(){
+        this.currentCrossPoints = this.GetCrossPoints();
+    }
 
     //crossPointを取得する
     public updateY(){
@@ -131,8 +166,8 @@ export class IntersectionLine extends Object3D{
             Colors.colors[0].g,
             Colors.colors[0].b
         )
-        this.currentCrossPoints = this.GetCrossPoints();
-        
+        //console.log(this.linePoints.length,this.currentCrossPoints.length);
+
         //yをよくする
         let h = DataManager.getInstance().domControl.title.height;
         DataManager.getInstance().domControl.setTitleY(

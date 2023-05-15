@@ -45,8 +45,8 @@ export class Params{
  
     static init(){
 
-        const webgl = document.getElementById(this.DOM_WEBGL);
-        this.PATH = webgl.dataset.baseurl;
+        const webgl = document.getElementById(this.DOM_JS);
+        this.PATH = webgl.dataset.baseurl+"img/"
         console.log(webgl);
         console.log("this.PATH",this.PATH);
 
@@ -67,12 +67,16 @@ export class Params{
 
         SRandom.init(Params.USER_HASH);
 
-        if(SRandom.random()<0.5){
-            Params.numEmitting      =4;
+        let rr = SRandom.random();
+        if(rr<0.33){
+            Params.numEmitting      =30;
+            Params.intervalEmitting =30;
+        }else if(rr<0.66){
+            Params.numEmitting      =15;
             Params.intervalEmitting =10;
         }else{
-            Params.numEmitting      =5;
-            Params.intervalEmitting =5;
+            Params.numEmitting      =1;
+            Params.intervalEmitting =1;
         }
 
 

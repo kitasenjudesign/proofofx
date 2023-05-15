@@ -1,40 +1,15 @@
-body{
-    margin:0;
-    padding:0;
-    background-color: #000;
-    font-family: Helvetica, Arial, sans-serif;
-    overflow: hidden;
-  }
-  #webgl{
+  #mainvisual_webgl{
     margin:0;
     padding:0;
     vertical-align:bottom;
   }
-  #domContainer{
-    margin:0;
-    padding:0;
-    z-index: 1;
-    position: absolute;
-    mix-blend-mode: multiply;
-  }
-  #domContainer2{
-    margin:0;
-    padding:0;
-    z-index: 2;
-    position: absolute;
-  }
-  .mainContainer{
+  .mainvisual_container{
     z-index: 3;
     position: absolute;
     top: 0;
     left: 0;
   }
-  .label{
-    display: inline-block;
-    background-color: #f00;
-    mix-blend-mode: difference;
-  }
-  #title{
+  #mainvisual_title{
     position: absolute;
     top: 50px;
     left: 0;
