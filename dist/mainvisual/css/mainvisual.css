@@ -4,10 +4,7 @@
     vertical-align:bottom;
   }
   .mainvisual_container{
-    z-index: 3;
-    position: absolute;
-    top: 0;
-    left: 0;
+    background-color: #000;
   }
   #mainvisual_title{
     position: absolute;

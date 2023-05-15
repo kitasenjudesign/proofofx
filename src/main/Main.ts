@@ -156,14 +156,13 @@ export class Main{
     tick(){
         if(this.isPause)return;
 
-        //this.domControl.update();
+        if(window.scrollY<100){
+            DataManager.getInstance().svg.update();
+            this.particles.update();
+            this.rttMain.update( this.renderer );
+            this.renderer.render(this.scene, this.camera);    
+        }
 
-        DataManager.getInstance().svg.update();
-        //this.control.update();
-        this.particles.update();
-        this.rttMain.update( this.renderer );
-
-        this.renderer.render(this.scene, this.camera);    
         window.requestAnimationFrame(()=>{
             this.tick();
         });

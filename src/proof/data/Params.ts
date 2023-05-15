@@ -50,14 +50,18 @@ export class Params{
         console.log(webgl);
         console.log("this.PATH",this.PATH);
 
-        /*
-        var attribute = {
-            hash: "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c",
-            name: "PoX太郎",
-            mintedAt: 1681036222612
-        };
-        */
+        
         let win:any = window;
+
+        if(win.attribute==null){
+            win.attribute = {
+              //hash: "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c",
+              hash: ""+Math.random()+""+Math.random(),
+              name: "PoX太郎2",
+              mintedAt: 1681036222612
+            };
+        }
+
         Params.USER_NAME = win.attribute.name;
         Params.USER_HASH = win.attribute.hash;
         Params.USER_TIME = win.attribute.mintedAt;

@@ -2826,12 +2826,12 @@ class Main {
     tick() {
         if (this.isPause)
             return;
-        //this.domControl.update();
-        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.update();
-        //this.control.update();
-        this.particles.update();
-        this.rttMain.update(this.renderer);
-        this.renderer.render(this.scene, this.camera);
+        if (window.scrollY < 100) {
+            _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.update();
+            this.particles.update();
+            this.rttMain.update(this.renderer);
+            this.renderer.render(this.scene, this.camera);
+        }
         window.requestAnimationFrame(() => {
             this.tick();
         });
@@ -4600,14 +4600,15 @@ class Params {
         this.PATH = webgl.dataset.baseurl + "img/";
         console.log(webgl);
         console.log("this.PATH", this.PATH);
-        /*
-        var attribute = {
-            hash: "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c",
-            name: "PoX太郎",
-            mintedAt: 1681036222612
-        };
-        */
         let win = window;
+        if (win.attribute == null) {
+            win.attribute = {
+                //hash: "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c",
+                hash: "" + Math.random() + "" + Math.random(),
+                name: "PoX太郎2",
+                mintedAt: 1681036222612
+            };
+        }
         Params.USER_NAME = win.attribute.name;
         Params.USER_HASH = win.attribute.hash;
         Params.USER_TIME = win.attribute.mintedAt;
