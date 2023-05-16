@@ -44,7 +44,9 @@ export class AbsDOM{
     get color():string{
         return this.dom.style.color;
     }
-    
+    get text(){
+        return this.dom.innerHTML;
+    }
     set width(value: number) {
         this.dom.style.width = value + "px";
     }

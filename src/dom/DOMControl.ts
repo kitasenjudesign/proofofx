@@ -21,6 +21,10 @@ export class DOMControl{
             " MINTED AT "+
             UNIXTimeFormatter.formatUnixTime(Params.USER_TIME) +
             " BY "+ Params.USER_NAME;
+
+        if(Params.NFT){
+            this.title.text += " HASH:" + Params.USER_HASH;
+        }
     }
 
     setTitleY(arg0: number) {

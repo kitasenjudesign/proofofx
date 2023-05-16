@@ -2628,6 +2628,9 @@ class AbsDOM {
     get color() {
         return this.dom.style.color;
     }
+    get text() {
+        return this.dom.innerHTML;
+    }
     set width(value) {
         this.dom.style.width = value + "px";
     }
@@ -2681,6 +2684,9 @@ class DOMControl {
                 " MINTED AT " +
                 _main_data_UNITTimeFormatter__WEBPACK_IMPORTED_MODULE_0__.UNIXTimeFormatter.formatUnixTime(_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_TIME) +
                 " BY " + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_NAME;
+        if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.NFT) {
+            this.title.text += " HASH:" + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_HASH;
+        }
     }
     setTitleY(arg0) {
         this.title.y = arg0;
@@ -4598,6 +4604,7 @@ class Params {
     static init() {
         const webgl = document.getElementById(this.DOM_JS);
         this.PATH = webgl.dataset.baseurl + "img/";
+        this.NFT = webgl.dataset.mode == "nft";
         console.log(webgl);
         console.log("this.PATH", this.PATH);
         let win = window;
@@ -4699,6 +4706,7 @@ Params.maxLimit = 400;
 Params.DOM_WEBGL = "mainvisual_webgl";
 Params.DOM_TITLE = "mainvisual_title";
 Params.DOM_JS = "mainvisual_js";
+Params.NFT = false;
 
 
 /***/ }),

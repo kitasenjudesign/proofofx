@@ -38,6 +38,8 @@ export class Params{
     public static DOM_TITLE="mainvisual_title"
     public static DOM_JS="mainvisual_js"
 
+    public static NFT:boolean=false;
+    
     // Getter宣言
     public static get bgColorHex(): number {
         return (Params.bgColor.r*255 << 16) + (Params.bgColor.g*255 << 8) + Params.bgColor.b*255;
@@ -47,6 +49,8 @@ export class Params{
 
         const webgl = document.getElementById(this.DOM_JS);
         this.PATH = webgl.dataset.baseurl+"img/"
+        this.NFT = webgl.dataset.mode=="nft";
+
         console.log(webgl);
         console.log("this.PATH",this.PATH);
 
