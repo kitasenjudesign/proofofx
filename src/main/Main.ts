@@ -25,6 +25,7 @@ export class Main{
     control: OrbitControls;
     rttMain:RTTMain;
     domControl:DOMControl;
+    size:number=1.5;
 
     init(){
        // let svgLoader = new SVGLo
@@ -37,7 +38,7 @@ export class Main{
         console.log(r.nextFloat());
         console.log(r.nextFloat());*/
         let dataManager = DataManager.getInstance();
-        dataManager.init(()=>{
+        dataManager.init(this,()=>{
             this.init2();
         });
 
@@ -53,6 +54,7 @@ export class Main{
              antialias: false,
              preserveDrawingBuffer : true
          });
+         //this.renderer.setPixelRatio(1);
 
         //console.log(hoge);
         this.scene = new THREE.Scene();
@@ -81,10 +83,10 @@ export class Main{
         this.renderer.setSize(window.innerWidth,window.innerHeight);
          
         this.camera = new THREE.OrthographicCamera(
-            -window.innerWidth/2, 
-            window.innerWidth/2, 
-            window.innerHeight/2, 
-            -window.innerHeight/2, 
+            -Params.stageWidth/2, 
+            Params.stageWidth/2, 
+            Params.stageHeight/2, 
+            -Params.stageHeight/2, 
             1, 3000
         );
         //this.camera = new THREE.PerspectiveCamera(20, 640/480, 1, 10000);
@@ -107,13 +109,29 @@ export class Main{
         //this.control = new OrbitControls(this.camera, this.renderer.domElement);
 
         this.tick();
-        
-        Params.gui.add(this, "pause");
-        Params.gui.add(this, "download");
-        Params.gui.add(this, "resetParticles").name("reset particles");
-        Params.gui.add(this, "reset").name("reset all");
+
+        let gui = Params.gui.addFolder("control");
+
+            gui.add(this, "regenerate");
+            gui.add(this, "pause");
+            gui.add(this, "download");
+            gui.add(this, "resetParticles").name("reset particles");
+            gui.add(this, "reset").name("reset all");
+            gui.add(this, "size",0,4).onChange(()=>{
+                this.onWindowResize();
+            });
 
     }
+
+
+    regenerate(){
+
+        Params.forcedRandom();
+        this.particles.reset();
+        this.rttMain.resetAll();
+
+    }
+
 
     resetParticles(){
         this.particles.reset();     
@@ -153,34 +171,59 @@ export class Main{
         }
     }
 
+
+
+
     tick(){
         if(this.isPause)return;
 
-        if(window.scrollY<100){
+        if(window.scrollY<window.innerHeight/2){
             DataManager.getInstance().svg.update();
             this.particles.update();
             this.rttMain.update( this.renderer );
             this.renderer.render(this.scene, this.camera);    
         }
 
+        setTimeout(()=>{
+            this.tick();
+        },1000/60);
+
+        /*
         window.requestAnimationFrame(()=>{
             this.tick();
-        });
+        });*/
 
     }
 
 
     onWindowResize(){
 
+        let ss = this.size;
+
+        this.size = window.innerWidth/1000*1.7
+        Params.SVG_SCALE=this.size;
+        DataManager.getInstance().svg.logo.setScale(1);
+        DataManager.getInstance().svg.logo2.setScale(1);
+        
         //const fovRad = (this.camera.fov / 2) * (Math.PI / 180);//角度
         //let distance = (window.innerHeight / 2) / Math.tan(fovRad);//距離
+
+        let ww = window.innerWidth;
+        let hh = window.innerHeight;
+        if(Params.SQUIRE){
+            ww=hh;
+        }
+        Params.stageWidth=ww;
+        Params.stageHeight=hh;
+        
+
         this.camera.position.set(0,0,1000);//距離を指定
-        this.camera.left = -window.innerWidth/2, 
-        this.camera.right = window.innerWidth/2, 
-        this.camera.top = window.innerHeight/2, 
-        this.camera.bottom = -window.innerHeight/2, 
+        this.camera.left = -ww/2, 
+        this.camera.right = ww/2, 
+        this.camera.top = hh/2, 
+        this.camera.bottom = -hh/2, 
         this.camera.updateProjectionMatrix()
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setSize(ww,hh);
        
         this.rttMain.resize(this.camera);
         this.particles.resize();

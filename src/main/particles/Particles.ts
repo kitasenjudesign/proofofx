@@ -55,16 +55,16 @@ export class Particles extends THREE.Object3D{
         geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 
         let loader = new THREE.TextureLoader();
-        let tex = loader.load( Params.PATH + 'cross.png');
+        let tex = loader.load( Params.PATH + '128x128.png');
         tex.magFilter = THREE.NearestFilter;
         tex.minFilter = THREE.NearestFilter;
 
         this.material = new THREE.PointsMaterial( {
-            size: 5,
+            size: 7,
             sizeAttenuation: false,
-            color: Colors.rgb2hex(Colors.colors[0])
-            //alphaTest: 0.5,
-            //map: tex
+            color: 0xffffff,//Colors.rgb2hex(Colors.colors[0]),
+            alphaTest: 0.5,
+            map: tex
         } );
 
         /*
@@ -103,9 +103,10 @@ export class Particles extends THREE.Object3D{
         
         this.control.update();
         this.material.color.setRGB(
-            Colors.colors[0].r,
-            Colors.colors[0].g,
-            Colors.colors[0].b
+            1,1,1
+            //Colors.colors[0].r,
+            //Colors.colors[0].g,
+            //Colors.colors[0].b
         )
 
         //POINTSの更新

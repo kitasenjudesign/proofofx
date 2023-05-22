@@ -54,7 +54,7 @@ export class MySVGLogo extends THREE.Object3D{
             this.fillMesh.add(mesh);
         }
 
-        this.scale.set(Params.SVG_SCALE,-Params.SVG_SCALE,Params.SVG_SCALE);
+        this.setScale(1);
 
         
         this.lineMesh = new MySVGLine();
@@ -66,8 +66,11 @@ export class MySVGLogo extends THREE.Object3D{
         let points = DataManager.getInstance().svg.pointsForLine
         for(let i=0;i<points.length;i++){
             let pts = points[i];
-            let col = Colors.logoColor
+            
             for(let j=0;j<pts.length-1;j++){
+                let col = {
+                    r:1,g:1,b:1
+                }//Colors.getRandomColor();
                 let p1 = pts[j];
                 let p2 = pts[j+1];
                 this.lineMesh.connectDots(
@@ -104,11 +107,21 @@ export class MySVGLogo extends THREE.Object3D{
     }
 
 
+    setScale(ss:number){
+        
+        this.scale.set(
+            Params.SVG_SCALE*ss,
+            -Params.SVG_SCALE*ss,
+            Params.SVG_SCALE*ss
+        );
+
+    }
+
     setY(yy:number){
 
         
-        if(this.frameCount++%120==0)this.visible=true;
-        else this.visible=false;
+        //if(this.frameCount++%120==0)this.visible=true;
+        //else this.visible=false;
 
         this.mat.uniforms.col1.value.x = Colors.logoColor.r;
         this.mat.uniforms.col1.value.y = Colors.logoColor.g;

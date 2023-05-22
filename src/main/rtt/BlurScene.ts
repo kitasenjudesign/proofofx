@@ -14,8 +14,8 @@ export class BlurScene extends FilpFlopSceneBase{
 
     constructor(){
 
-        let sizeX = window.innerWidth;
-        let sizeY = window.innerHeight;
+        let sizeX = Params.stageWidth;
+        let sizeY = Params.stageHeight;
 
         super(
             sizeX,

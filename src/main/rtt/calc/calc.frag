@@ -7,11 +7,15 @@
     uniform vec2 size;
     uniform float time;
     uniform float colorId;
+    //uniform float speed;
     uniform sampler2D tex;
     uniform sampler2D tex1;
     uniform sampler2D tex2;
     uniform float maxAlpha;
     uniform float alphaSpeed;
+    uniform float alphaSpeed2;
+    uniform float gensui;
+
     varying vec3 vNormal;
     varying vec2 vUv;
   
@@ -39,7 +43,7 @@
       col.rgb = mix(
         col.rgb,//一個前と変わらない色
         colPigment.rgb,//繰り返すとおよそ　この色になる
-        colBlur.a//この値は乾いて０に近づいていく
+        clamp(colBlur.a*alphaSpeed2,0.0,1.0)//この値は乾いて０に近づいていく
       );
 
 
@@ -54,7 +58,7 @@
 
       //col.a = colBlur.a;
       
-
+      col.a*=gensui;//*length(colPigment.rgb);
 
       gl_FragColor=vec4(col.rgba);
       //gl_FragColor = vec4(gradientValue.xy*10.0,0.0,1.0);

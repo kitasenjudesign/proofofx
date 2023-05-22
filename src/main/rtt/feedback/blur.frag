@@ -16,13 +16,17 @@
     void main(void)
     {
 
+
+      //float amp = snoise3(vec3(vUv.xy*8.0,0.0))*0.0015;
+      //float rad = snoise3(vec3(vUv.xy*8.0,999.0))*3.1415*10.0;
+
       vec2 ssize = 50.0*vec2(size.x/1000.0,size.y/1000.0);
       vec2 offset = vec2(
-        //0.0,0.0
-        //snoise3(vec3(vUv.xy*35.1,1.2*time+0.001))*0.0002,
-        //snoise3(vec3(vUv.xy*35.1,1.2*time+999.9))*0.0002
-        0.0*(random(floor(vUv.xy*ssize+vec2(0.0,0.0)))-0.5),
-        0.0*(random(floor(vUv.xy*ssize+vec2(99.99,0.0)))-0.5)        
+        0.0,0.0
+        //snoise3(vec3(vUv.xy*35.1,10.0))*0.0003,
+        //snoise3(vec3(vUv.xy*35.1,1110.0))*0.0003
+        //0.01*(random(floor(vUv.xy*ssize+vec2(0.0,0.0)))-0.5),
+        //0.01*(random(floor(vUv.xy*ssize+vec2(99.99,0.0)))-0.5)        
       );
 
 

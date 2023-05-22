@@ -1,3 +1,4 @@
+import { DataManager } from "../main/data/DataManager";
 import { UNIXTimeFormatter } from "../main/data/UNITTimeFormatter";
 import { Colors } from "../proof/data/Colors";
 import { Params } from "../proof/data/Params";
@@ -48,6 +49,9 @@ export class DOMControl{
 
         if(this.title.y>window.innerHeight-this.title.height){
             this.title.y = window.innerHeight-this.title.height;
+            
+            DataManager.getInstance().regenerate();
+
         }
 
 

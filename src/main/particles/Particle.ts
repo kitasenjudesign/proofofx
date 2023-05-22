@@ -91,6 +91,15 @@ export class Particle{
     public reset(){
         
         this.visible=false;
+        this.position.x=99999;
+        this.position.y=99999;
+        let t = Brushes.getInstance();
+        t.connect(
+            this.index,
+            this.position,
+            this.position,
+            0,0,0,0,0,0
+        );
 
     }
 

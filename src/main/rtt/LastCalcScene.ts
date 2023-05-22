@@ -11,16 +11,19 @@ export class LastCalcScene extends FilpFlopSceneBase{
 
     constructor(){
         super(
-            window.innerWidth,
-            window.innerHeight,
+            Params.stageWidth,
+            Params.stageHeight,
             {
                 uniforms: {
                     time: {value: 0},
                     size:{
-                        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+                        value: new THREE.Vector2(Params.stageWidth,Params.stageHeight),
                     },
-                    alphaSpeed:{value:0.8},
+                    //alphaSpeed:{value:0.8},
+                    alphaSpeed2:{value:1},
+                    alphaSpeed:{value:2.5},
                     maxAlpha:{value:0.9},
+                    gensui:{value:1},
                     tex:{value:null},
                     tex1:{value:null},
                     tex2:{value:null}
@@ -34,9 +37,10 @@ export class LastCalcScene extends FilpFlopSceneBase{
 
         let g = Params.gui.addFolder("== LAST CALC ==");
         g.close();
-        g.add(uniforms.alphaSpeed,"value",0,1).name("fixRalphaSpeedatio");
+        g.add(uniforms.alphaSpeed2,"value",1,20).name("alphaSpeed2");
+        g.add(uniforms.alphaSpeed,"value",0,5).name("alphaSpeed");
         g.add(uniforms.maxAlpha,"value",0,1).name("maxAlpha");
-
+        g.add(uniforms.gensui,"value",0,1).name("gensui");
 
         //Params.gui.add(this,"clearTargets");
     }

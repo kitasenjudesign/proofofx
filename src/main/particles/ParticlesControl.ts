@@ -55,21 +55,35 @@ export class ParticleControl extends THREE.Object3D{
             if(this.frameCount%Params.intervalEmitting==0){
                 this.line.updateCrossPoints();
                 let intesection = DataManager.getInstance().instersection;
+
+                let crossPoints = intesection.GetCurrentCrossPoints();
+
+                for(let i=0;i<crossPoints.length;i+=Params.numMabiki){
+                    let p = crossPoints[i];
+                    if(p){
+                        this.particles[this.particleIndex%this.particles.length].show(p);    
+                        this.particleIndex++;
+                    }
+                }
+
+                /*
                 for(let i=0;i<Params.numEmitting;i++){
                     let point = intesection.GetCurrentRandomPoint();
                     if(point){
                         this.particles[this.particleIndex%this.particles.length].show(point);    
                         this.particleIndex++;
                     }
-                }
+                }*/
+
             }
         }else{
+            /*
             for(let i=0;i<Params.numEmitting;i++){
                 let point = DataManager.getInstance().svg.getNextPoint();
                 this.particles[(this.frameCount+i)%this.particles.length].show(
                     new THREE.Vector2(point.x,point.y)
                 ); 
-            }
+            }*/
         }
         
 

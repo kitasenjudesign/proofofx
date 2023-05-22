@@ -19,7 +19,7 @@ export class OutputPlane extends THREE.Mesh{
         let mat = new THREE.ShaderMaterial({
           uniforms: {
               tex:{value:null},
-              size:{value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
+              size:{value: new THREE.Vector2(Params.stageWidth,Params.stageHeight)},
               alpha:{value:1.0},
               bgCol:{value:new THREE.Vector4(
                 Params.bgColor.r,
@@ -45,6 +45,7 @@ export class OutputPlane extends THREE.Mesh{
           this.mat.uniforms.bgCol.value.x = Params.bgColor.r;
           this.mat.uniforms.bgCol.value.y = Params.bgColor.g;
           this.mat.uniforms.bgCol.value.z = Params.bgColor.b;
+          this.mat.uniforms.bgCol.value.w = Params.bgColorAlpha;
 
         })
 

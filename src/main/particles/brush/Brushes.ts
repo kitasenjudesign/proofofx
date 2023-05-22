@@ -4,7 +4,6 @@ import { MeshBasicMaterial, Vector3 } from 'three';
 import { Forces } from '../Forces';
 import vert from "./brush.vert";
 import frag from "./brush.frag";
-import frag2 from "./brush2.frag";
 
 import glslify from 'glslify';
 import { Params } from '../../../proof/data/Params';
@@ -20,10 +19,11 @@ export class Brushes extends THREE.Mesh{
     randoms     :Float32Array;
     oldPos:Vector3;
     isDirty:boolean=false;
-    width:number = 0;
-    widthRatio:number = 1;
+    //width:number = 0;
+    //widthRatio:number = 1;
     mat: THREE.ShaderMaterial;
     static instance:Brushes;
+
 
     public static getInstance():Brushes{
         if(Brushes.instance == null){
@@ -36,6 +36,10 @@ export class Brushes extends THREE.Mesh{
 
         // BufferGeometryを使って四角形を作成
         const geometry = new THREE.BufferGeometry();
+
+        //
+        //this.widthRatio = 0.8+0.2*Math.random();
+
 
         // 頂点データを定義
         let vertices = new Float32Array(Forces.NUM*3*4);//vec3が4個
@@ -122,17 +126,19 @@ export class Brushes extends THREE.Mesh{
         // 四角形のメッシュを作成し、シーンに追加
         super(geometry, mat);
         this.mat = mat;
+
        
-        this.width      = SRandom.random()*0.5+0.5;
+        //this.width      = SRandom.random()*0.5+0.5;
+        //this.widthRatio = SRandom.random()*0.5+0.5;
+        
         this.vertices   = vertices;
         this.colors     = colors;
         this.randoms    = randoms;
         this.geometry.attributes.position.needsUpdate = true;
 
-        
         let gui = Params.gui.addFolder("==BRUSH==");
             gui.close();
-            gui.add(this,"widthRatio",0,10).listen();
+            //gui.add(this,"widthRatio",0,10).listen();
             gui.add(this.mat.uniforms.highlight,"value",0,1).name("highlight").listen();
             gui.add(this.mat.uniforms.border,"value",0,1).name("border").listen();
             gui.add(this.mat.uniforms.detail,"value",0,20).name("detail").listen();
@@ -176,7 +182,7 @@ export class Brushes extends THREE.Mesh{
         let dy = p2.y-p1.y;
 
         let rad = Math.atan2(dy,dx);
-        let amp = ww*this.widthRatio;//*(1-life);
+        let amp = ww*Params.widthRatio;//*(1-life);
 
         let lx=amp*Math.cos(rad-Math.PI/2);
         let ly=amp*Math.sin(rad-Math.PI/2);

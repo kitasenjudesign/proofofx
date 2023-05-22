@@ -14,27 +14,20 @@ export class Colors {
 
     public static init(){
 
-        Colors.NUM = Math.floor( 2 + 2 * SRandom.random() );
+        
 
         let gui = Params.gui.addFolder("== Colors ==");
         gui.close();
         this.colors=[];
         this.colorsObj={};
 
-        this.logoColor={
-            r:SRandom.random(),
-            g:SRandom.random(),
-            b:SRandom.random()
-        };
-
-        
-
-        for(let i=0;i<this.NUM;i++){
+       
+        for(let i=0;i<4;i++){
 
             let cc = new Color(0xffffff);
             cc.setHSL(
                 SRandom.random(),
-                0.5+0.5*SRandom.random(),//
+                0.6+0.4*SRandom.random(),//
                 0.5//
             );
 
@@ -49,15 +42,30 @@ export class Colors {
             gui.addColor(this.colorsObj,"col_"+i).listen();
 
         }
+
+        this.logoColor={
+            r:this.colorsObj["col_0"].r,
+            g:this.colorsObj["col_0"].g,
+            b:this.colorsObj["col_0"].b
+        };
+
         Colors.logoColorObj={};
         Colors.logoColorObj["logo"] = this.logoColor;
+
+        
+        
         gui.addColor(Colors.logoColorObj,"logo").listen();
         //gui.addColor(Colors.logoColor,"logoColor").listen();
+        gui.add(Colors,"NUM");
         gui.add(Colors,"reset");
+
+        this.reset();
 
     }
 
-    private static reset(){
+    public static reset(){
+
+        Colors.NUM = Math.floor( 2 + 2 * SRandom.random() );
 
         this.logoColor.r = 0.5+0.5*SRandom.random();
         this.logoColor.g = 0.5+0.5*SRandom.random();
@@ -87,7 +95,7 @@ export class Colors {
 
     public static getRandomColor(){
 
-        return this.colors[Math.floor(SRandom.random()*this.colors.length)];
+        return this.colors[Math.floor(SRandom.random()*this.NUM)];
 
     }
 

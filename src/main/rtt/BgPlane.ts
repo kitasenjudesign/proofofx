@@ -19,7 +19,7 @@ export class BgPlane extends THREE.Mesh{
                 uniforms: {
                     time: {value: 0},
                     attenuation: {value: 0.999},
-                    size:{value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
+                    size:{value: new THREE.Vector2(Params.stageWidth, Params.stageHeight)},
                     tex:{value:null},
                     tex2:{value:null}
                 },
@@ -42,7 +42,10 @@ export class BgPlane extends THREE.Mesh{
     ): void {
         
         this.bgMaterial.uniforms.tex.value = renderTgt.texture;
-        this.bgMaterial.uniforms.size.value = new THREE.Vector2(window.innerWidth, window.innerHeight);
+        this.bgMaterial.uniforms.size.value = new THREE.Vector2(
+            Params.stageWidth,
+            Params.stageHeight
+        );
         this.bgMaterial.uniforms.time.value += 0.01;      
 
     }

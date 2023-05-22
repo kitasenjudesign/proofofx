@@ -17,8 +17,8 @@ export class BrushScene {
     constructor(){
         
         this.renderTarget = new WebGLRenderTarget( 
-            window.innerWidth * this.sizeRatio,
-            window.innerHeight * this.sizeRatio
+            Params.stageWidth * this.sizeRatio,
+            Params.stageHeight * this.sizeRatio
         );
 
         this.renderTarget.texture.magFilter = Params.FILTER_DRAW;
@@ -75,8 +75,8 @@ export class BrushScene {
     resize(camera:OrthographicCamera){
 
         //renderTarget
-        this.renderTarget.width   = window.innerWidth*this.sizeRatio;
-        this.renderTarget.height  = window.innerHeight*this.sizeRatio;
+        this.renderTarget.width   = Params.stageWidth*this.sizeRatio;
+        this.renderTarget.height  = Params.stageHeight*this.sizeRatio;
         
         this.camera.left    =camera.left;
         this.camera.right   =camera.right;

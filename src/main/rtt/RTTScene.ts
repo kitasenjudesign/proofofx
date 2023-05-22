@@ -24,9 +24,10 @@ export class RTTScene extends RTTSceneBase{
         this.scene.add(this.tails);
         
         this.renderTargetC = new THREE.WebGLRenderTarget( 
-            window.innerWidth*1, 
-            window.innerHeight*1
+            Params.stageWidth*1, 
+            Params.stageHeight*1
         );
+        this.renderTargetC.texture.generateMipmaps = false;
 
         //this.lines=new Lines2();
         //this.scene.add(this.lines);

@@ -3,6 +3,7 @@ import { Params } from "../../proof/data/Params";
 import { MySVGLoader } from "../../shapes/MySVGLoader";
 import { IntersectionLine } from "../intersection/IntersectionLine";
 import { Particles } from "../particles/Particles";
+import { Main } from '../Main';
 
 
 export class DataManager{
@@ -28,20 +29,29 @@ export class DataManager{
   public particles      :Particles;
   public instersection  :IntersectionLine;
   public domControl     :DOMControl;
+  public main           :Main;
 
-  public init(callback:()=>void){
+
+  public init(main:Main, callback:()=>void){
     
+    this.main = main;
+
     //console.log(hoge);
-    
-    
     let loader = new MySVGLoader();
     loader.init(Params.PATH + "moji3.svg",()=>{
          callback();   
       });
     this.svg=loader;//.add(loader);
-
-     //DataManager.instance.svg = loader;
+    //DataManager.instance.svg = loader;
      
   }
+
+  
+  public regenerate(){
+
+    this.main.regenerate();
+
+  }
+
 
 }

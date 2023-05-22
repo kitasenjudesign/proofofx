@@ -46,8 +46,7 @@
       col1.a*alpha
     );
 
-
-
-    gl_FragColor = vec4(outputCol.rgb,1.0);
+    //gl_FragColor = vec4(outputCol.rgb,1.0);
+    gl_FragColor = vec4(outputCol.rgb,1.0);//col1.a*alpha);
   
   }

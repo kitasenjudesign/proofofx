@@ -11,13 +11,13 @@ export class PigmentScene extends FilpFlopSceneBase{
     constructor(){
 
         super(
-            window.innerWidth,
-            window.innerHeight,
+            Params.stageWidth,
+            Params.stageHeight,
             {
                 uniforms: {
                     time: {value: 0},
                     size:{
-                        value: new THREE.Vector2(window.innerWidth, window.innerHeight)
+                        value: new THREE.Vector2(Params.stageWidth, Params.stageHeight)
                     },
                     attenuation: {value: 0.995},
                     tex:{value:null},

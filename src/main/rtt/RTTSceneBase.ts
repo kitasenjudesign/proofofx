@@ -23,14 +23,17 @@ export class RTTSceneBase extends THREE.Object3D{
         this.scene = new THREE.Scene();
         this.camera = new THREE.OrthographicCamera();
         this.renderTargetA = new THREE.WebGLRenderTarget( 
-            window.innerWidth*this.sizeRatio, 
-            window.innerHeight*this.sizeRatio
+            Params.stageWidth*this.sizeRatio, 
+            Params.stageHeight*this.sizeRatio
         );
         this.renderTargetB = new THREE.WebGLRenderTarget( 
-            window.innerWidth*this.sizeRatio, 
-            window.innerHeight*this.sizeRatio
+            Params.stageWidth*this.sizeRatio, 
+            Params.stageHeight*this.sizeRatio
         );        
         
+        this.renderTargetA.texture.generateMipmaps = false;
+        this.renderTargetB.texture.generateMipmaps = false;
+
         /*
         this.renderTargetA.texture.minFilter = THREE.NearestFilter;
         this.renderTargetA.texture.magFilter = THREE.NearestFilter;
@@ -77,10 +80,10 @@ export class RTTSceneBase extends THREE.Object3D{
     resize(camera:OrthographicCamera){
 
         //renderTarget
-        this.renderTargetA.width   = window.innerWidth*this.sizeRatio;
-        this.renderTargetA.height  = window.innerHeight*this.sizeRatio;
-        this.renderTargetB.width   = window.innerWidth*this.sizeRatio;
-        this.renderTargetB.height  = window.innerHeight*this.sizeRatio;
+        this.renderTargetA.width   = Params.stageWidth*this.sizeRatio;
+        this.renderTargetA.height  = Params.stageHeight*this.sizeRatio;
+        this.renderTargetB.width   = Params.stageWidth*this.sizeRatio;
+        this.renderTargetB.height  = Params.stageHeight*this.sizeRatio;
 
         this.camera.left    =camera.left;
         this.camera.right   =camera.right;
@@ -94,8 +97,8 @@ export class RTTSceneBase extends THREE.Object3D{
         this.camera.updateProjectionMatrix();
 
         this.bgPlane.resize(
-            window.innerWidth/100,
-            window.innerHeight/100
+            Params.stageWidth/100,
+            Params.stageHeight/100
         )
 
     }

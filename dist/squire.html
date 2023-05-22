@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
+
+    <title>PROOF OF X</title>
+
+    <script type="text/javascript">
+      var attribute = {
+        //hash: "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c",
+        hash: "0x"+Math.random()+""+Math.random(),
+        name: "PoX太郎"+Math.floor(Math.random()*10),
+        mintedAt: 1681036222612
+      };
+    </script>
+
+    <style type="text/css">
+      body{
+          margin:0;
+          padding:0;
+          background-color: #000;
+          font-family: Helvetica, Arial, sans-serif;
+          overflow: hidden;
+      }
+    </style>
+    <link rel="stylesheet" href="./mainvisual/css/mainvisual.css">
+
+  </head>
+
+  <body>
+
+    <!-- START - for main visual -->
+      <script 
+        src="./mainvisual/js/mainvisual.js" 
+        id="mainvisual_js"
+        data-mode="squire" //website or nft
+        data-baseurl="./mainvisual/"//webglから読み込む素材のパス
+      >
+      </script>
+      <div id="mainvisual_title"></div>
+      <div class="mainvisual_container">
+        <canvas id="mainvisual_webgl"></canvas>
+      </div>
+    <!-- END - for main visual -->
+
+  </body>
+
+</html>

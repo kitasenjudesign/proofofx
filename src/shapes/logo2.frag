@@ -12,7 +12,7 @@
   void main() {
 
     vec4 color = textCol;
-    color.xyz += 0.02*cos(time*99.9);
+    color.xyz += 0.005*cos(time*99.9);
     
     if(vPos2.y > lineY) {
       //color = vec4(0.4,0.4,0.2,1.0);

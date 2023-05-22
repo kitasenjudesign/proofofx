@@ -2383,7 +2383,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\nvarying vec3 vColor;\nvarying vec4 vPosition;\nvarying vec3 localPos;\nvarying float vRandom;\nvarying float vOpacity;\n\nvarying vec2 vUv;\nvarying float vLife;\nuniform sampler2D tex;\nuniform float detail;\nuniform float border;\nuniform float highlight;\nuniform float opacity;\n\nvoid main() {\n\nvec3 col = vColor;\n//col.x += snoise3(vPosition.xyz*0.05);\n//col.y += snoise3(vPosition.xyz*0.05);\n//col.z += snoise3(vPosition.xyz*0.05);\n//ブラシをもっとブラシいぽくする\n\nvec3 offset     = vec3(vRandom,0.0,0.0);\nvec4 texColor   = texture2D(tex, vUv);\nfloat b         = snoise(vec3(vUv.x*detail,vPosition.xy*0.01));\n\nif(b<(vLife-0.5)*2.0) discard;\n\n//0.6,0.6,0.5\n\nvec3 added = b*vec3(0.6,0.6,0.3)*highlight;\n//gl_FragColor = vec4(col.rgb, 0.5+0.5*snoise3(offset+vPosition.xyz*0.05)); // varying変数から頂点カラーを取得して出力\n\nfloat fuchi = (1.0-border) + border * texColor.x;\ngl_FragColor = vec4(col.rgb*fuchi+added,vOpacity); // varying変数から頂点カラーを取得して出力\n\n}");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\nvarying vec3 vColor;\nvarying vec4 vPosition;\nvarying vec3 localPos;\nvarying float vRandom;\nvarying float vOpacity;\n\nvarying vec2 vUv;\nvarying float vLife;\nuniform sampler2D tex;\nuniform float detail;\nuniform float border;\nuniform float highlight;\nuniform float opacity;\n\nvoid main() {\n\n    vec3 col = vColor;\n    //col.x += snoise3(vPosition.xyz*0.05);\n    //col.y += snoise3(vPosition.xyz*0.05);\n    //col.z += snoise3(vPosition.xyz*0.05);\n    //ブラシをもっとブラシいぽくする\n\n    vec3 offset     = vec3(vRandom,0.0,0.0);\n    vec4 texColor   = texture2D(tex, vUv);\n    float b         = snoise(vec3(vUv.x*detail,vPosition.xy*0.01));\n\n    if(b<(vLife-0.5)*2.0) discard;\n\n    //0.6,0.6,0.5\n\n    //vec3 added = b*vec3(0.6,0.6,0.3)*highlight;\n    vec3 added = b*vec3(0.3,0.3,0.3)*highlight;\n\n    //gl_FragColor = vec4(col.rgb, 0.5+0.5*snoise3(offset+vPosition.xyz*0.05)); // varying変数から頂点カラーを取得して出力\n\n    float fuchi = (1.0-border) + border * texColor.x;\n    gl_FragColor = vec4(col.rgb*fuchi+added,vOpacity); // varying変数から頂点カラーを取得して出力\n\n}");
 
 /***/ }),
 
@@ -2413,7 +2413,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n    float random (vec2 st) {\n      return fract(sin(dot(st.xy,\n                           vec2(12.9898,78.233)))*\n          43758.5453123);\n    }\n\n    \n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, -pixelSize.y);\n  vec2 downOffset = vec2(0.0, pixelSize.y);\n  float left = texture2D(pTex,texCoord+leftOffset).x;\n  float right = texture2D(pTex,texCoord+rightOffset).r;\n  float up = texture2D(pTex,texCoord+upOffset).r;\n  float down = texture2D(pTex,texCoord+downOffset).r;\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n    uniform vec2 size;\n    uniform float time;\n    uniform float colorId;\n    uniform sampler2D tex;\n    uniform sampler2D tex1;\n    uniform sampler2D tex2;\n    uniform float maxAlpha;\n    uniform float alphaSpeed;\n    varying vec3 vNormal;\n    varying vec2 vUv;\n  \n\n    void main(void)\n    {\n      vec4 colBlur = texture2D(//ボケ用の数値\n        tex2,\n        vUv.xy\n      );\n      vec4 col=texture2D(//一個前の。\n        tex,\n        vUv.xy\n      );\n      //元の色,pigment\n      vec4 colPigment=texture2D(//pigment用\n        tex1,\n        vUv.xy\n      );\n      \n      //背景とブレンド\n      //暗い色を無視する\n      //float ratio = smoothstep(0.2,0.25,length(colPigment.rgb));\n      col.rgb = mix(\n        col.rgb,//一個前と変わらない色\n        colPigment.rgb,//繰り返すとおよそ　この色になる\n        colBlur.a//この値は乾いて０に近づいていく\n      );\n\n      //定着の割合、\n      vec2 nPos = (vUv.xy*30.0);\n      float paper=snoise(vec3(nPos,time*0.0));\n      //col.a += colBlur.a*(0.01+(0.005*paper))*alphaSpeed;\n      col.a += colBlur.a*(0.01)*alphaSpeed;\n\n      float maxAlpha1 = maxAlpha + 0.1*paper;\n      col.a = clamp(col.a,0.0,maxAlpha1);\n\n      //col.a = colBlur.a;\n      \n\n      gl_FragColor=vec4(col.rgba);\n      //gl_FragColor = vec4(gradientValue.xy*10.0,0.0,1.0);\n\n    }\n\n");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n    float random (vec2 st) {\n      return fract(sin(dot(st.xy,\n                           vec2(12.9898,78.233)))*\n          43758.5453123);\n    }\n\n    \n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, -pixelSize.y);\n  vec2 downOffset = vec2(0.0, pixelSize.y);\n  float left = texture2D(pTex,texCoord+leftOffset).x;\n  float right = texture2D(pTex,texCoord+rightOffset).r;\n  float up = texture2D(pTex,texCoord+upOffset).r;\n  float down = texture2D(pTex,texCoord+downOffset).r;\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n    uniform vec2 size;\n    uniform float time;\n    uniform float colorId;\n    //uniform float speed;\n    uniform sampler2D tex;\n    uniform sampler2D tex1;\n    uniform sampler2D tex2;\n    uniform float maxAlpha;\n    uniform float alphaSpeed;\n    uniform float alphaSpeed2;\n    uniform float gensui;\n\n    varying vec3 vNormal;\n    varying vec2 vUv;\n  \n\n    void main(void)\n    {\n      vec4 colBlur = texture2D(//ボケ用の数値\n        tex2,\n        vUv.xy\n      );\n      vec4 col=texture2D(//一個前の。\n        tex,\n        vUv.xy\n      );\n      //元の色,pigment\n      vec4 colPigment=texture2D(//pigment用\n        tex1,\n        vUv.xy\n      );\n      \n      //背景とブレンド\n      //暗い色を無視する\n      //float ratio = smoothstep(0.2,0.25,length(colPigment.rgb));\n      col.rgb = mix(\n        col.rgb,//一個前と変わらない色\n        colPigment.rgb,//繰り返すとおよそ　この色になる\n        clamp(colBlur.a*alphaSpeed2,0.0,1.0)//この値は乾いて０に近づいていく\n      );\n\n      //定着の割合、\n      vec2 nPos = (vUv.xy*30.0);\n      float paper=snoise(vec3(nPos,time*0.0));\n      //col.a += colBlur.a*(0.01+(0.005*paper))*alphaSpeed;\n      col.a += colBlur.a*(0.01)*alphaSpeed;\n\n      float maxAlpha1 = maxAlpha + 0.1*paper;\n      col.a = clamp(col.a,0.0,maxAlpha1);\n\n      //col.a = colBlur.a;\n      \n      col.a*=gensui;//*length(colPigment.rgb);\n\n      gl_FragColor=vec4(col.rgba);\n      //gl_FragColor = vec4(gradientValue.xy*10.0,0.0,1.0);\n\n    }\n\n");
 
 /***/ }),
 
@@ -2443,7 +2443,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n    float random (vec2 st) {\n      return fract(sin(dot(st.xy,\n                           vec2(12.9898,78.233)))*\n          43758.5453123);\n    }\n\n    \n//#pragma glslify: gaussian = require(\"./gaussian.glsl\")\n\n    uniform vec2 size;\n    uniform float time;\n    uniform float colorId;\n    uniform float attenuationSpeed;\n    uniform float blurRatio;\n    uniform float blurScale;\n    uniform sampler2D tex;\n    uniform sampler2D tex2;\n    varying vec3 vNormal;\n    varying vec2 vUv;\n\n    void main(void)\n    {\n\n      vec2 ssize = 50.0*vec2(size.x/1000.0,size.y/1000.0);\n      vec2 offset = vec2(\n        //0.0,0.0\n        //snoise3(vec3(vUv.xy*35.1,1.2*time+0.001))*0.0002,\n        //snoise3(vec3(vUv.xy*35.1,1.2*time+999.9))*0.0002\n        0.0*(random(floor(vUv.xy*ssize+vec2(0.0,0.0)))-0.5),\n        0.0*(random(floor(vUv.xy*ssize+vec2(99.99,0.0)))-0.5)        \n      );\n\n      //vec4 col2 = texture2D(\n      //  tex2,\n      //  vUv.xy+offset\n      //);\n\n      vec2 pixel = vec2(\n        blurScale/size.x,\n        blurScale/size.y\n      );\n\n      vec2 uvv = vUv.xy;\n      \n      //float amp = snoise3(vec3(vUv.xy*8.0,0.0))*0.0015;\n      //float rad = snoise3(vec3(vUv.xy*8.0,999.0))*3.1415*10.0;\n      //uvv.x += amp * cos(rad);\n      //uvv.y += amp * sin(rad);\n\n      vec4 col1 = texture2D(tex,uvv.xy+vec2(-1.0,-1.0)*pixel+offset);\n      vec4 col2 = texture2D(tex,uvv.xy+vec2(0.0,-1.0) *pixel+offset);\n      vec4 col3 = texture2D(tex,uvv.xy+vec2(1.0,-1.0) *pixel+offset);\n      \n      vec4 col4 = texture2D(tex,uvv.xy+vec2(-1.0,0.0) *pixel+offset);\n      vec4 col5 = texture2D(tex,uvv.xy+vec2(0.0,0.0)  *pixel+offset);\n      vec4 col6 = texture2D(tex,uvv.xy+vec2(1.0,0.0)  *pixel+offset);\n\n      vec4 col7 = texture2D(tex,uvv.xy+vec2(-1.0,1.0) *pixel+offset);\n      vec4 col8 = texture2D(tex,uvv.xy+vec2(0.0,1.0)  *pixel+offset);\n      vec4 col9 = texture2D(tex,uvv.xy+vec2(1.0,1.0)  *pixel+offset);\n\n      vec4 col = \n        1.0*col1 + 2.0*col2 + 1.0*col3+\n        2.0*col4 + 4.0*col5 + 2.0*col6+\n        1.0*col7 + 2.0*col8 + 1.0*col9;\n        col/=(16.0);\n\n      float blurR = blurRatio;//vUv.x<0.5 ? 0.5 : 0.2;\n      //,blurRatio\n      float rr = step(0.5,random(floor(vUv.xy*100.0)));\n      col = mix(col5,col,blurR);\n      col.a-=attenuationSpeed;\n      col = max(vec4(0.0,0.0,0.0,0.0),col);\n\n      vec4 randCol = texture2D(tex,vUv.xy+vec2(\n        1.0/size.x*(random(vUv.xy+vec2(0.1*time,111.0))-0.5),\n        1.0/size.y*(random(vUv.xy+vec2(0.1*time,197.9))-0.5)  \n      ));\n\n      vec4 inputTex = texture2D(tex2,vUv);\n      col.rgb = mix(\n        //col.rgb,//col5.rgb,\n        col.rgb,//randCol.rgb,\n        inputTex.rgb,\n        inputTex.a\n      );\n      col.a = max(col.a,inputTex.a);\n\n      \n\n      //col*=0.999;\n      //col*=0.99;\n      //col*=0.99;\n\n      //col-=0.0005;\n        //col1.x-=0.005;\n        //col1.y-=0.005;\n        //col1.z-=0.005;\n        //col1.rgb *= col1.rgb*0.999;\n        //col.g=1.0;\n        //col1.rgb*=0.99+0.01*snoise3(vec3(vUv.xy*15.1,time*0.01));\n\n      gl_FragColor=col.rgba;//vec4(col.rgba);\n\n    }");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n    float random (vec2 st) {\n      return fract(sin(dot(st.xy,\n                           vec2(12.9898,78.233)))*\n          43758.5453123);\n    }\n\n    \n//#pragma glslify: gaussian = require(\"./gaussian.glsl\")\n\n    uniform vec2 size;\n    uniform float time;\n    uniform float colorId;\n    uniform float attenuationSpeed;\n    uniform float blurRatio;\n    uniform float blurScale;\n    uniform sampler2D tex;\n    uniform sampler2D tex2;\n    varying vec3 vNormal;\n    varying vec2 vUv;\n\n    void main(void)\n    {\n\n      //float amp = snoise3(vec3(vUv.xy*8.0,0.0))*0.0015;\n      //float rad = snoise3(vec3(vUv.xy*8.0,999.0))*3.1415*10.0;\n\n      vec2 ssize = 50.0*vec2(size.x/1000.0,size.y/1000.0);\n      vec2 offset = vec2(\n        0.0,0.0\n        //snoise3(vec3(vUv.xy*35.1,10.0))*0.0003,\n        //snoise3(vec3(vUv.xy*35.1,1110.0))*0.0003\n        //0.01*(random(floor(vUv.xy*ssize+vec2(0.0,0.0)))-0.5),\n        //0.01*(random(floor(vUv.xy*ssize+vec2(99.99,0.0)))-0.5)        \n      );\n\n      //vec4 col2 = texture2D(\n      //  tex2,\n      //  vUv.xy+offset\n      //);\n\n      vec2 pixel = vec2(\n        blurScale/size.x,\n        blurScale/size.y\n      );\n\n      vec2 uvv = vUv.xy;\n      \n      //float amp = snoise3(vec3(vUv.xy*8.0,0.0))*0.0015;\n      //float rad = snoise3(vec3(vUv.xy*8.0,999.0))*3.1415*10.0;\n      //uvv.x += amp * cos(rad);\n      //uvv.y += amp * sin(rad);\n\n      vec4 col1 = texture2D(tex,uvv.xy+vec2(-1.0,-1.0)*pixel+offset);\n      vec4 col2 = texture2D(tex,uvv.xy+vec2(0.0,-1.0) *pixel+offset);\n      vec4 col3 = texture2D(tex,uvv.xy+vec2(1.0,-1.0) *pixel+offset);\n      \n      vec4 col4 = texture2D(tex,uvv.xy+vec2(-1.0,0.0) *pixel+offset);\n      vec4 col5 = texture2D(tex,uvv.xy+vec2(0.0,0.0)  *pixel+offset);\n      vec4 col6 = texture2D(tex,uvv.xy+vec2(1.0,0.0)  *pixel+offset);\n\n      vec4 col7 = texture2D(tex,uvv.xy+vec2(-1.0,1.0) *pixel+offset);\n      vec4 col8 = texture2D(tex,uvv.xy+vec2(0.0,1.0)  *pixel+offset);\n      vec4 col9 = texture2D(tex,uvv.xy+vec2(1.0,1.0)  *pixel+offset);\n\n      vec4 col = \n        1.0*col1 + 2.0*col2 + 1.0*col3+\n        2.0*col4 + 4.0*col5 + 2.0*col6+\n        1.0*col7 + 2.0*col8 + 1.0*col9;\n        col/=(16.0);\n\n      float blurR = blurRatio;//vUv.x<0.5 ? 0.5 : 0.2;\n      //,blurRatio\n      float rr = step(0.5,random(floor(vUv.xy*100.0)));\n      col = mix(col5,col,blurR);\n      col.a-=attenuationSpeed;\n      col = max(vec4(0.0,0.0,0.0,0.0),col);\n\n      vec4 randCol = texture2D(tex,vUv.xy+vec2(\n        1.0/size.x*(random(vUv.xy+vec2(0.1*time,111.0))-0.5),\n        1.0/size.y*(random(vUv.xy+vec2(0.1*time,197.9))-0.5)  \n      ));\n\n      vec4 inputTex = texture2D(tex2,vUv);\n      col.rgb = mix(\n        //col.rgb,//col5.rgb,\n        col.rgb,//randCol.rgb,\n        inputTex.rgb,\n        inputTex.a\n      );\n      col.a = max(col.a,inputTex.a);\n\n      \n\n      //col*=0.999;\n      //col*=0.99;\n      //col*=0.99;\n\n      //col-=0.0005;\n        //col1.x-=0.005;\n        //col1.y-=0.005;\n        //col1.z-=0.005;\n        //col1.rgb *= col1.rgb*0.999;\n        //col.g=1.0;\n        //col1.rgb*=0.99+0.01*snoise3(vec3(vUv.xy*15.1,time*0.01));\n\n      gl_FragColor=col.rgba;//vec4(col.rgba);\n\n    }");
 
 /***/ }),
 
@@ -2488,7 +2488,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\nhighp float random(vec2 co)\n{\n    highp float a = 12.9898;\n    highp float b = 78.233;\n    highp float c = 43758.5453;\n    highp float dt= dot(co.xy ,vec2(a,b));\n    highp float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, 0.0);//-pixelSize.y);\n  vec2 downOffset = vec2(0.0, 0.0);//pixelSize.y);\n  float left = length(texture2D(pTex,texCoord+leftOffset));\n  float right = length(texture2D(pTex,texCoord+rightOffset));\n  float up = length(texture2D(pTex,texCoord+upOffset));\n  float down = length(texture2D(pTex,texCoord+downOffset));\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n// 勾配計算関数\nvec4 unsharp(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixel = scale / resolution;\n  vec2 uvv = texCoord.xy;\n    \n  vec4 col1 = texture2D(pTex,uvv.xy+vec2(-1.0,-1.0)*pixel);\n  vec4 col2 = texture2D(pTex,uvv.xy+vec2(0.0,-1.0) *pixel);\n  vec4 col3 = texture2D(pTex,uvv.xy+vec2(1.0,-1.0) *pixel);\n      \n  vec4 col4 = texture2D(pTex,uvv.xy+vec2(-1.0,0.0) *pixel);\n  vec4 col5 = texture2D(pTex,uvv.xy+vec2(0.0,0.0)  *pixel);\n  vec4 col6 = texture2D(pTex,uvv.xy+vec2(1.0,0.0)  *pixel);\n\n  vec4 col7 = texture2D(pTex,uvv.xy+vec2(-1.0,1.0) *pixel);\n  vec4 col8 = texture2D(pTex,uvv.xy+vec2(0.0,1.0)  *pixel);\n  vec4 col9 = texture2D(pTex,uvv.xy+vec2(1.0,1.0)  *pixel);\n\n  //https://en.wikipedia.org/wiki/Unsharp_masking\n  //https://imagingsolution.net/imaging/unsharpmasking/\n  //元画像＋(元画像－平滑化画像)*k＝シャープ化画像\n  float k = 3.0;\n  vec4 col = -k/9.0*col1-k/9.0*col2-k/9.0*col3\n            -k/9.0*col4+(k*8.0/9.0)*col5-k/9.0*col6\n            -k/9.0*col7-k/9.0*col8-k/9.0*col9;\n\n  col += col5;\n\n  //col += (col5 - col6) * 0.5;\n\n  return col;\n}\n\n//#pragma glslify: snoise3 = require(glsl-noise/simplex/3d)\n\n  uniform sampler2D tex;\n  uniform sampler2D tex2;\n\n  uniform vec2 size;\n  uniform vec4 bgCol;\n  uniform float alpha;\n\n  varying vec2 vUv;\n\n  void main() {\n\n    //vec2 offset = texture2D()\n\n    vec2 uvv = vUv.xy;\n\n    vec2 offset = vec2(\n      random( vUv.xy + vec2(0.0,110.0) ) * 0.001,\n      random( vUv.xy + vec2(0.0,99.0) ) * 0.001\n    );\n    \n    \n    vec4 col1 = unsharp(tex,uvv,size,1.0);\n    \n    /*\n    vec4 col1 = texture2D(tex,uvv);\n    vec2 gradientValue = gradient(tex,uvv,size,1.0);\n    col1.x += gradientValue.x;\n    col1.y += gradientValue.x;\n    col1.z += gradientValue.x;\n    */\n\n    //vec4 col2 = texture2D(tex,vUv);\n    //vec4 col2 = texture2D(tex,vUv.xy + vec2(0.0, 5.0/size.y));//sizey\n    //vec4 col3 = texture2D(tex,vUv.xy + vec2(0.0, -5.0/size.y));\n\n    vec4 bgColor = bgCol;\n    vec4 outputCol  = mix(\n      bgColor,\n      col1,\n      col1.a*alpha\n    );\n\n    gl_FragColor = vec4(outputCol.rgb,1.0);\n  \n  }");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\nhighp float random(vec2 co)\n{\n    highp float a = 12.9898;\n    highp float b = 78.233;\n    highp float c = 43758.5453;\n    highp float dt= dot(co.xy ,vec2(a,b));\n    highp float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, 0.0);//-pixelSize.y);\n  vec2 downOffset = vec2(0.0, 0.0);//pixelSize.y);\n  float left = length(texture2D(pTex,texCoord+leftOffset));\n  float right = length(texture2D(pTex,texCoord+rightOffset));\n  float up = length(texture2D(pTex,texCoord+upOffset));\n  float down = length(texture2D(pTex,texCoord+downOffset));\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n// 勾配計算関数\nvec4 unsharp(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixel = scale / resolution;\n  vec2 uvv = texCoord.xy;\n    \n  vec4 col1 = texture2D(pTex,uvv.xy+vec2(-1.0,-1.0)*pixel);\n  vec4 col2 = texture2D(pTex,uvv.xy+vec2(0.0,-1.0) *pixel);\n  vec4 col3 = texture2D(pTex,uvv.xy+vec2(1.0,-1.0) *pixel);\n      \n  vec4 col4 = texture2D(pTex,uvv.xy+vec2(-1.0,0.0) *pixel);\n  vec4 col5 = texture2D(pTex,uvv.xy+vec2(0.0,0.0)  *pixel);\n  vec4 col6 = texture2D(pTex,uvv.xy+vec2(1.0,0.0)  *pixel);\n\n  vec4 col7 = texture2D(pTex,uvv.xy+vec2(-1.0,1.0) *pixel);\n  vec4 col8 = texture2D(pTex,uvv.xy+vec2(0.0,1.0)  *pixel);\n  vec4 col9 = texture2D(pTex,uvv.xy+vec2(1.0,1.0)  *pixel);\n\n  //https://en.wikipedia.org/wiki/Unsharp_masking\n  //https://imagingsolution.net/imaging/unsharpmasking/\n  //元画像＋(元画像－平滑化画像)*k＝シャープ化画像\n  float k = 3.0;\n  vec4 col = -k/9.0*col1-k/9.0*col2-k/9.0*col3\n            -k/9.0*col4+(k*8.0/9.0)*col5-k/9.0*col6\n            -k/9.0*col7-k/9.0*col8-k/9.0*col9;\n\n  col += col5;\n\n  //col += (col5 - col6) * 0.5;\n\n  return col;\n}\n\n//#pragma glslify: snoise3 = require(glsl-noise/simplex/3d)\n\n  uniform sampler2D tex;\n  uniform sampler2D tex2;\n\n  uniform vec2 size;\n  uniform vec4 bgCol;\n  uniform float alpha;\n\n  varying vec2 vUv;\n\n  void main() {\n\n    //vec2 offset = texture2D()\n\n    vec2 uvv = vUv.xy;\n\n    vec2 offset = vec2(\n      random( vUv.xy + vec2(0.0,110.0) ) * 0.001,\n      random( vUv.xy + vec2(0.0,99.0) ) * 0.001\n    );\n    \n    \n    vec4 col1 = unsharp(tex,uvv,size,1.0);\n    \n    /*\n    vec4 col1 = texture2D(tex,uvv);\n    vec2 gradientValue = gradient(tex,uvv,size,1.0);\n    col1.x += gradientValue.x;\n    col1.y += gradientValue.x;\n    col1.z += gradientValue.x;\n    */\n\n    //vec4 col2 = texture2D(tex,vUv);\n    //vec4 col2 = texture2D(tex,vUv.xy + vec2(0.0, 5.0/size.y));//sizey\n    //vec4 col3 = texture2D(tex,vUv.xy + vec2(0.0, -5.0/size.y));\n\n    vec4 bgColor = bgCol;\n    vec4 outputCol  = mix(\n      bgColor,\n      col1,\n      col1.a*alpha\n    );\n\n    //gl_FragColor = vec4(outputCol.rgb,1.0);\n    gl_FragColor = vec4(outputCol.rgb,1.0);//col1.a*alpha);\n  \n  }");
 
 /***/ }),
 
@@ -2578,7 +2578,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n  highp float random(vec2 co)\n{\n    highp float a = 12.9898;\n    highp float b = 78.233;\n    highp float c = 43758.5453;\n    highp float dt= dot(co.xy ,vec2(a,b));\n    highp float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\n  uniform sampler2D tex;\n  varying vec2 vUv;\n  varying vec4 vPos;\n  varying vec4 vPos2;\n  \n  uniform float lineY;\n  uniform float time;\n  uniform vec4 textCol;\n\n  void main() {\n\n    vec4 color = textCol;\n    color.xyz += 0.02*cos(time*99.9);\n    \n    if(vPos2.y > lineY) {\n      //color = vec4(0.4,0.4,0.2,1.0);\n      //color = vec4(1.0,0.0,0.0,0.1);\n      discard;\n    }\n\n    //if(random(vUv) < 0.5) {\n    //  discard;\n    //}\n    \n    gl_FragColor = color;\n\n  \n  }");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n  highp float random(vec2 co)\n{\n    highp float a = 12.9898;\n    highp float b = 78.233;\n    highp float c = 43758.5453;\n    highp float dt= dot(co.xy ,vec2(a,b));\n    highp float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\n  uniform sampler2D tex;\n  varying vec2 vUv;\n  varying vec4 vPos;\n  varying vec4 vPos2;\n  \n  uniform float lineY;\n  uniform float time;\n  uniform vec4 textCol;\n\n  void main() {\n\n    vec4 color = textCol;\n    color.xyz += 0.005*cos(time*99.9);\n    \n    if(vPos2.y > lineY) {\n      //color = vec4(0.4,0.4,0.2,1.0);\n      //color = vec4(1.0,0.0,0.0,0.1);\n      discard;\n    }\n\n    //if(random(vUv) < 0.5) {\n    //  discard;\n    //}\n    \n    gl_FragColor = color;\n\n  \n  }");
 
 /***/ }),
 
@@ -2665,10 +2665,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "DOMControl": () => (/* binding */ DOMControl)
 /* harmony export */ });
-/* harmony import */ var _main_data_UNITTimeFormatter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../main/data/UNITTimeFormatter */ "./src/main/data/UNITTimeFormatter.ts");
-/* harmony import */ var _proof_data_Colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../proof/data/Colors */ "./src/proof/data/Colors.ts");
-/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../proof/data/Params */ "./src/proof/data/Params.ts");
-/* harmony import */ var _AbsDOM__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AbsDOM */ "./src/dom/AbsDOM.ts");
+/* harmony import */ var _main_data_DataManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../main/data/DataManager */ "./src/main/data/DataManager.ts");
+/* harmony import */ var _main_data_UNITTimeFormatter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../main/data/UNITTimeFormatter */ "./src/main/data/UNITTimeFormatter.ts");
+/* harmony import */ var _proof_data_Colors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../proof/data/Colors */ "./src/proof/data/Colors.ts");
+/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../proof/data/Params */ "./src/proof/data/Params.ts");
+/* harmony import */ var _AbsDOM__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./AbsDOM */ "./src/dom/AbsDOM.ts");
+
 
 
 
@@ -2678,20 +2680,20 @@ class DOMControl {
         this.init();
     }
     init() {
-        this.title = new _AbsDOM__WEBPACK_IMPORTED_MODULE_3__.AbsDOM(document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.DOM_TITLE), 999);
+        this.title = new _AbsDOM__WEBPACK_IMPORTED_MODULE_4__.AbsDOM(document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.DOM_TITLE), 999);
         this.title.text =
             "PROOF OF X - KEY VISUAL #001 " +
                 " MINTED AT " +
-                _main_data_UNITTimeFormatter__WEBPACK_IMPORTED_MODULE_0__.UNIXTimeFormatter.formatUnixTime(_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_TIME) +
-                " BY " + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_NAME;
-        if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.NFT) {
-            this.title.text += " HASH:" + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_HASH;
+                _main_data_UNITTimeFormatter__WEBPACK_IMPORTED_MODULE_1__.UNIXTimeFormatter.formatUnixTime(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.USER_TIME) +
+                " BY " + _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.USER_NAME;
+        if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.NFT) {
+            this.title.text += " HASH:" + _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.USER_HASH;
         }
     }
     setTitleY(arg0) {
         this.title.y = arg0;
         //161020 '274fc'
-        let hex = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_1__.Colors.rgb2hex(_proof_data_Colors__WEBPACK_IMPORTED_MODULE_1__.Colors.colors[0]).toString(16);
+        let hex = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_2__.Colors.rgb2hex(_proof_data_Colors__WEBPACK_IMPORTED_MODULE_2__.Colors.colors[0]).toString(16);
         while (hex.length < 6) {
             hex = "0" + hex;
         }
@@ -2703,6 +2705,7 @@ class DOMControl {
         )*/
         if (this.title.y > window.innerHeight - this.title.height) {
             this.title.y = window.innerHeight - this.title.height;
+            _main_data_DataManager__WEBPACK_IMPORTED_MODULE_0__.DataManager.getInstance().regenerate();
         }
     }
     update() {
@@ -2740,6 +2743,7 @@ __webpack_require__.r(__webpack_exports__);
 class Main {
     constructor() {
         this.isPause = false;
+        this.size = 1.5;
     }
     init() {
         // let svgLoader = new SVGLo
@@ -2752,7 +2756,7 @@ class Main {
         console.log(r.nextFloat());
         console.log(r.nextFloat());*/
         let dataManager = _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance();
-        dataManager.init(() => {
+        dataManager.init(this, () => {
             this.init2();
         });
     }
@@ -2764,6 +2768,7 @@ class Main {
             antialias: false,
             preserveDrawingBuffer: true
         });
+        //this.renderer.setPixelRatio(1);
         //console.log(hoge);
         this.scene = new three__WEBPACK_IMPORTED_MODULE_5__.Scene();
         this.rttMain = new _rtt_RTTMain__WEBPACK_IMPORTED_MODULE_2__.RTTMain(() => {
@@ -2781,7 +2786,7 @@ class Main {
         this.renderer.setPixelRatio(1);
         this.renderer.setClearColor(new three__WEBPACK_IMPORTED_MODULE_5__.Color(0xcccccc));
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.camera = new three__WEBPACK_IMPORTED_MODULE_5__.OrthographicCamera(-window.innerWidth / 2, window.innerWidth / 2, window.innerHeight / 2, -window.innerHeight / 2, 1, 3000);
+        this.camera = new three__WEBPACK_IMPORTED_MODULE_5__.OrthographicCamera(-_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth / 2, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth / 2, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight / 2, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight / 2, 1, 3000);
         //this.camera = new THREE.PerspectiveCamera(20, 640/480, 1, 10000);
         this.domControl = new _dom_DOMControl__WEBPACK_IMPORTED_MODULE_4__.DOMControl();
         _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().domControl = this.domControl;
@@ -2796,10 +2801,20 @@ class Main {
         this.scene.add(d);
         //this.control = new OrbitControls(this.camera, this.renderer.domElement);
         this.tick();
-        _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.gui.add(this, "pause");
-        _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.gui.add(this, "download");
-        _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.gui.add(this, "resetParticles").name("reset particles");
-        _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.gui.add(this, "reset").name("reset all");
+        let gui = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.gui.addFolder("control");
+        gui.add(this, "regenerate");
+        gui.add(this, "pause");
+        gui.add(this, "download");
+        gui.add(this, "resetParticles").name("reset particles");
+        gui.add(this, "reset").name("reset all");
+        gui.add(this, "size", 0, 4).onChange(() => {
+            this.onWindowResize();
+        });
+    }
+    regenerate() {
+        _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.forcedRandom();
+        this.particles.reset();
+        this.rttMain.resetAll();
     }
     resetParticles() {
         this.particles.reset();
@@ -2832,26 +2847,42 @@ class Main {
     tick() {
         if (this.isPause)
             return;
-        if (window.scrollY < 100) {
+        if (window.scrollY < window.innerHeight / 2) {
             _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.update();
             this.particles.update();
             this.rttMain.update(this.renderer);
             this.renderer.render(this.scene, this.camera);
         }
-        window.requestAnimationFrame(() => {
+        setTimeout(() => {
             this.tick();
-        });
+        }, 1000 / 60);
+        /*
+        window.requestAnimationFrame(()=>{
+            this.tick();
+        });*/
     }
     onWindowResize() {
+        let ss = this.size;
+        this.size = window.innerWidth / 1000 * 1.7;
+        _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.SVG_SCALE = this.size;
+        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo.setScale(1);
+        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo2.setScale(1);
         //const fovRad = (this.camera.fov / 2) * (Math.PI / 180);//角度
         //let distance = (window.innerHeight / 2) / Math.tan(fovRad);//距離
+        let ww = window.innerWidth;
+        let hh = window.innerHeight;
+        if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.SQUIRE) {
+            ww = hh;
+        }
+        _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth = ww;
+        _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight = hh;
         this.camera.position.set(0, 0, 1000); //距離を指定
-        this.camera.left = -window.innerWidth / 2,
-            this.camera.right = window.innerWidth / 2,
-            this.camera.top = window.innerHeight / 2,
-            this.camera.bottom = -window.innerHeight / 2,
+        this.camera.left = -ww / 2,
+            this.camera.right = ww / 2,
+            this.camera.top = hh / 2,
+            this.camera.bottom = -hh / 2,
             this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setSize(ww, hh);
         this.rttMain.resize(this.camera);
         this.particles.resize();
     }
@@ -2885,7 +2916,8 @@ class DataManager {
         }
         return DataManager.instance;
     }
-    init(callback) {
+    init(main, callback) {
+        this.main = main;
         //console.log(hoge);
         let loader = new _shapes_MySVGLoader__WEBPACK_IMPORTED_MODULE_1__.MySVGLoader();
         loader.init(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.PATH + "moji3.svg", () => {
@@ -2893,6 +2925,9 @@ class DataManager {
         });
         this.svg = loader; //.add(loader);
         //DataManager.instance.svg = loader;
+    }
+    regenerate() {
+        this.main.regenerate();
     }
 }
 
@@ -3032,6 +3067,7 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         this.currentIndex = 0;
         this.currentCrossPoints = [];
         this.linePoints = [];
+        this.index = 0;
         this.yy = window.innerHeight / 2;
         // 線のジオメトリを作成
         this.material = new three__WEBPACK_IMPORTED_MODULE_6__.LineBasicMaterial({ color: 0xffffff });
@@ -3058,7 +3094,9 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
                 for (let k = 0; k < points.length - 1; k++) {
                     let point1 = points[k];
                     let point2 = points[k + 1];
-                    this.linePoints.push(new _IntersectionPoint__WEBPACK_IMPORTED_MODULE_5__.IntersectionPoint(point1.x * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE, point1.y * -_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE));
+                    this.linePoints.push(new _IntersectionPoint__WEBPACK_IMPORTED_MODULE_5__.IntersectionPoint(point1.x, // * Params.SVG_SCALE,
+                    point1.y // * -Params.SVG_SCALE
+                    ));
                     let line = new _LineSeg__WEBPACK_IMPORTED_MODULE_0__.LineSeg(point1.x * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE, point1.y * -_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE, point2.x * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE, point2.y * -_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE);
                     this.linesSegs.push(line);
                 }
@@ -3073,10 +3111,13 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
             return null;
         if (this.currentCrossPoints.length == 0)
             return null;
-        return this.currentCrossPoints[Math.floor(_data_SRandom__WEBPACK_IMPORTED_MODULE_3__.SRandom.random() * this.currentCrossPoints.length)];
+        //順に出していくようにする
+        //this.currentIndex++;
+        return this.currentCrossPoints[Math.floor(_data_SRandom__WEBPACK_IMPORTED_MODULE_3__.SRandom.random() * this.currentCrossPoints.length)
+        //this.currentIndex%this.currentCrossPoints.length
+        ];
     }
     GetCrossPoints() {
-        this.currentIndex = 0;
         /*
         let crossPoints:THREE.Vector2[] = [];
         for(let i=0;i<this.linesSegs.length;i++){
@@ -3092,9 +3133,9 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         let crossPoints = [];
         for (let i = 0; i < this.linePoints.length; i++) {
             let pp = this.linePoints[i];
-            if (pp.y > this.yy && pp.enable) {
+            if (pp.y * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE > this.yy && pp.enable) {
                 pp.enable = false;
-                crossPoints.push(new three__WEBPACK_IMPORTED_MODULE_6__.Vector2(this.linePoints[i].x, this.linePoints[i].y));
+                crossPoints.push(new three__WEBPACK_IMPORTED_MODULE_6__.Vector2(this.linePoints[i].x * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE, this.linePoints[i].y * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE));
             }
         }
         return crossPoints;
@@ -3115,7 +3156,7 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         //yをよくする
         let h = _data_DataManager__WEBPACK_IMPORTED_MODULE_2__.DataManager.getInstance().domControl.title.height;
         _data_DataManager__WEBPACK_IMPORTED_MODULE_2__.DataManager.getInstance().domControl.setTitleY(-this.yy + window.innerHeight / 2 - h);
-        this.yy -= 0.7;
+        this.yy -= 1.7;
         if (this.yy < -window.innerHeight / 2) {
             //this.yy=window.innerHeight/2;
         }
@@ -3297,7 +3338,7 @@ class PLifeCalc {
             this._points[i].y = particles[i].position.y;
         }
         //quadtree更新
-        this._quadTree.updateQtree(this._points, new _quadtree_Rectangle__WEBPACK_IMPORTED_MODULE_2__.Rectangle(0, 0, window.innerWidth, window.innerHeight));
+        this._quadTree.updateQtree(this._points, new _quadtree_Rectangle__WEBPACK_IMPORTED_MODULE_2__.Rectangle(0, 0, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight));
         //console.log(this._quadTree);
         for (let i = 0; i < particles.length; i++) {
             let p1 = particles[i];
@@ -3466,6 +3507,10 @@ class Particle {
     }
     reset() {
         this.visible = false;
+        this.position.x = 99999;
+        this.position.y = 99999;
+        let t = _brush_Brushes__WEBPACK_IMPORTED_MODULE_3__.Brushes.getInstance();
+        t.connect(this.index, this.position, this.position, 0, 0, 0, 0, 0, 0);
     }
     update() {
         //this.position.z=this.count;
@@ -3544,14 +3589,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Particles": () => (/* binding */ Particles)
 /* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 /* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Particle */ "./src/main/particles/Particle.ts");
 /* harmony import */ var _Forces__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Forces */ "./src/main/particles/Forces.ts");
 /* harmony import */ var _intersection_IntersectionLine__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../intersection/IntersectionLine */ "./src/main/intersection/IntersectionLine.ts");
 /* harmony import */ var _data_DataManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../data/DataManager */ "./src/main/data/DataManager.ts");
 /* harmony import */ var _ParticlesControl__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ParticlesControl */ "./src/main/particles/ParticlesControl.ts");
 /* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../proof/data/Params */ "./src/proof/data/Params.ts");
-/* harmony import */ var _proof_data_Colors__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../proof/data/Colors */ "./src/proof/data/Colors.ts");
 
 
 
@@ -3559,8 +3603,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-class Particles extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
+class Particles extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
     //lines           :Lines;
     constructor() {
         super();
@@ -3576,22 +3619,22 @@ class Particles extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
             let p = new _Particle__WEBPACK_IMPORTED_MODULE_0__.Particle(i);
             this.particles.push(p);
         }
-        const geometry = new three__WEBPACK_IMPORTED_MODULE_7__.BufferGeometry();
+        const geometry = new three__WEBPACK_IMPORTED_MODULE_6__.BufferGeometry();
         const vertices = [];
         for (let i = 0; i < _Forces__WEBPACK_IMPORTED_MODULE_1__.Forces.NUM; i++) {
             vertices.push(0, 0, 0);
         }
-        geometry.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_7__.Float32BufferAttribute(vertices, 3));
-        let loader = new three__WEBPACK_IMPORTED_MODULE_7__.TextureLoader();
-        let tex = loader.load(_proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.PATH + 'cross.png');
-        tex.magFilter = three__WEBPACK_IMPORTED_MODULE_7__.NearestFilter;
-        tex.minFilter = three__WEBPACK_IMPORTED_MODULE_7__.NearestFilter;
-        this.material = new three__WEBPACK_IMPORTED_MODULE_7__.PointsMaterial({
-            size: 5,
+        geometry.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_6__.Float32BufferAttribute(vertices, 3));
+        let loader = new three__WEBPACK_IMPORTED_MODULE_6__.TextureLoader();
+        let tex = loader.load(_proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.PATH + '128x128.png');
+        tex.magFilter = three__WEBPACK_IMPORTED_MODULE_6__.NearestFilter;
+        tex.minFilter = three__WEBPACK_IMPORTED_MODULE_6__.NearestFilter;
+        this.material = new three__WEBPACK_IMPORTED_MODULE_6__.PointsMaterial({
+            size: 7,
             sizeAttenuation: false,
-            color: _proof_data_Colors__WEBPACK_IMPORTED_MODULE_6__.Colors.rgb2hex(_proof_data_Colors__WEBPACK_IMPORTED_MODULE_6__.Colors.colors[0])
-            //alphaTest: 0.5,
-            //map: tex
+            color: 0xffffff,
+            alphaTest: 0.5,
+            map: tex
         });
         /*
         this.mat = new THREE.ShaderMaterial({
@@ -3603,7 +3646,7 @@ class Particles extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
             fragmentShader: glslify(myFrag),
             side: THREE.DoubleSide
           })*/
-        this.points = new three__WEBPACK_IMPORTED_MODULE_7__.Points(geometry, this.material);
+        this.points = new three__WEBPACK_IMPORTED_MODULE_6__.Points(geometry, this.material);
         this.points.frustumCulled = false;
         this.add(this.points);
         this.control = new _ParticlesControl__WEBPACK_IMPORTED_MODULE_4__.ParticleControl();
@@ -3620,7 +3663,11 @@ class Particles extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
     }
     update() {
         this.control.update();
-        this.material.color.setRGB(_proof_data_Colors__WEBPACK_IMPORTED_MODULE_6__.Colors.colors[0].r, _proof_data_Colors__WEBPACK_IMPORTED_MODULE_6__.Colors.colors[0].g, _proof_data_Colors__WEBPACK_IMPORTED_MODULE_6__.Colors.colors[0].b);
+        this.material.color.setRGB(1, 1, 1
+        //Colors.colors[0].r,
+        //Colors.colors[0].g,
+        //Colors.colors[0].b
+        );
         //POINTSの更新
         let list = this.points.geometry.attributes.position.array;
         for (let i = 0; i < list.length; i += 3) {
@@ -3693,20 +3740,32 @@ class ParticleControl extends three__WEBPACK_IMPORTED_MODULE_3__.Object3D {
             if (this.frameCount % _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.intervalEmitting == 0) {
                 this.line.updateCrossPoints();
                 let intesection = _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().instersection;
-                for (let i = 0; i < _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.numEmitting; i++) {
-                    let point = intesection.GetCurrentRandomPoint();
-                    if (point) {
-                        this.particles[this.particleIndex % this.particles.length].show(point);
+                let crossPoints = intesection.GetCurrentCrossPoints();
+                for (let i = 0; i < crossPoints.length; i += _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.numMabiki) {
+                    let p = crossPoints[i];
+                    if (p) {
+                        this.particles[this.particleIndex % this.particles.length].show(p);
                         this.particleIndex++;
                     }
                 }
+                /*
+                for(let i=0;i<Params.numEmitting;i++){
+                    let point = intesection.GetCurrentRandomPoint();
+                    if(point){
+                        this.particles[this.particleIndex%this.particles.length].show(point);
+                        this.particleIndex++;
+                    }
+                }*/
             }
         }
         else {
-            for (let i = 0; i < _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.numEmitting; i++) {
-                let point = _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.getNextPoint();
-                this.particles[(this.frameCount + i) % this.particles.length].show(new three__WEBPACK_IMPORTED_MODULE_3__.Vector2(point.x, point.y));
-            }
+            /*
+            for(let i=0;i<Params.numEmitting;i++){
+                let point = DataManager.getInstance().svg.getNextPoint();
+                this.particles[(this.frameCount+i)%this.particles.length].show(
+                    new THREE.Vector2(point.x,point.y)
+                );
+            }*/
         }
         //動きの計算,quadtreeの更新
         if (this.frameCount % 3 == 0)
@@ -3840,6 +3899,8 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
     constructor() {
         // BufferGeometryを使って四角形を作成
         const geometry = new three__WEBPACK_IMPORTED_MODULE_6__.BufferGeometry();
+        //
+        //this.widthRatio = 0.8+0.2*Math.random();
         // 頂点データを定義
         let vertices = new Float32Array(_Forces__WEBPACK_IMPORTED_MODULE_0__.Forces.NUM * 3 * 4); //vec3が4個
         let colors = new Float32Array(_Forces__WEBPACK_IMPORTED_MODULE_0__.Forces.NUM * 3 * 4); //vec3が4個
@@ -3911,17 +3972,16 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
         // 四角形のメッシュを作成し、シーンに追加
         super(geometry, mat);
         this.isDirty = false;
-        this.width = 0;
-        this.widthRatio = 1;
         this.mat = mat;
-        this.width = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random() * 0.5 + 0.5;
+        //this.width      = SRandom.random()*0.5+0.5;
+        //this.widthRatio = SRandom.random()*0.5+0.5;
         this.vertices = vertices;
         this.colors = colors;
         this.randoms = randoms;
         this.geometry.attributes.position.needsUpdate = true;
         let gui = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.gui.addFolder("==BRUSH==");
         gui.close();
-        gui.add(this, "widthRatio", 0, 10).listen();
+        //gui.add(this,"widthRatio",0,10).listen();
         gui.add(this.mat.uniforms.highlight, "value", 0, 1).name("highlight").listen();
         gui.add(this.mat.uniforms.border, "value", 0, 1).name("border").listen();
         gui.add(this.mat.uniforms.detail, "value", 0, 20).name("detail").listen();
@@ -3948,7 +4008,7 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
         let dx = p2.x - p1.x;
         let dy = p2.y - p1.y;
         let rad = Math.atan2(dy, dx);
-        let amp = ww * this.widthRatio; //*(1-life);
+        let amp = ww * _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.widthRatio; //*(1-life);
         let lx = amp * Math.cos(rad - Math.PI / 2);
         let ly = amp * Math.sin(rad - Math.PI / 2);
         let rx = amp * Math.cos(rad + Math.PI / 2);
@@ -4004,8 +4064,8 @@ __webpack_require__.r(__webpack_exports__);
 
 class BlurScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.FilpFlopSceneBase {
     constructor() {
-        let sizeX = window.innerWidth;
-        let sizeY = window.innerHeight;
+        let sizeX = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth;
+        let sizeY = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight;
         super(sizeX, sizeY, {
             uniforms: {
                 time: { value: 0 },
@@ -4062,7 +4122,7 @@ class BrushScene {
     constructor() {
         this.sizeRatio = 1;
         this.isClear = true;
-        this.renderTarget = new three__WEBPACK_IMPORTED_MODULE_3__.WebGLRenderTarget(window.innerWidth * this.sizeRatio, window.innerHeight * this.sizeRatio);
+        this.renderTarget = new three__WEBPACK_IMPORTED_MODULE_3__.WebGLRenderTarget(_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageWidth * this.sizeRatio, _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageHeight * this.sizeRatio);
         this.renderTarget.texture.magFilter = _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.FILTER_DRAW;
         this.renderTarget.texture.minFilter = _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.FILTER_DRAW;
         this.brush = _particles_brush_Brushes__WEBPACK_IMPORTED_MODULE_0__.Brushes.getInstance();
@@ -4094,8 +4154,8 @@ class BrushScene {
     }
     resize(camera) {
         //renderTarget
-        this.renderTarget.width = window.innerWidth * this.sizeRatio;
-        this.renderTarget.height = window.innerHeight * this.sizeRatio;
+        this.renderTarget.width = _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageWidth * this.sizeRatio;
+        this.renderTarget.height = _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageHeight * this.sizeRatio;
         this.camera.left = camera.left;
         this.camera.right = camera.right;
         this.camera.top = camera.top;
@@ -4212,14 +4272,17 @@ __webpack_require__.r(__webpack_exports__);
 
 class LastCalcScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.FilpFlopSceneBase {
     constructor() {
-        super(window.innerWidth, window.innerHeight, {
+        super(_proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight, {
             uniforms: {
                 time: { value: 0 },
                 size: {
-                    value: new three__WEBPACK_IMPORTED_MODULE_5__.Vector2(window.innerWidth, window.innerHeight),
+                    value: new three__WEBPACK_IMPORTED_MODULE_5__.Vector2(_proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight),
                 },
-                alphaSpeed: { value: 0.8 },
+                //alphaSpeed:{value:0.8},
+                alphaSpeed2: { value: 1 },
+                alphaSpeed: { value: 2.5 },
                 maxAlpha: { value: 0.9 },
+                gensui: { value: 1 },
                 tex: { value: null },
                 tex1: { value: null },
                 tex2: { value: null }
@@ -4230,8 +4293,10 @@ class LastCalcScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.Filp
         let uniforms = this.feedbackMaterial.uniforms;
         let g = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.gui.addFolder("== LAST CALC ==");
         g.close();
-        g.add(uniforms.alphaSpeed, "value", 0, 1).name("fixRalphaSpeedatio");
+        g.add(uniforms.alphaSpeed2, "value", 1, 20).name("alphaSpeed2");
+        g.add(uniforms.alphaSpeed, "value", 0, 5).name("alphaSpeed");
         g.add(uniforms.maxAlpha, "value", 0, 1).name("maxAlpha");
+        g.add(uniforms.gensui, "value", 0, 1).name("gensui");
         //Params.gui.add(this,"clearTargets");
     }
     update(renderer, colorTex, blurTex) {
@@ -4274,7 +4339,7 @@ class OutputPlane extends three__WEBPACK_IMPORTED_MODULE_4__.Mesh {
         let mat = new three__WEBPACK_IMPORTED_MODULE_4__.ShaderMaterial({
             uniforms: {
                 tex: { value: null },
-                size: { value: new three__WEBPACK_IMPORTED_MODULE_4__.Vector2(window.innerWidth, window.innerHeight) },
+                size: { value: new three__WEBPACK_IMPORTED_MODULE_4__.Vector2(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight) },
                 alpha: { value: 1.0 },
                 bgCol: { value: new three__WEBPACK_IMPORTED_MODULE_4__.Vector4(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.r, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.g, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.b, 1.0) },
                 //textureSize: {value: new THREE.Vector2(textureWidth, textureWidth)}
@@ -4291,6 +4356,7 @@ class OutputPlane extends three__WEBPACK_IMPORTED_MODULE_4__.Mesh {
             this.mat.uniforms.bgCol.value.x = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.r;
             this.mat.uniforms.bgCol.value.y = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.g;
             this.mat.uniforms.bgCol.value.z = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.b;
+            this.mat.uniforms.bgCol.value.w = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColorAlpha;
         });
         let gg = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.gui.addFolder("== Output ==");
         gg.add(this.mat.uniforms.alpha, "value", 0.0, 1.0).step(0.01).name("alpha");
@@ -4334,11 +4400,11 @@ __webpack_require__.r(__webpack_exports__);
 
 class PigmentScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.FilpFlopSceneBase {
     constructor() {
-        super(window.innerWidth, window.innerHeight, {
+        super(_proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight, {
             uniforms: {
                 time: { value: 0 },
                 size: {
-                    value: new three__WEBPACK_IMPORTED_MODULE_5__.Vector2(window.innerWidth, window.innerHeight)
+                    value: new three__WEBPACK_IMPORTED_MODULE_5__.Vector2(_proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight)
                 },
                 attenuation: { value: 0.995 },
                 tex: { value: null },
@@ -4452,7 +4518,7 @@ class RTTMain extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         this.lastCalcScene.clearTargets();
     }
     resize(camera) {
-        this.outputPlane.resize(window.innerWidth / 100, window.innerHeight / 100);
+        this.outputPlane.resize(_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageWidth / 100, _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageHeight / 100);
         this.brushScene.resize(camera);
     }
 }
@@ -4479,19 +4545,13 @@ __webpack_require__.r(__webpack_exports__);
 
 class Colors {
     static init() {
-        Colors.NUM = Math.floor(2 + 2 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random());
         let gui = _Params__WEBPACK_IMPORTED_MODULE_0__.Params.gui.addFolder("== Colors ==");
         gui.close();
         this.colors = [];
         this.colorsObj = {};
-        this.logoColor = {
-            r: _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(),
-            g: _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(),
-            b: _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random()
-        };
-        for (let i = 0; i < this.NUM; i++) {
+        for (let i = 0; i < 4; i++) {
             let cc = new three__WEBPACK_IMPORTED_MODULE_2__.Color(0xffffff);
-            cc.setHSL(_main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(), 0.5 + 0.5 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(), //
+            cc.setHSL(_main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(), 0.6 + 0.4 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(), //
             0.5 //
             );
             let col = {
@@ -4503,13 +4563,21 @@ class Colors {
             this.colors.push(col);
             gui.addColor(this.colorsObj, "col_" + i).listen();
         }
+        this.logoColor = {
+            r: this.colorsObj["col_0"].r,
+            g: this.colorsObj["col_0"].g,
+            b: this.colorsObj["col_0"].b
+        };
         Colors.logoColorObj = {};
         Colors.logoColorObj["logo"] = this.logoColor;
         gui.addColor(Colors.logoColorObj, "logo").listen();
         //gui.addColor(Colors.logoColor,"logoColor").listen();
+        gui.add(Colors, "NUM");
         gui.add(Colors, "reset");
+        this.reset();
     }
     static reset() {
+        Colors.NUM = Math.floor(2 + 2 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random());
         this.logoColor.r = 0.5 + 0.5 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
         this.logoColor.g = 0.5 + 0.5 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
         this.logoColor.b = 0.5 + 0.5 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
@@ -4528,7 +4596,7 @@ class Colors {
         return hex;
     }
     static getRandomColor() {
-        return this.colors[Math.floor(_main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random() * this.colors.length)];
+        return this.colors[Math.floor(_main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random() * this.NUM)];
     }
 }
 Colors.NUM = 3;
@@ -4602,11 +4670,48 @@ class Params {
         return (Params.bgColor.r * 255 << 16) + (Params.bgColor.g * 255 << 8) + Params.bgColor.b * 255;
     }
     static init() {
+        Params.stageWidth = window.innerWidth;
+        Params.stageHeight = window.innerHeight;
+        this.initParams();
+        _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.init(Params.USER_HASH);
+        _MyGUI__WEBPACK_IMPORTED_MODULE_0__.MyGUI.Init();
+        this.gui = _MyGUI__WEBPACK_IMPORTED_MODULE_0__.MyGUI.gui;
+        _Colors__WEBPACK_IMPORTED_MODULE_1__.Colors.init();
+        this.setRandomParam();
+        //パーティクルのパラメータ
+        let g = this.gui.addFolder("== Particles ==");
+        g.close();
+        g.add(Params, "radius", 0, 200).listen();
+        g.add(Params, "radius2", 0, 200).listen();
+        g.add(Params, "strength", 0, 10).listen();
+        g.add(Params, "strength2", 0, 10).listen();
+        g.add(Params, "masatsu", 0, 1).listen();
+        g.add(Params, "numMabiki", 1, 8).step(1).listen();
+        g.add(Params, "intervalEmitting", 1, 40).step(1).listen();
+        g.add(Params, "UPDATE_DISTANCE", 0, 50).listen();
+        g.add(Params, "maxLimit", 0, 400).listen();
+        g.add(Params, "widthRatio", 0, 1).listen();
+    }
+    static forcedRandom() {
+        if (this.NFT)
+            return; //NFTモードなら何もしない
+        this.setRandomParam();
+    }
+    static setRandomParam() {
+        this.setRandomColor();
+        this.setParticleParam();
+    }
+    static initParams() {
+        //DOM_JSにパスが書いてある
         const webgl = document.getElementById(this.DOM_JS);
         this.PATH = webgl.dataset.baseurl + "img/";
-        this.NFT = webgl.dataset.mode == "nft";
-        console.log(webgl);
-        console.log("this.PATH", this.PATH);
+        this.NFT = webgl.dataset.mode == "nft"; //"nft","website","squire"
+        this.SQUIRE = webgl.dataset.mode == "squire"; //"nft","website","squire"
+        if (this.SQUIRE) {
+            Params.stageWidth = Params.stageHeight;
+        }
+        //console.log(webgl);
+        //console.log("this.PATH",this.PATH);
         let win = window;
         if (win.attribute == null) {
             win.attribute = {
@@ -4622,21 +4727,30 @@ class Params {
         console.log("Params.USER_NAME", Params.USER_NAME);
         console.log("Params.USER_HASH", Params.USER_HASH);
         console.log("Params.USER_TIME", Params.USER_TIME);
-        _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.init(Params.USER_HASH);
+    }
+    static setParticleParam() {
         let rr = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
         if (rr < 0.33) {
-            Params.numEmitting = 30;
-            Params.intervalEmitting = 30;
+            //Params.numEmitting      =30;
+            Params.intervalEmitting = 20;
         }
         else if (rr < 0.66) {
-            Params.numEmitting = 15;
+            //Params.numEmitting      =15;
             Params.intervalEmitting = 10;
         }
         else {
-            Params.numEmitting = 1;
+            //Params.numEmitting      =1;
             Params.intervalEmitting = 1;
         }
-        _MyGUI__WEBPACK_IMPORTED_MODULE_0__.MyGUI.Init();
+        this.masatsu = 0.8 + 0.2 * Math.random();
+        this.radius = 40 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 20;
+        this.radius2 = 10 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 10;
+        this.strength = 0.8 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 0.3;
+        this.strength2 = 0.9 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 0.2;
+        this.widthRatio = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 0.6 + 0.4;
+    }
+    static setRandomColor() {
+        _Colors__WEBPACK_IMPORTED_MODULE_1__.Colors.reset();
         let rand = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
         if (rand < 0.333) {
             this.bgColor.r = 255 / 255;
@@ -4649,38 +4763,6 @@ class Params {
             this.bgColor.b = 255 / 255;
         }
         else {}
-        this.gui = _MyGUI__WEBPACK_IMPORTED_MODULE_0__.MyGUI.gui;
-        _Colors__WEBPACK_IMPORTED_MODULE_1__.Colors.init();
-        //if(SRandom.random()<0.5){
-        //    this.numEmitting = 5;
-        //}else{
-        //this.numEmitting = 20;
-        //this.intervalEmitting = 10;
-        //}
-        this.masatsu = 0.0; //0.5 + 0.4 * SRandom.random();
-        let ran = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
-        if (ran < 0.5) {
-            this.masatsu = 0.6;
-        }
-        else {
-            this.masatsu = 0.9;
-        }
-        this.radius = 40 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 20;
-        this.radius2 = 10 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 10;
-        this.strength = 0.8 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 0.2;
-        this.strength2 = 0.9 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 0.2;
-        //パーティクルのパラメータ
-        let g = this.gui.addFolder("== Particles ==");
-        g.close();
-        g.add(Params, "radius", 0, 200).listen();
-        g.add(Params, "radius2", 0, 200).listen();
-        g.add(Params, "strength", 0, 10).listen();
-        g.add(Params, "strength2", 0, 10).listen();
-        g.add(Params, "masatsu", 0, 1).listen();
-        g.add(Params, "numEmitting", 1, 40).step(1).listen();
-        g.add(Params, "intervalEmitting", 1, 40).step(1).listen();
-        g.add(Params, "UPDATE_DISTANCE", 0, 50).listen();
-        g.add(Params, "maxLimit", 0, 400).listen();
     }
 }
 Params.NUM_DOTS = 150;
@@ -4692,9 +4774,12 @@ Params.masatsu = 0.9;
 Params.logoScale = 2.6;
 Params.OUTSIDE_POS = new three__WEBPACK_IMPORTED_MODULE_3__.Vector3(999, 999, 999);
 Params.SVG_SCALE = 2;
-Params.numEmitting = 4;
+Params.stageWidth = 0;
+Params.stageHeight = 0;
+Params.numMabiki = 4;
 Params.intervalEmitting = 10;
 Params.bgColor = { r: 0.7, g: 0.7, b: 0.6 };
+Params.bgColorAlpha = 0.5;
 Params.FILTER_FLIPFLOP = three__WEBPACK_IMPORTED_MODULE_3__.LinearFilter;
 Params.FILTER_DRAW = three__WEBPACK_IMPORTED_MODULE_3__.LinearFilter;
 Params.UPDATE_DISTANCE = 5;
@@ -4703,10 +4788,12 @@ Params.USER_NAME = "";
 Params.USER_HASH = "";
 Params.USER_TIME = 0;
 Params.maxLimit = 400;
+Params.widthRatio = 1;
 Params.DOM_WEBGL = "mainvisual_webgl";
 Params.DOM_TITLE = "mainvisual_title";
 Params.DOM_JS = "mainvisual_js";
 Params.NFT = false;
+Params.SQUIRE = false;
 
 
 /***/ }),
@@ -5307,7 +5394,7 @@ class MySVGLogo extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
             const mesh = new three__WEBPACK_IMPORTED_MODULE_7__.Mesh(geometry, this.mat);
             this.fillMesh.add(mesh);
         }
-        this.scale.set(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE);
+        this.setScale(1);
         this.lineMesh = new _MySVGLine__WEBPACK_IMPORTED_MODULE_5__.MySVGLine();
         this.lineMesh.init();
         this.lineMesh.show();
@@ -5315,8 +5402,10 @@ class MySVGLogo extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
         let points = _main_data_DataManager__WEBPACK_IMPORTED_MODULE_6__.DataManager.getInstance().svg.pointsForLine;
         for (let i = 0; i < points.length; i++) {
             let pts = points[i];
-            let col = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.logoColor;
             for (let j = 0; j < pts.length - 1; j++) {
+                let col = {
+                    r: 1, g: 1, b: 1
+                }; //Colors.getRandomColor();
                 let p1 = pts[j];
                 let p2 = pts[j + 1];
                 this.lineMesh.connectDots(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, col.r, col.g, col.b);
@@ -5342,11 +5431,12 @@ class MySVGLogo extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
             //this.visible = false;
         }, 2000);
     }
+    setScale(ss) {
+        this.scale.set(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE * ss, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE * ss, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE * ss);
+    }
     setY(yy) {
-        if (this.frameCount++ % 120 == 0)
-            this.visible = true;
-        else
-            this.visible = false;
+        //if(this.frameCount++%120==0)this.visible=true;
+        //else this.visible=false;
         this.mat.uniforms.col1.value.x = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.logoColor.r;
         this.mat.uniforms.col1.value.y = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.logoColor.g;
         this.mat.uniforms.col1.value.z = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.logoColor.b;
@@ -5422,9 +5512,12 @@ class MySVGLogo2 extends three__WEBPACK_IMPORTED_MODULE_5__.Object3D {
             const mesh = new THREE.Mesh( geometry, this.mat );
             this.add(mesh);
         }*/
-        this.scale.set(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE);
+        this.setScale(1);
         let f = _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.gui.addFolder("== Logo2 ==");
         f.add(this, "visible").listen();
+    }
+    setScale(n) {
+        this.scale.set(n * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, n * -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, n * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE);
     }
     setY(yy) {
         this.mat.uniforms.textCol.value.x = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.colors[0].r;
@@ -58659,16 +58752,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _main_Main__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./main/Main */ "./src/main/Main.ts");
 
 window.addEventListener('DOMContentLoaded', () => {
-    //const main = new Main();
-    //main.init();
-    //const tester = new QTreeTester();
-    //tester.init(0,0,0);
     const main = new _main_Main__WEBPACK_IMPORTED_MODULE_0__.Main();
     main.init();
-    //const main = new Main1();
-    //main.init();
-    //const main = new ProofMain();
-    //main.init()
 });
 
 })();

@@ -52,11 +52,20 @@ export class MySVGLogo2 extends THREE.Object3D{
             this.add(mesh);
         }*/
 
-        this.scale.set(Params.SVG_SCALE,-Params.SVG_SCALE,Params.SVG_SCALE);
+        this.setScale(1);
         
         let f = Params.gui.addFolder("== Logo2 ==");
         f.add(this,"visible").listen();
 
+    }
+
+
+    setScale(n:number){
+        this.scale.set(
+            n*Params.SVG_SCALE,
+            n*-Params.SVG_SCALE,
+            n*Params.SVG_SCALE
+        );
     }
 
     setY(yy:number){

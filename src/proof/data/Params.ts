@@ -20,10 +20,14 @@ export class Params{
     static logoScale    :number=2.6;
     static OUTSIDE_POS  :Vector3=new Vector3(999,999,999);
     static SVG_SCALE    :number=2;
-    static numEmitting      :number=4;
-    static intervalEmitting :number=10;
-    static bgColor: { r: number; g: number; b: number; } = {r:0.7,g:0.7,b:0.6};
 
+    static stageWidth:number = 0 ;
+    static stageHeight:number = 0;
+
+    static numMabiki      :number = 4;
+    static intervalEmitting :number = 10;
+    static bgColor: { r: number; g: number; b: number; } = {r:0.7,g:0.7,b:0.6};
+    static bgColorAlpha:number = 0.5;
     static FILTER_FLIPFLOP  : THREE.TextureFilter = THREE.LinearFilter;
     static FILTER_DRAW      : THREE.TextureFilter = THREE.LinearFilter;
     static UPDATE_DISTANCE  : number=5;
@@ -33,13 +37,15 @@ export class Params{
     public static USER_HASH:string="";
     public static USER_TIME:number=0;
     public static maxLimit: number = 400;
-    
+    public static widthRatio: number = 1;
+
     public static DOM_WEBGL="mainvisual_webgl";
     public static DOM_TITLE="mainvisual_title"
     public static DOM_JS="mainvisual_js"
 
     public static NFT:boolean=false;
-    
+    public static SQUIRE:boolean=false;
+
     // Getter宣言
     public static get bgColorHex(): number {
         return (Params.bgColor.r*255 << 16) + (Params.bgColor.g*255 << 8) + Params.bgColor.b*255;
@@ -47,14 +53,62 @@ export class Params{
  
     static init(){
 
+        Params.stageWidth = window.innerWidth;
+        Params.stageHeight = window.innerHeight;
+
+        this.initParams();
+        SRandom.init(Params.USER_HASH);
+        MyGUI.Init();
+        this.gui = MyGUI.gui;
+        Colors.init();
+        this.setRandomParam();
+
+
+        //パーティクルのパラメータ
+        let g = this.gui.addFolder("== Particles ==");
+            g.close();
+            g.add(Params,"radius",0,200).listen();
+            g.add(Params,"radius2",0,200).listen();
+            g.add(Params,"strength",0,10).listen();
+            g.add(Params,"strength2",0,10).listen();
+            g.add(Params,"masatsu",0,1).listen();
+            g.add(Params,"numMabiki",1,8).step(1).listen();
+            g.add(Params,"intervalEmitting",1,40).step(1).listen();
+            g.add(Params,"UPDATE_DISTANCE",0,50).listen();
+            g.add(Params,"maxLimit",0,400).listen();
+            g.add(Params,"widthRatio",0,1).listen();
+    }
+
+    public static forcedRandom(){
+
+        if(this.NFT)return;//NFTモードなら何もしない
+
+        this.setRandomParam();
+
+    }
+
+
+    public static setRandomParam(){
+
+        this.setRandomColor();
+        this.setParticleParam();
+
+    }
+
+    public static initParams(){
+
+        //DOM_JSにパスが書いてある
         const webgl = document.getElementById(this.DOM_JS);
         this.PATH = webgl.dataset.baseurl+"img/"
-        this.NFT = webgl.dataset.mode=="nft";
+        this.NFT = webgl.dataset.mode=="nft";//"nft","website","squire"
+        this.SQUIRE = webgl.dataset.mode=="squire";//"nft","website","squire"
+        if(this.SQUIRE){
+            Params.stageWidth=Params.stageHeight;
+        }
 
-        console.log(webgl);
-        console.log("this.PATH",this.PATH);
+        //console.log(webgl);
+        //console.log("this.PATH",this.PATH);
 
-        
         let win:any = window;
 
         if(win.attribute==null){
@@ -73,22 +127,35 @@ export class Params{
         console.log("Params.USER_HASH",Params.USER_HASH);
         console.log("Params.USER_TIME",Params.USER_TIME);
 
-        SRandom.init(Params.USER_HASH);
+    }
+
+
+
+    public static setParticleParam(){
 
         let rr = SRandom.random();
         if(rr<0.33){
-            Params.numEmitting      =30;
-            Params.intervalEmitting =30;
+            //Params.numEmitting      =30;
+            Params.intervalEmitting =20;
         }else if(rr<0.66){
-            Params.numEmitting      =15;
+            //Params.numEmitting      =15;
             Params.intervalEmitting =10;
         }else{
-            Params.numEmitting      =1;
+            //Params.numEmitting      =1;
             Params.intervalEmitting =1;
         }
 
+        this.masatsu = 0.8+0.2*Math.random();
+        this.radius=40+SRandom.random()*20;
+        this.radius2=10+SRandom.random()*10;
+        this.strength=0.8+SRandom.random()*0.3;
+        this.strength2=0.9+SRandom.random()*0.2;
+        this.widthRatio = SRandom.random()*0.6+0.4;
+    }
 
-        MyGUI.Init();
+    public static setRandomColor(){
+
+        Colors.reset();
 
         let rand = SRandom.random();
         if(rand<0.333){
@@ -105,47 +172,7 @@ export class Params{
             this.bgColor.b = 220/255
         }
 
-        this.gui = MyGUI.gui;
-        Colors.init();
-
-        //if(SRandom.random()<0.5){
-        //    this.numEmitting = 5;
-        //}else{
-            //this.numEmitting = 20;
-            //this.intervalEmitting = 10;
-        //}
-
-
-        this.masatsu = 0.0;//0.5 + 0.4 * SRandom.random();
-        let ran = SRandom.random(); 
-
-
-        if(ran<0.5){
-            this.masatsu=0.6;
-        }else{
-            this.masatsu=0.9;
-        }
-
-
-        this.radius=40+SRandom.random()*20;
-        this.radius2=10+SRandom.random()*10;
-        this.strength=0.8+SRandom.random()*0.2;
-        this.strength2=0.9+SRandom.random()*0.2;
-
-        //パーティクルのパラメータ
-        let g = this.gui.addFolder("== Particles ==");
-            g.close();
-            g.add(Params,"radius",0,200).listen();
-            g.add(Params,"radius2",0,200).listen();
-            g.add(Params,"strength",0,10).listen();
-            g.add(Params,"strength2",0,10).listen();
-            g.add(Params,"masatsu",0,1).listen();
-            g.add(Params,"numEmitting",1,40).step(1).listen();
-            g.add(Params,"intervalEmitting",1,40).step(1).listen();
-            g.add(Params,"UPDATE_DISTANCE",0,50).listen();
-            g.add(Params,"maxLimit",0,400).listen();
     }
-
 
 
 }

@@ -43,7 +43,7 @@ export class PLifeCalc{
         //quadtree更新
         this._quadTree.updateQtree(
             this._points,
-            new Rectangle(0,0,window.innerWidth,window.innerHeight)
+            new Rectangle(0,0,Params.stageWidth,Params.stageHeight)
         );
         //console.log(this._quadTree);
 

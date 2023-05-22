@@ -28,6 +28,7 @@ export class IntersectionLine extends Object3D{
     linePoints:IntersectionPoint[] = [];
 
     material :LineBasicMaterial;
+    index:number=0;
 
     constructor(){
         
@@ -75,8 +76,8 @@ export class IntersectionLine extends Object3D{
                     let point2 = points[k+1];
 
                     this.linePoints.push(new IntersectionPoint(
-                        point1.x * Params.SVG_SCALE,
-                        point1.y * -Params.SVG_SCALE
+                        point1.x,// * Params.SVG_SCALE,
+                        point1.y// * -Params.SVG_SCALE
                     ));
                 
                     let line = new LineSeg(
@@ -105,16 +106,19 @@ export class IntersectionLine extends Object3D{
         if(!this.currentCrossPoints)return null;
         if(this.currentCrossPoints.length==0)return null;
 
+        //順に出していくようにする
+
+        //this.currentIndex++;
         return this.currentCrossPoints[
             Math.floor(SRandom.random() * this.currentCrossPoints.length)
+            //this.currentIndex%this.currentCrossPoints.length
         ];
 
     }
 
 
     private GetCrossPoints():THREE.Vector2[]{
-        this.currentIndex=0;
-
+        
         /*
         let crossPoints:THREE.Vector2[] = [];
         for(let i=0;i<this.linesSegs.length;i++){
@@ -130,16 +134,17 @@ export class IntersectionLine extends Object3D{
         let crossPoints:THREE.Vector2[] = [];
         for(let i=0;i<this.linePoints.length;i++){
             let pp = this.linePoints[i];
-            if(pp.y>this.yy && pp.enable){
+            if(pp.y*Params.SVG_SCALE>this.yy && pp.enable){
                 
                 pp.enable=false;
 
                 crossPoints.push(
                     new Vector2(
-                        this.linePoints[i].x,
-                        this.linePoints[i].y
+                        this.linePoints[i].x*Params.SVG_SCALE,
+                        this.linePoints[i].y*Params.SVG_SCALE
                     )
                 );
+
             }
         }
 
@@ -174,7 +179,7 @@ export class IntersectionLine extends Object3D{
             -this.yy+window.innerHeight/2-h
         ) 
             
-        this.yy-=0.7;
+        this.yy-=1.7;
         if(this.yy<-window.innerHeight/2){
             //this.yy=window.innerHeight/2;
         }

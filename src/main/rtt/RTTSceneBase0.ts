@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Scene, OrthographicCamera, WebGLRenderer, Vector3, MeshBasicMaterial, SphereGeometry, TorusGeometry, Texture } from 'three';
+import { Params } from '../../proof/data/Params';
 
 
 
@@ -16,8 +17,8 @@ export class RTTSceneBase0 extends THREE.Object3D{
         this.scene = new THREE.Scene();
         this.camera = new THREE.OrthographicCamera();
         this.renderTarget = new THREE.WebGLRenderTarget( 
-            window.innerWidth*this.sizeRatio, 
-            window.innerHeight*this.sizeRatio
+            Params.stageWidth*this.sizeRatio, 
+            Params.stageHeight*this.sizeRatio
         );
         //this.renderTarget.texture.minFilter = THREE.NearestFilter;
         //this.renderTarget.texture.magFilter = THREE.NearestFilter;
@@ -40,9 +41,8 @@ export class RTTSceneBase0 extends THREE.Object3D{
     resize(camera:OrthographicCamera){
 
         //renderTarget
-        this.renderTarget.width   = window.innerWidth*this.sizeRatio;
-        this.renderTarget.height  = window.innerHeight*this.sizeRatio;
-
+        this.renderTarget.width   = Params.stageWidth*this.sizeRatio;
+        this.renderTarget.height  = Params.stageHeight*this.sizeRatio;
 
         this.camera.left    =camera.left;
         this.camera.right   =camera.right;
