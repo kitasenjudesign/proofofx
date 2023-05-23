@@ -79,6 +79,7 @@ export class Colors {
             col.b = SRandom.random();
 
         }
+        
     }
 
 

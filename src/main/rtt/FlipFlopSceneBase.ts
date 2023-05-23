@@ -98,4 +98,23 @@ export class FilpFlopSceneBase{
 
     }
 
+    public resize(camera:OrthographicCamera){
+
+        //renderTarget
+        this.renderTarget1.setSize(Params.stageWidth,Params.stageHeight);
+        this.renderTarget2.setSize(Params.stageWidth,Params.stageHeight);
+        
+        this.camera.left    =camera.left;
+        this.camera.right   =camera.right;
+        this.camera.top     =camera.top;
+        this.camera.bottom  =camera.bottom;
+        
+        //pos
+        //this.camera.position.copy(camera.position);
+        //this.camera.rotation.copy(camera.rotation);
+
+        //this.camera.updateProjectionMatrix();
+
+    }
+
 }

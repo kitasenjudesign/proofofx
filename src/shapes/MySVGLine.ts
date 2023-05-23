@@ -5,6 +5,7 @@ import glslify from 'glslify';
 import { SRandom } from '../main/data/SRandom';
 import { Colors } from '../proof/data/Colors';
 import { Params } from '../proof/data/Params';
+import { DataManager } from '../main/data/DataManager';
 
 export class MySVGLine extends THREE.Object3D{
 
@@ -82,6 +83,32 @@ export class MySVGLine extends THREE.Object3D{
         this.strokes.visible=false;
     }
 
+    updateLines(){
+        
+        console.log("updateLines");
+        this.reset();
+
+        let points = DataManager.getInstance().svg.pointsForLine
+
+        for(let i=0;i<points.length;i++){
+            let pts = points[i];            
+            for(let j=0;j<pts.length-1;j++){
+                
+                let col = Colors.getRandomColor();
+                let p1 = pts[j];
+                let p2 = pts[j+1];
+
+                this.connectDots(
+                    p1.x,p1.y,p1.z,
+                    p2.x,p2.y,p2.z,
+                    col.r,col.g,col.b
+                );
+            }
+        }    
+        
+    }
+
+
     reset(){
         this.counter=0;
         //this.strokes.visible=false;
@@ -107,9 +134,9 @@ export class MySVGLine extends THREE.Object3D{
         this.strokes.visible=true;
         let ratio = 0;//-Math.pow(brightness,3);
         
-        let sx:number = 1/Params.SVG_SCALE;
-        let sy:number = -1/Params.SVG_SCALE;
-        let sz:number = 1/Params.SVG_SCALE;
+        let sx:number = 1;//1/Params.SVG_SCALE;
+        let sy:number = -1;//-1/Params.SVG_SCALE;
+        let sz:number = 1;//1/Params.SVG_SCALE;
 
         //x2はゴール
         this.positions[this.counter*6+0] = x1*sx;//x2*ratio+x1*(1-ratio);
@@ -133,9 +160,7 @@ export class MySVGLine extends THREE.Object3D{
         }else{
             console.log("stroke数を超えた")
         }
-        
-
-        
+                
     }
 
 
@@ -160,9 +185,12 @@ export class MySVGLine extends THREE.Object3D{
         );*/
 
         //if(this.strokes.visible && this.isDirty){
+        if(this.isDirty){
+            console.log("update!!!");
             this.geo.attributes.position.needsUpdate = true;
             this.geo.attributes.color1.needsUpdate = true;
             this.isDirty=false;
+        }
         //}
         //this.resetCount();
 

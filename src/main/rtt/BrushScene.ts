@@ -72,11 +72,13 @@ export class BrushScene {
 
     
 
-    resize(camera:OrthographicCamera){
+    public resize(camera:OrthographicCamera){
 
         //renderTarget
-        this.renderTarget.width   = Params.stageWidth*this.sizeRatio;
-        this.renderTarget.height  = Params.stageHeight*this.sizeRatio;
+        this.renderTarget.setSize(
+            Params.stageWidth*this.sizeRatio,
+            Params.stageHeight*this.sizeRatio
+        );
         
         this.camera.left    =camera.left;
         this.camera.right   =camera.right;

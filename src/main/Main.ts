@@ -26,6 +26,7 @@ export class Main{
     rttMain:RTTMain;
     domControl:DOMControl;
     size:number=1.5;
+    pastTime:number=0
 
     init(){
        // let svgLoader = new SVGLo
@@ -129,6 +130,7 @@ export class Main{
         Params.forcedRandom();
         this.particles.reset();
         this.rttMain.resetAll();
+        DataManager.getInstance().svg.logo.reset();
 
     }
 
@@ -198,30 +200,36 @@ export class Main{
 
     onWindowResize(){
 
-        let ss = this.size;
-
-        this.size = window.innerWidth/1000*1.7
-        Params.SVG_SCALE=this.size;
-        DataManager.getInstance().svg.logo.setScale(1);
-        DataManager.getInstance().svg.logo2.setScale(1);
-        
-        //const fovRad = (this.camera.fov / 2) * (Math.PI / 180);//角度
-        //let distance = (window.innerHeight / 2) / Math.tan(fovRad);//距離
-
         let ww = window.innerWidth;
         let hh = window.innerHeight;
         if(Params.SQUIRE){
             ww=hh;
         }
-        Params.stageWidth=ww;
-        Params.stageHeight=hh;
         
+        //if(ww!=Params.stageWidth || hh!=Params.stageHeight){
+            Params.stageWidth=ww;
+            Params.stageHeight=hh;
+            this.onWindowResize2(ww,hh);
+            this.pastTime = new Date().getTime();
+        //}
 
+    }
+
+    onWindowResize2(ww:number,hh:number){
+
+        this.size = ww/1000*1.7;
+        Params.SVG_SCALE=this.size;//svgのスケールを変える
+
+        
+        DataManager.getInstance().svg.logo2.setScale();
+        DataManager.getInstance().svg.logo.setScale();
+        DataManager.getInstance().svg.logo.reset();
+        
         this.camera.position.set(0,0,1000);//距離を指定
-        this.camera.left = -ww/2, 
-        this.camera.right = ww/2, 
-        this.camera.top = hh/2, 
-        this.camera.bottom = -hh/2, 
+        this.camera.left    = -ww/2, 
+        this.camera.right   = ww/2, 
+        this.camera.top     = hh/2, 
+        this.camera.bottom  = -hh/2, 
         this.camera.updateProjectionMatrix()
         this.renderer.setSize(ww,hh);
        

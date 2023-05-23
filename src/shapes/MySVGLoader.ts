@@ -82,13 +82,13 @@ export class MySVGLoader extends Object3D{
                 let pts2 = [];
                 for(let k=0;k<pts.length;k++){
                     this.points.push(new Vector3(
-                        pts[k].x*Params.SVG_SCALE,
-                        -pts[k].y*Params.SVG_SCALE,
+                        pts[k].x,
+                        -pts[k].y,
                         0
                     ));
                     pts2.push(new Vector3(
-                        pts[k].x*Params.SVG_SCALE,
-                        -pts[k].y*Params.SVG_SCALE,
+                        pts[k].x,
+                        -pts[k].y,
                         0
                     ));
                 }
@@ -104,13 +104,13 @@ export class MySVGLoader extends Object3D{
                     pts2 = [];
                     for(let l=0;l<pts.length;l++){
                         this.points.push(new Vector3(
-                            pts[l].x*Params.SVG_SCALE,
-                            -pts[l].y*Params.SVG_SCALE,
+                            pts[l].x,
+                            -pts[l].y,
                             0
                         ));
                         pts2.push(new Vector3(
-                            pts[l].x*Params.SVG_SCALE,
-                            -pts[l].y*Params.SVG_SCALE,
+                            pts[l].x,
+                            -pts[l].y,
                             0
                         ));                        
                     }

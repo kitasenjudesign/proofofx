@@ -54,7 +54,7 @@ export class MySVGLogo extends THREE.Object3D{
             this.fillMesh.add(mesh);
         }
 
-        this.setScale(1);
+        this.setScale();
 
         
         this.lineMesh = new MySVGLine();
@@ -63,30 +63,7 @@ export class MySVGLogo extends THREE.Object3D{
         this.add(this.lineMesh);
         
         
-        let points = DataManager.getInstance().svg.pointsForLine
-        for(let i=0;i<points.length;i++){
-            let pts = points[i];
-            
-            for(let j=0;j<pts.length-1;j++){
-                let col = {
-                    r:1,g:1,b:1
-                }//Colors.getRandomColor();
-                let p1 = pts[j];
-                let p2 = pts[j+1];
-                this.lineMesh.connectDots(
-                    p1.x,p1.y,p1.z,
-                    p2.x,p2.y,p2.z,
-                    col.r,col.g,col.b
-                );
-            }
-        }
-        /*
-        this.lineMesh.scale.set(
-            1/Params.SVG_SCALE,
-            -1/Params.SVG_SCALE,
-            1/Params.SVG_SCALE
-        )*/
-
+        this.lineMesh.updateLines();
         this.lineMesh.update();
         
 
@@ -96,30 +73,42 @@ export class MySVGLogo extends THREE.Object3D{
             f.add(this.fillMesh,"visible").name("fillMesh.visible").listen();
             f.add(this.lineMesh,"visible").name("lineMesh.visible").listen();
             f.add(this,"opacity",0,1).name("opacity").listen();
+
         this.visible=true;
         this.fillMesh.visible=false;
         this.lineMesh.visible=true;
 
-        setTimeout(()=>{
+        //setTimeout(()=>{
             //this.visible = false;
-        },2000);        
-
+        //},2000);        
+        this.setScale();
     }
 
+    reset(){
+        this.lineMesh.updateLines();
+    }
 
-    setScale(ss:number){
-        
-        this.scale.set(
-            Params.SVG_SCALE*ss,
-            -Params.SVG_SCALE*ss,
-            Params.SVG_SCALE*ss
-        );
+    setScale(){
+       
+        if(this.fillMesh){
+            this.fillMesh.scale.set(
+                Params.SVG_SCALE,
+                -Params.SVG_SCALE,
+                Params.SVG_SCALE
+            );    
+        }
+        if(this.lineMesh){
+            this.lineMesh.scale.set(
+                Params.SVG_SCALE,
+                -Params.SVG_SCALE,
+                Params.SVG_SCALE
+            );       
+        }
 
     }
 
     setY(yy:number){
 
-        
         //if(this.frameCount++%120==0)this.visible=true;
         //else this.visible=false;
 

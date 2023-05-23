@@ -2744,6 +2744,7 @@ class Main {
     constructor() {
         this.isPause = false;
         this.size = 1.5;
+        this.pastTime = 0;
     }
     init() {
         // let svgLoader = new SVGLo
@@ -2815,6 +2816,7 @@ class Main {
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.forcedRandom();
         this.particles.reset();
         this.rttMain.resetAll();
+        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo.reset();
     }
     resetParticles() {
         this.particles.reset();
@@ -2862,20 +2864,24 @@ class Main {
         });*/
     }
     onWindowResize() {
-        let ss = this.size;
-        this.size = window.innerWidth / 1000 * 1.7;
-        _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.SVG_SCALE = this.size;
-        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo.setScale(1);
-        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo2.setScale(1);
-        //const fovRad = (this.camera.fov / 2) * (Math.PI / 180);//角度
-        //let distance = (window.innerHeight / 2) / Math.tan(fovRad);//距離
         let ww = window.innerWidth;
         let hh = window.innerHeight;
         if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.SQUIRE) {
             ww = hh;
         }
+        //if(ww!=Params.stageWidth || hh!=Params.stageHeight){
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth = ww;
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight = hh;
+        this.onWindowResize2(ww, hh);
+        this.pastTime = new Date().getTime();
+        //}
+    }
+    onWindowResize2(ww, hh) {
+        this.size = ww / 1000 * 1.7;
+        _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.SVG_SCALE = this.size; //svgのスケールを変える
+        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo2.setScale();
+        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo.setScale();
+        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo.reset();
         this.camera.position.set(0, 0, 1000); //距離を指定
         this.camera.left = -ww / 2,
             this.camera.right = ww / 2,
@@ -4154,8 +4160,7 @@ class BrushScene {
     }
     resize(camera) {
         //renderTarget
-        this.renderTarget.width = _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageWidth * this.sizeRatio;
-        this.renderTarget.height = _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageHeight * this.sizeRatio;
+        this.renderTarget.setSize(_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageWidth * this.sizeRatio, _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageHeight * this.sizeRatio);
         this.camera.left = camera.left;
         this.camera.right = camera.right;
         this.camera.top = camera.top;
@@ -4240,6 +4245,19 @@ class FilpFlopSceneBase {
         renderer.render(this.scene, this.camera);
         renderer.setRenderTarget(null);
         this.pingpong = !this.pingpong;
+    }
+    resize(camera) {
+        //renderTarget
+        this.renderTarget1.setSize(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.stageHeight);
+        this.renderTarget2.setSize(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.stageHeight);
+        this.camera.left = camera.left;
+        this.camera.right = camera.right;
+        this.camera.top = camera.top;
+        this.camera.bottom = camera.bottom;
+        //pos
+        //this.camera.position.copy(camera.position);
+        //this.camera.rotation.copy(camera.rotation);
+        //this.camera.updateProjectionMatrix();
     }
 }
 
@@ -4520,6 +4538,9 @@ class RTTMain extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
     resize(camera) {
         this.outputPlane.resize(_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageWidth / 100, _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageHeight / 100);
         this.brushScene.resize(camera);
+        this.blurScene.resize(camera);
+        this.pigmentScene.resize(camera);
+        this.lastCalcScene.resize(camera);
     }
 }
 
@@ -5107,20 +5128,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "MySVGLine": () => (/* binding */ MySVGLine)
 /* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 /* harmony import */ var _line_line_vert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./line/line.vert */ "./src/shapes/line/line.vert");
 /* harmony import */ var _line_line_frag__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./line/line.frag */ "./src/shapes/line/line.frag");
 /* harmony import */ var glslify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js");
 /* harmony import */ var glslify__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(glslify__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _main_data_SRandom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../main/data/SRandom */ "./src/main/data/SRandom.ts");
-/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../proof/data/Params */ "./src/proof/data/Params.ts");
+/* harmony import */ var _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../proof/data/Colors */ "./src/proof/data/Colors.ts");
+/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../proof/data/Params */ "./src/proof/data/Params.ts");
+/* harmony import */ var _main_data_DataManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../main/data/DataManager */ "./src/main/data/DataManager.ts");
 
 
 
 
 
 
-class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_5__.Object3D {
+
+
+class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
     constructor() {
         super(...arguments);
         //ストロークを書く
@@ -5140,16 +5165,16 @@ class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_5__.Object3D {
             colors[i * 3 + 1] = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_3__.SRandom.random();
             colors[i * 3 + 2] = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_3__.SRandom.random();
         }
-        this.geo = new three__WEBPACK_IMPORTED_MODULE_5__.BufferGeometry();
-        this.geo.setAttribute('color1', new three__WEBPACK_IMPORTED_MODULE_5__.BufferAttribute(colors, 3, true));
-        this.geo.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_5__.BufferAttribute(positions, 3));
+        this.geo = new three__WEBPACK_IMPORTED_MODULE_7__.BufferGeometry();
+        this.geo.setAttribute('color1', new three__WEBPACK_IMPORTED_MODULE_7__.BufferAttribute(colors, 3, true));
+        this.geo.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_7__.BufferAttribute(positions, 3));
         //this.geo.setAttribute( 'scale', new THREE.BufferAttribute( scales, 1 ) );
         /*
         this.material = new THREE.LineBasicMaterial({
             color:0xffffff
         });*/
-        this.material = new three__WEBPACK_IMPORTED_MODULE_5__.ShaderMaterial({
-            side: three__WEBPACK_IMPORTED_MODULE_5__.DoubleSide,
+        this.material = new three__WEBPACK_IMPORTED_MODULE_7__.ShaderMaterial({
+            side: three__WEBPACK_IMPORTED_MODULE_7__.DoubleSide,
             uniforms: {
                 opacity: { value: 1.0 },
                 time: { value: 0.0 },
@@ -5162,20 +5187,34 @@ class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_5__.Object3D {
             //opacity: 0.5         
         });
         //this.material.opacity=0.5;
-        this.strokes = new three__WEBPACK_IMPORTED_MODULE_5__.LineSegments(this.geo, this.material);
+        this.strokes = new three__WEBPACK_IMPORTED_MODULE_7__.LineSegments(this.geo, this.material);
         //scene.add( particles );
         this.positions = this.geo.attributes.position.array;
         this.colors = this.geo.attributes.color1.array;
         //this.scales = this.particles.geometry.attributes.scale.array as number[];
         this.add(this.strokes);
         this.hide();
-        _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.gui.add(this.material.uniforms.lineY, "value", -2000, 2000).name("lineY").listen();
+        _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.gui.add(this.material.uniforms.lineY, "value", -2000, 2000).name("lineY").listen();
     }
     show() {
         this.strokes.visible = true;
     }
     hide() {
         this.strokes.visible = false;
+    }
+    updateLines() {
+        console.log("updateLines");
+        this.reset();
+        let points = _main_data_DataManager__WEBPACK_IMPORTED_MODULE_6__.DataManager.getInstance().svg.pointsForLine;
+        for (let i = 0; i < points.length; i++) {
+            let pts = points[i];
+            for (let j = 0; j < pts.length - 1; j++) {
+                let col = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.getRandomColor();
+                let p1 = pts[j];
+                let p2 = pts[j + 1];
+                this.connectDots(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, col.r, col.g, col.b);
+            }
+        }
     }
     reset() {
         this.counter = 0;
@@ -5194,9 +5233,9 @@ class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_5__.Object3D {
         this.isDirty = true;
         this.strokes.visible = true;
         let ratio = 0; //-Math.pow(brightness,3);
-        let sx = 1 / _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.SVG_SCALE;
-        let sy = -1 / _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.SVG_SCALE;
-        let sz = 1 / _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.SVG_SCALE;
+        let sx = 1; //1/Params.SVG_SCALE;
+        let sy = -1; //-1/Params.SVG_SCALE;
+        let sz = 1; //1/Params.SVG_SCALE;
         //x2はゴール
         this.positions[this.counter * 6 + 0] = x1 * sx; //x2*ratio+x1*(1-ratio);
         this.positions[this.counter * 6 + 1] = y1 * sy; //y2*ratio+y1*(1-ratio);
@@ -5233,9 +5272,12 @@ class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_5__.Object3D {
             Colors.colors[0].b
         );*/
         //if(this.strokes.visible && this.isDirty){
-        this.geo.attributes.position.needsUpdate = true;
-        this.geo.attributes.color1.needsUpdate = true;
-        this.isDirty = false;
+        if (this.isDirty) {
+            console.log("update!!!");
+            this.geo.attributes.position.needsUpdate = true;
+            this.geo.attributes.color1.needsUpdate = true;
+            this.isDirty = false;
+        }
         //}
         //this.resetCount();
     }
@@ -5255,17 +5297,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "MySVGLoader": () => (/* binding */ MySVGLoader)
 /* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
-/* harmony import */ var three_examples_jsm_loaders_SVGLoader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! three/examples/jsm/loaders/SVGLoader */ "./node_modules/three/examples/jsm/loaders/SVGLoader.js");
-/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../proof/data/Params */ "./src/proof/data/Params.ts");
-/* harmony import */ var _MySVGLogo__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MySVGLogo */ "./src/shapes/MySVGLogo.ts");
-/* harmony import */ var _MySVGLogo2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MySVGLogo2 */ "./src/shapes/MySVGLogo2.ts");
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var three_examples_jsm_loaders_SVGLoader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! three/examples/jsm/loaders/SVGLoader */ "./node_modules/three/examples/jsm/loaders/SVGLoader.js");
+/* harmony import */ var _MySVGLogo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MySVGLogo */ "./src/shapes/MySVGLogo.ts");
+/* harmony import */ var _MySVGLogo2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MySVGLogo2 */ "./src/shapes/MySVGLogo2.ts");
 
 
 
 
-
-class MySVGLoader extends three__WEBPACK_IMPORTED_MODULE_3__.Object3D {
+class MySVGLoader extends three__WEBPACK_IMPORTED_MODULE_2__.Object3D {
     constructor() {
         super();
         this.points = [];
@@ -5275,20 +5315,20 @@ class MySVGLoader extends three__WEBPACK_IMPORTED_MODULE_3__.Object3D {
     init(url, callback) {
         this.callback = callback;
         this.shapes = [];
-        this.loader = new three_examples_jsm_loaders_SVGLoader__WEBPACK_IMPORTED_MODULE_4__.SVGLoader();
+        this.loader = new three_examples_jsm_loaders_SVGLoader__WEBPACK_IMPORTED_MODULE_3__.SVGLoader();
         this.loader.load(url, (data) => {
             console.log("onload");
             const paths = data.paths;
             for (let i = 0; i < paths.length; i++) {
                 const path = paths[i];
-                const shapes = three_examples_jsm_loaders_SVGLoader__WEBPACK_IMPORTED_MODULE_4__.SVGLoader.createShapes(path);
+                const shapes = three_examples_jsm_loaders_SVGLoader__WEBPACK_IMPORTED_MODULE_3__.SVGLoader.createShapes(path);
                 this.shapes.push(shapes);
             }
             this.makeAllPoints(false);
-            this.logo = new _MySVGLogo__WEBPACK_IMPORTED_MODULE_1__.MySVGLogo();
+            this.logo = new _MySVGLogo__WEBPACK_IMPORTED_MODULE_0__.MySVGLogo();
             this.logo.init(this.shapes);
             this.add(this.logo);
-            this.logo2 = new _MySVGLogo2__WEBPACK_IMPORTED_MODULE_2__.MySVGLogo2();
+            this.logo2 = new _MySVGLogo2__WEBPACK_IMPORTED_MODULE_1__.MySVGLogo2();
             this.logo2.init(this.logo.fillMesh);
             this.callback();
         });
@@ -5302,16 +5342,16 @@ class MySVGLoader extends three__WEBPACK_IMPORTED_MODULE_3__.Object3D {
     makeAllPoints(isDummy) {
         this.points = [];
         this.pointsForLine = [];
-        let geo = new three__WEBPACK_IMPORTED_MODULE_3__.BoxGeometry(4, 4, 4);
-        let mat = new three__WEBPACK_IMPORTED_MODULE_3__.MeshBasicMaterial({ color: 0xff0000 });
+        let geo = new three__WEBPACK_IMPORTED_MODULE_2__.BoxGeometry(4, 4, 4);
+        let mat = new three__WEBPACK_IMPORTED_MODULE_2__.MeshBasicMaterial({ color: 0xff0000 });
         for (let i = 0; i < this.shapes.length; i++) {
             let shape = this.shapes[i];
             for (let j = 0; j < shape.length; j++) {
                 let pts = shape[j].getSpacedPoints(50);
                 let pts2 = [];
                 for (let k = 0; k < pts.length; k++) {
-                    this.points.push(new three__WEBPACK_IMPORTED_MODULE_3__.Vector3(pts[k].x * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -pts[k].y * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, 0));
-                    pts2.push(new three__WEBPACK_IMPORTED_MODULE_3__.Vector3(pts[k].x * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -pts[k].y * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, 0));
+                    this.points.push(new three__WEBPACK_IMPORTED_MODULE_2__.Vector3(pts[k].x, -pts[k].y, 0));
+                    pts2.push(new three__WEBPACK_IMPORTED_MODULE_2__.Vector3(pts[k].x, -pts[k].y, 0));
                 }
                 this.pointsForLine.push(pts2);
                 let holes = shape[j].holes;
@@ -5320,8 +5360,8 @@ class MySVGLoader extends three__WEBPACK_IMPORTED_MODULE_3__.Object3D {
                     let pts = holes[k].getSpacedPoints(50);
                     pts2 = [];
                     for (let l = 0; l < pts.length; l++) {
-                        this.points.push(new three__WEBPACK_IMPORTED_MODULE_3__.Vector3(pts[l].x * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -pts[l].y * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, 0));
-                        pts2.push(new three__WEBPACK_IMPORTED_MODULE_3__.Vector3(pts[l].x * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -pts[l].y * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, 0));
+                        this.points.push(new three__WEBPACK_IMPORTED_MODULE_2__.Vector3(pts[l].x, -pts[l].y, 0));
+                        pts2.push(new three__WEBPACK_IMPORTED_MODULE_2__.Vector3(pts[l].x, -pts[l].y, 0));
                     }
                     this.pointsForLine.push(pts2);
                 }
@@ -5346,7 +5386,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "MySVGLogo": () => (/* binding */ MySVGLogo)
 /* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 /* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../proof/data/Params */ "./src/proof/data/Params.ts");
 /* harmony import */ var _logo_vert__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./logo.vert */ "./src/shapes/logo.vert");
 /* harmony import */ var _logo_frag__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./logo.frag */ "./src/shapes/logo.frag");
@@ -5354,7 +5394,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var glslify__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(glslify__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../proof/data/Colors */ "./src/proof/data/Colors.ts");
 /* harmony import */ var _MySVGLine__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./MySVGLine */ "./src/shapes/MySVGLine.ts");
-/* harmony import */ var _main_data_DataManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../main/data/DataManager */ "./src/main/data/DataManager.ts");
 
 
 
@@ -5363,8 +5402,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-class MySVGLogo extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
+class MySVGLogo extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
     constructor() {
         super();
         this.opacity = 0.3;
@@ -5372,51 +5410,34 @@ class MySVGLogo extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
     }
     init(shapes) {
         let opacity = 0.1;
-        this.mat = new three__WEBPACK_IMPORTED_MODULE_7__.ShaderMaterial({
+        this.mat = new three__WEBPACK_IMPORTED_MODULE_6__.ShaderMaterial({
             uniforms: {
                 lineY: { value: 0 },
-                col1: { value: new three__WEBPACK_IMPORTED_MODULE_7__.Vector4(1, 0, 1, opacity) },
-                col2: { value: new three__WEBPACK_IMPORTED_MODULE_7__.Vector4(0, 1, 1, opacity) },
+                col1: { value: new three__WEBPACK_IMPORTED_MODULE_6__.Vector4(1, 0, 1, opacity) },
+                col2: { value: new three__WEBPACK_IMPORTED_MODULE_6__.Vector4(0, 1, 1, opacity) },
                 time: { value: 0 },
                 //textureSize: {value: new THREE.Vector2(textureWidth, textureWidth)}
             },
             vertexShader: glslify__WEBPACK_IMPORTED_MODULE_3___default()(_logo_vert__WEBPACK_IMPORTED_MODULE_1__["default"]),
             fragmentShader: glslify__WEBPACK_IMPORTED_MODULE_3___default()(_logo_frag__WEBPACK_IMPORTED_MODULE_2__["default"]),
-            side: three__WEBPACK_IMPORTED_MODULE_7__.DoubleSide,
+            side: three__WEBPACK_IMPORTED_MODULE_6__.DoubleSide,
             //wireframe:true
         });
         this.mat.transparent = true;
-        this.fillMesh = new three__WEBPACK_IMPORTED_MODULE_7__.Object3D();
+        this.fillMesh = new three__WEBPACK_IMPORTED_MODULE_6__.Object3D();
         this.add(this.fillMesh);
         for (let j = 0; j < shapes.length; j++) {
             const shape = shapes[j];
-            const geometry = new three__WEBPACK_IMPORTED_MODULE_7__.ShapeGeometry(shape);
-            const mesh = new three__WEBPACK_IMPORTED_MODULE_7__.Mesh(geometry, this.mat);
+            const geometry = new three__WEBPACK_IMPORTED_MODULE_6__.ShapeGeometry(shape);
+            const mesh = new three__WEBPACK_IMPORTED_MODULE_6__.Mesh(geometry, this.mat);
             this.fillMesh.add(mesh);
         }
-        this.setScale(1);
+        this.setScale();
         this.lineMesh = new _MySVGLine__WEBPACK_IMPORTED_MODULE_5__.MySVGLine();
         this.lineMesh.init();
         this.lineMesh.show();
         this.add(this.lineMesh);
-        let points = _main_data_DataManager__WEBPACK_IMPORTED_MODULE_6__.DataManager.getInstance().svg.pointsForLine;
-        for (let i = 0; i < points.length; i++) {
-            let pts = points[i];
-            for (let j = 0; j < pts.length - 1; j++) {
-                let col = {
-                    r: 1, g: 1, b: 1
-                }; //Colors.getRandomColor();
-                let p1 = pts[j];
-                let p2 = pts[j + 1];
-                this.lineMesh.connectDots(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, col.r, col.g, col.b);
-            }
-        }
-        /*
-        this.lineMesh.scale.set(
-            1/Params.SVG_SCALE,
-            -1/Params.SVG_SCALE,
-            1/Params.SVG_SCALE
-        )*/
+        this.lineMesh.updateLines();
         this.lineMesh.update();
         let f = _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.gui.addFolder("== Logo ==");
         f.close();
@@ -5427,12 +5448,21 @@ class MySVGLogo extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
         this.visible = true;
         this.fillMesh.visible = false;
         this.lineMesh.visible = true;
-        setTimeout(() => {
-            //this.visible = false;
-        }, 2000);
+        //setTimeout(()=>{
+        //this.visible = false;
+        //},2000);        
+        this.setScale();
     }
-    setScale(ss) {
-        this.scale.set(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE * ss, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE * ss, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE * ss);
+    reset() {
+        this.lineMesh.updateLines();
+    }
+    setScale() {
+        if (this.fillMesh) {
+            this.fillMesh.scale.set(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE);
+        }
+        if (this.lineMesh) {
+            this.lineMesh.scale.set(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE);
+        }
     }
     setY(yy) {
         //if(this.frameCount++%120==0)this.visible=true;
@@ -5505,19 +5535,12 @@ class MySVGLogo2 extends three__WEBPACK_IMPORTED_MODULE_5__.Object3D {
             m.scale.copy(mesh.scale);
             this.add(m);
         }
-        /*
-        for ( let j = 0; j < shapes.length; j ++ ) {
-            const shape = shapes[ j ];
-            const geometry = new THREE.ShapeGeometry( shape );
-            const mesh = new THREE.Mesh( geometry, this.mat );
-            this.add(mesh);
-        }*/
-        this.setScale(1);
+        this.setScale();
         let f = _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.gui.addFolder("== Logo2 ==");
         f.add(this, "visible").listen();
     }
-    setScale(n) {
-        this.scale.set(n * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, n * -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, n * _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE);
+    setScale() {
+        this.scale.set(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE);
     }
     setY(yy) {
         this.mat.uniforms.textCol.value.x = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.colors[0].r;

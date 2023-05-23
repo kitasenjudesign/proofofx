@@ -19,7 +19,6 @@ export class MySVGLogo2 extends THREE.Object3D{
 
     init( logo:Object3D ){
 
-
         let opacity = 0.1;
         this.mat = new THREE.ShaderMaterial({
             uniforms: {
@@ -34,7 +33,6 @@ export class MySVGLogo2 extends THREE.Object3D{
             side: THREE.DoubleSide
         })
 
-
         for(let i=0;i<logo.children.length;i++){
             const mesh = logo.children[i] as THREE.Mesh;
             let m = new Mesh(mesh.geometry,this.mat);
@@ -43,28 +41,18 @@ export class MySVGLogo2 extends THREE.Object3D{
             this.add(m);
         }
 
-
-        /*
-        for ( let j = 0; j < shapes.length; j ++ ) {
-            const shape = shapes[ j ]; 
-            const geometry = new THREE.ShapeGeometry( shape );
-            const mesh = new THREE.Mesh( geometry, this.mat );      
-            this.add(mesh);
-        }*/
-
-        this.setScale(1);
+        this.setScale();
         
         let f = Params.gui.addFolder("== Logo2 ==");
         f.add(this,"visible").listen();
 
     }
 
-
-    setScale(n:number){
+    setScale(){
         this.scale.set(
-            n*Params.SVG_SCALE,
-            n*-Params.SVG_SCALE,
-            n*Params.SVG_SCALE
+            Params.SVG_SCALE,
+            -Params.SVG_SCALE,
+            Params.SVG_SCALE
         );
     }
 
