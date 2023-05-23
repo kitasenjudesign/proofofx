@@ -137,8 +137,9 @@ export class Params{
 
         Params.intervalEmitting =3;
         Params.numMabiki=3;
+        if(SRandom.random()<0.5)Params.numMabiki = 4;
 
-        this.masatsu = 0.8+0.2*Math.random();
+        this.masatsu = 0.8+0.2*SRandom.random();
         this.radius=40+SRandom.random()*20;
         this.radius2=10+SRandom.random()*10;
         this.strength=0.8+SRandom.random()*0.3;

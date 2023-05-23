@@ -10893,7 +10893,9 @@ class Params {
     static setParticleParam() {
         Params.intervalEmitting = 3;
         Params.numMabiki = 3;
-        this.masatsu = 0.8 + 0.2 * Math.random();
+        if (_main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() < 0.5)
+            Params.numMabiki = 4;
+        this.masatsu = 0.8 + 0.2 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
         this.radius = 40 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 20;
         this.radius2 = 10 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 10;
         this.strength = 0.8 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 0.3;
