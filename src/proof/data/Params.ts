@@ -43,8 +43,9 @@ export class Params{
     public static DOM_TITLE="mainvisual_title"
     public static DOM_JS="mainvisual_js"
 
-    public static NFT:boolean=false;
-    public static SQUIRE:boolean=false;
+    public static MODE_NFT:boolean=false;
+    public static MODE_WEBSITE:boolean=false;
+    public static MODE_SQUIRE:boolean=false;
 
     // Getter宣言
     public static get bgColorHex(): number {
@@ -81,7 +82,7 @@ export class Params{
 
     public static forcedRandom(){
 
-        if(this.NFT)return;//NFTモードなら何もしない
+        if(this.MODE_NFT)return;//NFTモードなら何もしない
 
         this.setRandomParam();
 
@@ -100,9 +101,10 @@ export class Params{
         //DOM_JSにパスが書いてある
         const webgl = document.getElementById(this.DOM_JS);
         this.PATH = webgl.dataset.baseurl+"img/"
-        this.NFT = webgl.dataset.mode=="nft";//"nft","website","squire"
-        this.SQUIRE = webgl.dataset.mode=="squire";//"nft","website","squire"
-        if(this.SQUIRE){
+        this.MODE_NFT = webgl.dataset.mode=="nft";//"nft","website","squire"
+        this.MODE_SQUIRE = webgl.dataset.mode=="squire";//"nft","website","squire"
+        this.MODE_WEBSITE = webgl.dataset.mode=="website";
+        if(this.MODE_SQUIRE){
             Params.stageWidth=Params.stageHeight;
         }
 

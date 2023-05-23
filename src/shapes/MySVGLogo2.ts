@@ -12,7 +12,10 @@ import { Colors } from '../proof/data/Colors';
 export class MySVGLogo2 extends THREE.Object3D{
 
     private mat:THREE.ShaderMaterial;
-    
+
+    private flashing:boolean = false;
+    private flashCount:number = 0;
+
     constructor(){
         super();
     }
@@ -56,7 +59,19 @@ export class MySVGLogo2 extends THREE.Object3D{
         );
     }
 
+    reset(){
+        this.flashCount=0;
+    }
+
     setY(yy:number){
+
+        this.flashCount++;
+        if(this.flashCount<15){
+            this.visible = this.flashCount%2==0 ? true : false;
+        }else{
+            this.visible = true;
+        }
+
 
         this.mat.uniforms.textCol.value.x = Colors.colors[0].r;
         this.mat.uniforms.textCol.value.y = Colors.colors[0].g;

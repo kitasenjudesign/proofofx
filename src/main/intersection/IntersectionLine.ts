@@ -6,6 +6,7 @@ import { DataManager } from "../data/DataManager";
 import { SRandom } from "../data/SRandom";
 import { Colors } from "../../proof/data/Colors";
 import { IntersectionPoint } from './IntersectionPoint';
+import { gsap } from "gsap";
 
 
 
@@ -163,6 +164,28 @@ export class IntersectionLine extends Object3D{
         this.currentCrossPoints = this.GetCrossPoints();
     }
 
+
+    public tweenY(){
+        this.yy = window.innerHeight/2
+        gsap.to(this,{
+            yy:-window.innerHeight/2,
+            duration:12.0,
+            ease:"linear",
+            onComplete:()=>{
+                this.onTweenY();
+            }
+        });
+    }
+
+    public onTweenY(){
+        if(Params.MODE_WEBSITE){
+            setTimeout(()=>{
+                DataManager.getInstance().regenerate();
+                this.tweenY();
+            },1000);    
+        }
+    }
+
     //crossPointを取得する
     public updateY(){
 
@@ -179,7 +202,7 @@ export class IntersectionLine extends Object3D{
             -this.yy+window.innerHeight/2-h
         ) 
             
-        this.yy-=1.7;
+        //this.yy-=1.7;
         if(this.yy<-window.innerHeight/2){
             //this.yy=window.innerHeight/2;
         }

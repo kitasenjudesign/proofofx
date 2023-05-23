@@ -130,7 +130,9 @@ export class Main{
         Params.forcedRandom();
         this.particles.reset();
         this.rttMain.resetAll();
+
         DataManager.getInstance().svg.logo.reset();
+        DataManager.getInstance().svg.logo2.reset();
 
     }
 
@@ -202,7 +204,7 @@ export class Main{
 
         let ww = window.innerWidth;
         let hh = window.innerHeight;
-        if(Params.SQUIRE){
+        if(Params.MODE_SQUIRE){
             ww=hh;
         }
         

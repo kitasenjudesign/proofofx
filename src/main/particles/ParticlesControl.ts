@@ -35,22 +35,23 @@ export class ParticleControl extends THREE.Object3D{
         this.calc = new PLifeCalc();
         this.calc.init(this.particles);
 
+        this.line.tweenY();
     }
 
 
     reset(){
         this.line.reset();
+        
     }
 
 
     update(){
 
-        
-
-        
+    
         //順にshowしていく
 
         if(this.showingMode=="line"){
+            
             this.line.updateY();
             if(this.frameCount%Params.intervalEmitting==0){
                 this.line.updateCrossPoints();

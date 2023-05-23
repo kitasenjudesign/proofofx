@@ -23,8 +23,11 @@ export class DOMControl{
             UNIXTimeFormatter.formatUnixTime(Params.USER_TIME) +
             " BY "+ Params.USER_NAME;
 
-        if(Params.NFT){
+        if(Params.MODE_NFT){
             this.title.text += " HASH:" + Params.USER_HASH;
+        }
+        if(Params.MODE_WEBSITE){
+            this.title.text = ""
         }
     }
 
@@ -50,7 +53,7 @@ export class DOMControl{
         if(this.title.y>window.innerHeight-this.title.height){
             this.title.y = window.innerHeight-this.title.height;
             
-            DataManager.getInstance().regenerate();
+            //DataManager.getInstance().regenerate();
 
         }
 

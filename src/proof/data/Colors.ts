@@ -52,8 +52,6 @@ export class Colors {
         Colors.logoColorObj={};
         Colors.logoColorObj["logo"] = this.logoColor;
 
-        
-        
         gui.addColor(Colors.logoColorObj,"logo").listen();
         //gui.addColor(Colors.logoColor,"logoColor").listen();
         gui.add(Colors,"NUM");
@@ -79,7 +77,7 @@ export class Colors {
             col.b = SRandom.random();
 
         }
-        
+
     }
 
 
