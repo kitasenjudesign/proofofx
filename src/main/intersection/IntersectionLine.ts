@@ -120,29 +120,21 @@ export class IntersectionLine extends Object3D{
 
     private GetCrossPoints():THREE.Vector2[]{
         
-        /*
-        let crossPoints:THREE.Vector2[] = [];
-        for(let i=0;i<this.linesSegs.length;i++){
-            let seg = LineSeg.GetIntersectionLineSegments(
-                this.linesSegs[i],
-                this.lineY
-            );
-            if(seg){
-                crossPoints.push(seg);
-            }
-        }
-        */
         let crossPoints:THREE.Vector2[] = [];
         for(let i=0;i<this.linePoints.length;i++){
             let pp = this.linePoints[i];
-            if(pp.y*Params.SVG_SCALE>this.yy && pp.enable){
+            let pos = new Vector2(
+                pp.x,-pp.y
+            )
+
+            if(pos.y*Params.SVG_SCALE>this.yy && pp.enable){
                 
                 pp.enable=false;
 
                 crossPoints.push(
                     new Vector2(
-                        this.linePoints[i].x*Params.SVG_SCALE,
-                        this.linePoints[i].y*Params.SVG_SCALE
+                        pos.x*Params.SVG_SCALE,
+                        pos.y*Params.SVG_SCALE
                     )
                 );
 

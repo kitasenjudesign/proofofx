@@ -27,7 +27,7 @@ export class Colors {
             let cc = new Color(0xffffff);
             cc.setHSL(
                 SRandom.random(),
-                0.6+0.4*SRandom.random(),//
+                1,//0.6+0.4*SRandom.random(),//
                 0.5//
             );
 

@@ -182,10 +182,12 @@ export class Main{
         if(this.isPause)return;
 
         if(window.scrollY<window.innerHeight/2){
+            
             DataManager.getInstance().svg.update();
             this.particles.update();
             this.rttMain.update( this.renderer );
-            this.renderer.render(this.scene, this.camera);    
+            this.renderer.render(this.scene, this.camera);
+
         }
 
         setTimeout(()=>{

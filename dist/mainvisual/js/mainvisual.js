@@ -9255,24 +9255,13 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         ];
     }
     GetCrossPoints() {
-        /*
-        let crossPoints:THREE.Vector2[] = [];
-        for(let i=0;i<this.linesSegs.length;i++){
-            let seg = LineSeg.GetIntersectionLineSegments(
-                this.linesSegs[i],
-                this.lineY
-            );
-            if(seg){
-                crossPoints.push(seg);
-            }
-        }
-        */
         let crossPoints = [];
         for (let i = 0; i < this.linePoints.length; i++) {
             let pp = this.linePoints[i];
-            if (pp.y * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE > this.yy && pp.enable) {
+            let pos = new three__WEBPACK_IMPORTED_MODULE_6__.Vector2(pp.x, -pp.y);
+            if (pos.y * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE > this.yy && pp.enable) {
                 pp.enable = false;
-                crossPoints.push(new three__WEBPACK_IMPORTED_MODULE_6__.Vector2(this.linePoints[i].x * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE, this.linePoints[i].y * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE));
+                crossPoints.push(new three__WEBPACK_IMPORTED_MODULE_6__.Vector2(pos.x * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE, pos.y * _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.SVG_SCALE));
             }
         }
         return crossPoints;
@@ -10723,7 +10712,7 @@ class Colors {
         this.colorsObj = {};
         for (let i = 0; i < 4; i++) {
             let cc = new three__WEBPACK_IMPORTED_MODULE_2__.Color(0xffffff);
-            cc.setHSL(_main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(), 0.6 + 0.4 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(), //
+            cc.setHSL(_main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(), 1, //0.6+0.4*SRandom.random(),//
             0.5 //
             );
             let col = {
@@ -10902,19 +10891,8 @@ class Params {
         console.log("Params.USER_TIME", Params.USER_TIME);
     }
     static setParticleParam() {
-        let rr = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
-        if (rr < 0.33) {
-            //Params.numEmitting      =30;
-            Params.intervalEmitting = 20;
-        }
-        else if (rr < 0.66) {
-            //Params.numEmitting      =15;
-            Params.intervalEmitting = 10;
-        }
-        else {
-            //Params.numEmitting      =1;
-            Params.intervalEmitting = 1;
-        }
+        Params.intervalEmitting = 3;
+        Params.numMabiki = 3;
         this.masatsu = 0.8 + 0.2 * Math.random();
         this.radius = 40 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 20;
         this.radius2 = 10 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 10;

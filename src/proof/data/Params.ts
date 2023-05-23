@@ -135,17 +135,8 @@ export class Params{
 
     public static setParticleParam(){
 
-        let rr = SRandom.random();
-        if(rr<0.33){
-            //Params.numEmitting      =30;
-            Params.intervalEmitting =20;
-        }else if(rr<0.66){
-            //Params.numEmitting      =15;
-            Params.intervalEmitting =10;
-        }else{
-            //Params.numEmitting      =1;
-            Params.intervalEmitting =1;
-        }
+        Params.intervalEmitting =3;
+        Params.numMabiki=3;
 
         this.masatsu = 0.8+0.2*Math.random();
         this.radius=40+SRandom.random()*20;
