@@ -8,6 +8,7 @@ import myFrag from "./logo2.frag";
 import glslify from 'glslify';
 import { MySVGLogo } from './MySVGLogo';
 import { Colors } from '../proof/data/Colors';
+import { MySVGLine } from './MySVGLine';
 
 export class MySVGLogo2 extends THREE.Object3D{
 
@@ -16,11 +17,13 @@ export class MySVGLogo2 extends THREE.Object3D{
     private flashing:boolean = false;
     private flashCount:number = 0;
 
+    private line:MySVGLine;
+
     constructor(){
         super();
     }
 
-    init( logo:Object3D ){
+    init( logo:MySVGLogo ){
 
         let opacity = 0.1;
         this.mat = new THREE.ShaderMaterial({
@@ -37,8 +40,8 @@ export class MySVGLogo2 extends THREE.Object3D{
         })
         this.mat.transparent=true;
 
-        for(let i=0;i<logo.children.length;i++){
-            const mesh = logo.children[i] as THREE.Mesh;
+        for(let i=0;i<logo.fillMesh.children.length;i++){
+            const mesh = logo.fillMesh.children[i] as THREE.Mesh;
             let m = new Mesh(mesh.geometry,this.mat);
             m.position.copy(mesh.position);
             m.scale.copy(mesh.scale)
@@ -47,6 +50,16 @@ export class MySVGLogo2 extends THREE.Object3D{
 
         this.setScale();
         
+        /*
+        let geo = logo.lineMesh.geo;
+        let mat = new THREE.LineBasicMaterial({color:0xff0000});
+        mat.transparent=true;
+        mat.opacity=0.5;
+        let mesh = new THREE.LineSegments(geo,mat);
+        mesh.position.z = 0.1;
+        this.add(mesh)
+        */
+
         let f = Params.gui.addFolder("== Logo2 ==");
         f.add(this,"visible").listen();
 
@@ -72,6 +85,8 @@ export class MySVGLogo2 extends THREE.Object3D{
         }else{
             this.visible = true;
         }
+
+       // this.line.setY(yy)
 
 
         this.mat.uniforms.textCol.value.x = Colors.colors[0].r;

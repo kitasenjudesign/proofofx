@@ -110,17 +110,16 @@ export class RTTMain extends THREE.Object3D{
 
     resize(camera:OrthographicCamera){
         
-        this.outputPlane.resize(
+        this.outputPlane?.resize(
             Params.stageWidth/100,
             Params.stageHeight/100
         )
         
-        this.brushScene.resize(camera);
+        this.brushScene?.resize(camera);
 
-        
-        this.blurScene.resize(camera);
-        this.pigmentScene.resize(camera);
-        this.lastCalcScene.resize(camera);
+        this.blurScene?.resize(camera);
+        this.pigmentScene?.resize(camera);
+        this.lastCalcScene?.resize(camera);
         
 
     }

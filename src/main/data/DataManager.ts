@@ -38,7 +38,7 @@ export class DataManager{
 
     //console.log(hoge);
     let loader = new MySVGLoader();
-    loader.init(Params.PATH + "moji3.svg",()=>{
+    loader.init(Params.PATH + "logo.svg",()=>{
          callback();   
       });
     this.svg=loader;//.add(loader);

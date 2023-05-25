@@ -9,6 +9,7 @@ import { Params } from '../proof/data/Params';
 import { DOMControl } from '../dom/DOMControl';
 import { Xorshift } from './data/Xorshift';
 import { SRandom } from './data/SRandom';
+import { Download } from './data/Download';
 
 
 export class Main{
@@ -27,6 +28,7 @@ export class Main{
     domControl:DOMControl;
     size:number=1.5;
     pastTime:number=0
+    timeoutId:number=0;
 
     init(){
        // let svgLoader = new SVGLo
@@ -38,6 +40,29 @@ export class Main{
         console.log(r.nextFloat());
         console.log(r.nextFloat());
         console.log(r.nextFloat());*/
+        this.renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById(Params.DOM_WEBGL),
+            antialias: false,
+            preserveDrawingBuffer : true
+        });
+        this.renderer.setPixelRatio(1);
+        this.renderer.setClearColor(new THREE.Color(0xffffff));
+        this.renderer.setSize(window.innerWidth,window.innerHeight);
+         
+        this.camera = new THREE.OrthographicCamera(
+            -Params.stageWidth/2, 
+            Params.stageWidth/2, 
+            Params.stageHeight/2, 
+            -Params.stageHeight/2, 
+            1, 3000
+        );
+        this.onWindowResize();
+        this.scene = new THREE.Scene();
+
+        this.renderer.render(this.scene, this.camera);
+
+
+
         let dataManager = DataManager.getInstance();
         dataManager.init(this,()=>{
             this.init2();
@@ -49,17 +74,6 @@ export class Main{
 
         this.clock = new THREE.Clock(true);
         this.clock.start();
-     
-         this.renderer = new THREE.WebGLRenderer({
-             canvas: document.getElementById(Params.DOM_WEBGL),
-             antialias: false,
-             preserveDrawingBuffer : true
-         });
-         //this.renderer.setPixelRatio(1);
-
-        //console.log(hoge);
-        this.scene = new THREE.Scene();
-
         this.rttMain = new RTTMain(this.renderer,()=>{
             this.init3();
         });
@@ -79,17 +93,7 @@ export class Main{
             DataManager.getInstance().svg.logo2
         );
 
-        this.renderer.setPixelRatio(1);
-        this.renderer.setClearColor(new THREE.Color(0xcccccc));
-        this.renderer.setSize(window.innerWidth,window.innerHeight);
-         
-        this.camera = new THREE.OrthographicCamera(
-            -Params.stageWidth/2, 
-            Params.stageWidth/2, 
-            Params.stageHeight/2, 
-            -Params.stageHeight/2, 
-            1, 3000
-        );
+
         //this.camera = new THREE.PerspectiveCamera(20, 640/480, 1, 10000);
         
         this.domControl = new DOMControl();
@@ -160,23 +164,7 @@ export class Main{
 
 
     download(){
-        
-        let dom = document.getElementById(Params.DOM_WEBGL) as HTMLCanvasElement;
-        let link = document.createElement('a');
-        link.href = dom.toDataURL('image/png');
-
-        let date = new Date(); // 現在の日時を取得
-        let y = date.getFullYear().toString().slice(-2); // 年を2桁にして取得
-        let m = ("0" + (date.getMonth() + 1)).slice(-2); // 月を2桁にして取得
-        let d = ("0" + date.getDate()).slice(-2); // 日を2桁にして取得
-        let h = ("0" + date.getHours()).slice(-2); // 時を2桁にして取得
-        let i = ("0" + date.getMinutes()).slice(-2); // 分を2桁にして取得
-        let s = ("0" + date.getSeconds()).slice(-2); // 秒を2桁にして取得
-        let dateString = y + m + d + "_" + h + i + s; // 日付文字列を作成
-
-        link.download = dateString+'.png'
-        link.click()
-        
+        Download.download();
     }
 
 
@@ -184,9 +172,6 @@ export class Main{
         //this.isPause = !this.isPause;
         this.particles.pause();
     }
-
-
-
 
     tick(){
         if(this.isPause)return;
@@ -219,25 +204,29 @@ export class Main{
         if(Params.MODE_SQUIRE){
             ww=hh;
         }
-        
-        //if(ww!=Params.stageWidth || hh!=Params.stageHeight){
-            Params.stageWidth=ww;
-            Params.stageHeight=hh;
-            this.onWindowResize2(ww,hh);
+        Params.stageWidth=ww;
+        Params.stageHeight=hh;
+
+        window.clearTimeout(this.timeoutId);
+        this.timeoutId=window.setTimeout(()=>{
+            this.onWindowResize2(Params.stageWidth,Params.stageHeight);
             this.pastTime = new Date().getTime();
-        //}
+        },200);
 
     }
 
     onWindowResize2(ww:number,hh:number){
 
+        console.log("resize")
+
         this.size = ww/1000*1.7;
         Params.SVG_SCALE=this.size;//svgのスケールを変える
 
-        
-        DataManager.getInstance().svg.logo2.setScale();
-        DataManager.getInstance().svg.logo.setScale();
-        DataManager.getInstance().svg.logo.reset();
+        if(DataManager.getInstance().svg){
+            DataManager.getInstance().svg.logo2.setScale();
+            DataManager.getInstance().svg.logo.setScale();
+            DataManager.getInstance().svg.logo.reset();    
+        }
         
         this.camera.position.set(0,0,1000);//距離を指定
         this.camera.left    = -ww/2, 
@@ -247,8 +236,8 @@ export class Main{
         this.camera.updateProjectionMatrix()
         this.renderer.setSize(ww,hh);
        
-        this.rttMain.resize(this.camera);
-        this.particles.resize();
+        this.rttMain?.resize(this.camera);
+        this.particles?.resize();
 
     }
 

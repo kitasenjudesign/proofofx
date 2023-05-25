@@ -62,11 +62,9 @@ export class MySVGLogo extends THREE.Object3D{
         this.lineMesh.show()
         this.add(this.lineMesh);
         
-        
         this.lineMesh.updateLines();
         this.lineMesh.update();
         
-
         let f = Params.gui.addFolder("== Logo ==");
             f.close();
             f.add(this,"visible").name("visible").listen();
@@ -90,6 +88,12 @@ export class MySVGLogo extends THREE.Object3D{
 
     setScale(){
        
+        this.scale.set(
+            Params.SVG_SCALE,
+            -Params.SVG_SCALE,
+            Params.SVG_SCALE
+        )
+        /*
         if(this.fillMesh){
             this.fillMesh.scale.set(
                 Params.SVG_SCALE,
@@ -103,7 +107,7 @@ export class MySVGLogo extends THREE.Object3D{
                 -Params.SVG_SCALE,
                 Params.SVG_SCALE
             );       
-        }
+        }*/
 
     }
 

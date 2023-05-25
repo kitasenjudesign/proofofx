@@ -60,7 +60,7 @@ export class Particles extends THREE.Object3D{
         tex.minFilter = THREE.NearestFilter;
 
         this.material = new THREE.PointsMaterial( {
-            size: 7,
+            size: 8,
             sizeAttenuation: false,
             color: 0xffffff,//Colors.rgb2hex(Colors.colors[0]),
             alphaTest: 0.5,

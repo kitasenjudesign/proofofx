@@ -8855,12 +8855,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Main": () => (/* binding */ Main)
 /* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 /* harmony import */ var _particles_Particles__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./particles/Particles */ "./src/main/particles/Particles.ts");
 /* harmony import */ var _data_DataManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./data/DataManager */ "./src/main/data/DataManager.ts");
 /* harmony import */ var _rtt_RTTMain__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./rtt/RTTMain */ "./src/main/rtt/RTTMain.ts");
 /* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../proof/data/Params */ "./src/proof/data/Params.ts");
 /* harmony import */ var _dom_DOMControl__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../dom/DOMControl */ "./src/dom/DOMControl.ts");
+/* harmony import */ var _data_Download__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./data/Download */ "./src/main/data/Download.ts");
+
 
 
 
@@ -8873,6 +8875,7 @@ class Main {
         this.isPause = false;
         this.size = 1.5;
         this.pastTime = 0;
+        this.timeoutId = 0;
     }
     init() {
         // let svgLoader = new SVGLo
@@ -8884,22 +8887,26 @@ class Main {
         console.log(r.nextFloat());
         console.log(r.nextFloat());
         console.log(r.nextFloat());*/
+        this.renderer = new three__WEBPACK_IMPORTED_MODULE_6__.WebGLRenderer({
+            canvas: document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.DOM_WEBGL),
+            antialias: false,
+            preserveDrawingBuffer: true
+        });
+        this.renderer.setPixelRatio(1);
+        this.renderer.setClearColor(new three__WEBPACK_IMPORTED_MODULE_6__.Color(0xffffff));
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.camera = new three__WEBPACK_IMPORTED_MODULE_6__.OrthographicCamera(-_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth / 2, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth / 2, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight / 2, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight / 2, 1, 3000);
+        this.onWindowResize();
+        this.scene = new three__WEBPACK_IMPORTED_MODULE_6__.Scene();
+        this.renderer.render(this.scene, this.camera);
         let dataManager = _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance();
         dataManager.init(this, () => {
             this.init2();
         });
     }
     init2() {
-        this.clock = new three__WEBPACK_IMPORTED_MODULE_5__.Clock(true);
+        this.clock = new three__WEBPACK_IMPORTED_MODULE_6__.Clock(true);
         this.clock.start();
-        this.renderer = new three__WEBPACK_IMPORTED_MODULE_5__.WebGLRenderer({
-            canvas: document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.DOM_WEBGL),
-            antialias: false,
-            preserveDrawingBuffer: true
-        });
-        //this.renderer.setPixelRatio(1);
-        //console.log(hoge);
-        this.scene = new three__WEBPACK_IMPORTED_MODULE_5__.Scene();
         this.rttMain = new _rtt_RTTMain__WEBPACK_IMPORTED_MODULE_2__.RTTMain(this.renderer, () => {
             this.init3();
         });
@@ -8912,10 +8919,6 @@ class Main {
         _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().particles = this.particles;
         this.rttMain.init();
         this.scene.add(_data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo2);
-        this.renderer.setPixelRatio(1);
-        this.renderer.setClearColor(new three__WEBPACK_IMPORTED_MODULE_5__.Color(0xcccccc));
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.camera = new three__WEBPACK_IMPORTED_MODULE_5__.OrthographicCamera(-_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth / 2, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth / 2, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight / 2, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight / 2, 1, 3000);
         //this.camera = new THREE.PerspectiveCamera(20, 640/480, 1, 10000);
         this.domControl = new _dom_DOMControl__WEBPACK_IMPORTED_MODULE_4__.DOMControl();
         _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().domControl = this.domControl;
@@ -8924,7 +8927,7 @@ class Main {
             this.onWindowResize();
         }, false);
         this.onWindowResize();
-        let d = new three__WEBPACK_IMPORTED_MODULE_5__.DirectionalLight(0xffffff);
+        let d = new three__WEBPACK_IMPORTED_MODULE_6__.DirectionalLight(0xffffff);
         d.position.x = 10;
         d.position.y = 10;
         this.scene.add(d);
@@ -8964,19 +8967,7 @@ class Main {
         this.rttMain.resetAll();
     }
     download() {
-        let dom = document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.DOM_WEBGL);
-        let link = document.createElement('a');
-        link.href = dom.toDataURL('image/png');
-        let date = new Date(); // 現在の日時を取得
-        let y = date.getFullYear().toString().slice(-2); // 年を2桁にして取得
-        let m = ("0" + (date.getMonth() + 1)).slice(-2); // 月を2桁にして取得
-        let d = ("0" + date.getDate()).slice(-2); // 日を2桁にして取得
-        let h = ("0" + date.getHours()).slice(-2); // 時を2桁にして取得
-        let i = ("0" + date.getMinutes()).slice(-2); // 分を2桁にして取得
-        let s = ("0" + date.getSeconds()).slice(-2); // 秒を2桁にして取得
-        let dateString = y + m + d + "_" + h + i + s; // 日付文字列を作成
-        link.download = dateString + '.png';
-        link.click();
+        _data_Download__WEBPACK_IMPORTED_MODULE_5__.Download.download();
     }
     pause() {
         //this.isPause = !this.isPause;
@@ -9005,19 +8996,24 @@ class Main {
         if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.MODE_SQUIRE) {
             ww = hh;
         }
-        //if(ww!=Params.stageWidth || hh!=Params.stageHeight){
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth = ww;
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight = hh;
-        this.onWindowResize2(ww, hh);
-        this.pastTime = new Date().getTime();
-        //}
+        window.clearTimeout(this.timeoutId);
+        this.timeoutId = window.setTimeout(() => {
+            this.onWindowResize2(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight);
+            this.pastTime = new Date().getTime();
+        }, 200);
     }
     onWindowResize2(ww, hh) {
+        var _a, _b;
+        console.log("resize");
         this.size = ww / 1000 * 1.7;
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.SVG_SCALE = this.size; //svgのスケールを変える
-        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo2.setScale();
-        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo.setScale();
-        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo.reset();
+        if (_data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg) {
+            _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo2.setScale();
+            _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo.setScale();
+            _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo.reset();
+        }
         this.camera.position.set(0, 0, 1000); //距離を指定
         this.camera.left = -ww / 2,
             this.camera.right = ww / 2,
@@ -9025,8 +9021,8 @@ class Main {
             this.camera.bottom = -hh / 2,
             this.camera.updateProjectionMatrix();
         this.renderer.setSize(ww, hh);
-        this.rttMain.resize(this.camera);
-        this.particles.resize();
+        (_a = this.rttMain) === null || _a === void 0 ? void 0 : _a.resize(this.camera);
+        (_b = this.particles) === null || _b === void 0 ? void 0 : _b.resize();
     }
 }
 
@@ -9062,7 +9058,7 @@ class DataManager {
         this.main = main;
         //console.log(hoge);
         let loader = new _shapes_MySVGLoader__WEBPACK_IMPORTED_MODULE_1__.MySVGLoader();
-        loader.init(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.PATH + "moji3.svg", () => {
+        loader.init(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.PATH + "logo.svg", () => {
             callback();
         });
         this.svg = loader; //.add(loader);
@@ -9070,6 +9066,40 @@ class DataManager {
     }
     regenerate() {
         this.main.regenerate();
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/main/data/Download.ts":
+/*!***********************************!*\
+  !*** ./src/main/data/Download.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Download": () => (/* binding */ Download)
+/* harmony export */ });
+/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../proof/data/Params */ "./src/proof/data/Params.ts");
+
+class Download {
+    static download() {
+        let dom = document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.DOM_WEBGL);
+        let link = document.createElement('a');
+        link.href = dom.toDataURL('image/png');
+        let date = new Date(); // 現在の日時を取得
+        let y = date.getFullYear().toString().slice(-2); // 年を2桁にして取得
+        let m = ("0" + (date.getMonth() + 1)).slice(-2); // 月を2桁にして取得
+        let d = ("0" + date.getDate()).slice(-2); // 日を2桁にして取得
+        let h = ("0" + date.getHours()).slice(-2); // 時を2桁にして取得
+        let i = ("0" + date.getMinutes()).slice(-2); // 分を2桁にして取得
+        let s = ("0" + date.getSeconds()).slice(-2); // 秒を2桁にして取得
+        let dateString = y + m + d + "_" + h + i + s; // 日付文字列を作成
+        link.download = dateString + '.png';
+        link.click();
     }
 }
 
@@ -9652,7 +9682,7 @@ class Particle {
         this.colR = col.r;
         this.colG = col.g;
         this.colB = col.b;
-        this.limit = 10 + _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.maxLimit * _data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random();
+        this.limit = 10 + _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.maxLimit * Math.pow(_data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random(), 2);
         //if(SRandom.random()<0.1)this.limit= 10 + Params.maxLimit*SRandom.random()/4;
         this.position.x = point.x + 5 * (_data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random() - 0.5);
         this.position.y = point.y + 5 * (_data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random() - 0.5);
@@ -9790,7 +9820,7 @@ class Particles extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         tex.magFilter = three__WEBPACK_IMPORTED_MODULE_6__.NearestFilter;
         tex.minFilter = three__WEBPACK_IMPORTED_MODULE_6__.NearestFilter;
         this.material = new three__WEBPACK_IMPORTED_MODULE_6__.PointsMaterial({
-            size: 7,
+            size: 8,
             sizeAttenuation: false,
             color: 0xffffff,
             alphaTest: 0.5,
@@ -10714,11 +10744,12 @@ class RTTMain extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         this.lastCalcScene.clearTargets();
     }
     resize(camera) {
-        this.outputPlane.resize(_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageWidth / 100, _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageHeight / 100);
-        this.brushScene.resize(camera);
-        this.blurScene.resize(camera);
-        this.pigmentScene.resize(camera);
-        this.lastCalcScene.resize(camera);
+        var _a, _b, _c, _d, _e;
+        (_a = this.outputPlane) === null || _a === void 0 ? void 0 : _a.resize(_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageWidth / 100, _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageHeight / 100);
+        (_b = this.brushScene) === null || _b === void 0 ? void 0 : _b.resize(camera);
+        (_c = this.blurScene) === null || _c === void 0 ? void 0 : _c.resize(camera);
+        (_d = this.pigmentScene) === null || _d === void 0 ? void 0 : _d.resize(camera);
+        (_e = this.lastCalcScene) === null || _e === void 0 ? void 0 : _e.resize(camera);
     }
 }
 
@@ -11323,7 +11354,7 @@ class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
     constructor() {
         super(...arguments);
         //ストロークを書く
-        this.numParticles = 5000;
+        this.numParticles = 4000;
         this.counter = 0;
         this.isDirty = false;
     }
@@ -11389,6 +11420,7 @@ class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
                 this.connectDots(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, col.r, col.g, col.b);
             }
         }
+        console.log("--->" + this.counter);
     }
     reset() {
         this.counter = 0;
@@ -11439,21 +11471,12 @@ class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
     }
     //pointsに従ってレンダリングします
     update() {
-        /*
-        this.material.color.setRGB(
-            Colors.colors[0].r,
-            Colors.colors[0].g,
-            Colors.colors[0].b
-        );*/
-        //if(this.strokes.visible && this.isDirty){
         if (this.isDirty) {
             console.log("update!!!");
             this.geo.attributes.position.needsUpdate = true;
             this.geo.attributes.color1.needsUpdate = true;
             this.isDirty = false;
         }
-        //}
-        //this.resetCount();
     }
 }
 
@@ -11503,7 +11526,7 @@ class MySVGLoader extends three__WEBPACK_IMPORTED_MODULE_2__.Object3D {
             this.logo.init(this.shapes);
             this.add(this.logo);
             this.logo2 = new _MySVGLogo2__WEBPACK_IMPORTED_MODULE_1__.MySVGLogo2();
-            this.logo2.init(this.logo.fillMesh);
+            this.logo2.init(this.logo);
             this.callback();
         });
     }
@@ -11631,12 +11654,22 @@ class MySVGLogo extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         this.lineMesh.updateLines();
     }
     setScale() {
-        if (this.fillMesh) {
-            this.fillMesh.scale.set(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE);
+        this.scale.set(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE);
+        /*
+        if(this.fillMesh){
+            this.fillMesh.scale.set(
+                Params.SVG_SCALE,
+                -Params.SVG_SCALE,
+                Params.SVG_SCALE
+            );
         }
-        if (this.lineMesh) {
-            this.lineMesh.scale.set(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE, _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.SVG_SCALE);
-        }
+        if(this.lineMesh){
+            this.lineMesh.scale.set(
+                Params.SVG_SCALE,
+                -Params.SVG_SCALE,
+                Params.SVG_SCALE
+            );
+        }*/
     }
     setY(yy) {
         //if(this.frameCount++%120==0)this.visible=true;
@@ -11705,14 +11738,23 @@ class MySVGLogo2 extends three__WEBPACK_IMPORTED_MODULE_5__.Object3D {
             side: three__WEBPACK_IMPORTED_MODULE_5__.DoubleSide
         });
         this.mat.transparent = true;
-        for (let i = 0; i < logo.children.length; i++) {
-            const mesh = logo.children[i];
+        for (let i = 0; i < logo.fillMesh.children.length; i++) {
+            const mesh = logo.fillMesh.children[i];
             let m = new three__WEBPACK_IMPORTED_MODULE_5__.Mesh(mesh.geometry, this.mat);
             m.position.copy(mesh.position);
             m.scale.copy(mesh.scale);
             this.add(m);
         }
         this.setScale();
+        /*
+        let geo = logo.lineMesh.geo;
+        let mat = new THREE.LineBasicMaterial({color:0xff0000});
+        mat.transparent=true;
+        mat.opacity=0.5;
+        let mesh = new THREE.LineSegments(geo,mat);
+        mesh.position.z = 0.1;
+        this.add(mesh)
+        */
         let f = _proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.gui.addFolder("== Logo2 ==");
         f.add(this, "visible").listen();
     }
@@ -11730,6 +11772,7 @@ class MySVGLogo2 extends three__WEBPACK_IMPORTED_MODULE_5__.Object3D {
         else {
             this.visible = true;
         }
+        // this.line.setY(yy)
         this.mat.uniforms.textCol.value.x = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.colors[0].r;
         this.mat.uniforms.textCol.value.y = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.colors[0].g;
         this.mat.uniforms.textCol.value.z = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.colors[0].b;

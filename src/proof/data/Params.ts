@@ -1,4 +1,3 @@
-import p5 from 'p5';
 import * as THREE from 'three';
 import { MyGUI } from './MyGUI';
 import { GUI } from 'lil-gui';
@@ -140,7 +139,7 @@ export class Params{
         if(ran<0.333)Params.numMabiki = 3;
         else if(ran<0.666)Params.numMabiki = 3;
         else Params.numMabiki = 5;
-        
+
         this.masatsu = 0.8+0.05*SRandom.random();//0.8+0.2*SRandom.random();
         this.radius=50;//40+SRandom.random()*20;
         this.radius2=20;//12;//10+SRandom.random()*10;

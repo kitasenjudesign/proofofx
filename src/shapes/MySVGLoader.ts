@@ -45,7 +45,7 @@ export class MySVGLoader extends Object3D{
             this.add(this.logo);
 
             this.logo2 = new MySVGLogo2();
-            this.logo2.init(this.logo.fillMesh);
+            this.logo2.init(this.logo);
 
             
             this.callback();

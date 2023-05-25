@@ -10,7 +10,7 @@ import { DataManager } from '../main/data/DataManager';
 export class MySVGLine extends THREE.Object3D{
 
     //ストロークを書く
-    numParticles:number=5000;
+    numParticles:number=4000;
     strokes:THREE.Line;
     counter=0;
 
@@ -104,7 +104,9 @@ export class MySVGLine extends THREE.Object3D{
                     col.r,col.g,col.b
                 );
             }
-        }    
+        }
+
+        console.log("--->"+this.counter);
         
     }
 
@@ -177,22 +179,12 @@ export class MySVGLine extends THREE.Object3D{
     //pointsに従ってレンダリングします
     update(){
     
-        /*
-        this.material.color.setRGB(
-            Colors.colors[0].r,
-            Colors.colors[0].g,
-            Colors.colors[0].b
-        );*/
-
-        //if(this.strokes.visible && this.isDirty){
         if(this.isDirty){
             console.log("update!!!");
             this.geo.attributes.position.needsUpdate = true;
             this.geo.attributes.color1.needsUpdate = true;
             this.isDirty=false;
         }
-        //}
-        //this.resetCount();
 
     }
 
