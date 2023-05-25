@@ -8807,7 +8807,7 @@ class DOMControl {
     init() {
         this.title = new _AbsDOM__WEBPACK_IMPORTED_MODULE_3__.AbsDOM(document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.DOM_TITLE), 999);
         this.title.text =
-            "PROOF OF X - KEY VISUAL #001 " +
+            "PROOF OF X - KEY VISUAL" +
                 " MINTED AT " +
                 _main_data_UNITTimeFormatter__WEBPACK_IMPORTED_MODULE_0__.UNIXTimeFormatter.formatUnixTime(_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_TIME) +
                 " BY " + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_NAME;
