@@ -12,12 +12,13 @@ export class BlurScene extends FilpFlopSceneBase{
 
 
 
-    constructor(){
+    constructor(renderer:WebGLRenderer){
 
         let sizeX = Params.stageWidth;
         let sizeY = Params.stageHeight;
 
         super(
+            renderer,
             sizeX,
             sizeY,
             {
@@ -47,7 +48,7 @@ export class BlurScene extends FilpFlopSceneBase{
             "value", 0.0, 1.0).step(0.001).name("BlurRatio");
         g.add(
             this.feedbackMaterial.uniforms.blurScale,
-            "value", 1.0, 3.0).step(1).name("BlurScale");
+            "value", 0.1, 3.0).step(0.1).name("BlurScale");
     
             
 
@@ -63,7 +64,9 @@ export class BlurScene extends FilpFlopSceneBase{
         this.uniforms.tex.value = this.getTex();
         this.uniforms.tex2.value = inputTex;
         this.uniforms.time.value += 0.01;      
-
+        this.uniforms.size.value.x = Params.stageWidth;
+        this.uniforms.size.value.x = Params.stageHeight;
+        
         super.render(renderer);
     }
 

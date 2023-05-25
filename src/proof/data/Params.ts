@@ -37,7 +37,7 @@ export class Params{
     public static USER_HASH:string="";
     public static USER_TIME:number=0;
     public static maxLimit: number = 400;
-    public static widthRatio: number = 1;
+    public static widthRatio: number = 0.4;
 
     public static DOM_WEBGL="mainvisual_webgl";
     public static DOM_TITLE="mainvisual_title"
@@ -56,10 +56,10 @@ export class Params{
 
         Params.stageWidth = window.innerWidth;
         Params.stageHeight = window.innerHeight;
-
         this.initParams();
         SRandom.init(Params.USER_HASH);
         MyGUI.Init();
+
         this.gui = MyGUI.gui;
         Colors.init();
         this.setRandomParam();
@@ -78,6 +78,7 @@ export class Params{
             g.add(Params,"UPDATE_DISTANCE",0,50).listen();
             g.add(Params,"maxLimit",0,400).listen();
             g.add(Params,"widthRatio",0,1).listen();
+
     }
 
     public static forcedRandom(){
@@ -108,9 +109,6 @@ export class Params{
             Params.stageWidth=Params.stageHeight;
         }
 
-        //console.log(webgl);
-        //console.log("this.PATH",this.PATH);
-
         let win:any = window;
 
         if(win.attribute==null){
@@ -137,14 +135,19 @@ export class Params{
 
         Params.intervalEmitting =3;
         Params.numMabiki=3;
-        if(SRandom.random()<0.5)Params.numMabiki = 4;
 
-        this.masatsu = 0.8+0.2*SRandom.random();
-        this.radius=40+SRandom.random()*20;
-        this.radius2=10+SRandom.random()*10;
-        this.strength=0.8+SRandom.random()*0.3;
-        this.strength2=0.9+SRandom.random()*0.2;
-        this.widthRatio = SRandom.random()*0.6+0.4;
+        let ran = SRandom.random();
+        if(ran<0.333)Params.numMabiki = 3;
+        else if(ran<0.666)Params.numMabiki = 3;
+        else Params.numMabiki = 5;
+        
+        this.masatsu = 0.8+0.05*SRandom.random();//0.8+0.2*SRandom.random();
+        this.radius=50;//40+SRandom.random()*20;
+        this.radius2=20;//12;//10+SRandom.random()*10;
+        this.strength=0.8;//0.8+SRandom.random()*0.3;
+        this.strength2=0.9;//0.9+SRandom.random()*0.2;
+        //this.widthRatio = SRandom.random()*0.6+0.4;
+
     }
 
     public static setRandomColor(){

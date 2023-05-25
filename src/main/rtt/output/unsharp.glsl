@@ -19,10 +19,12 @@ vec4 unsharp(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {
   //https://en.wikipedia.org/wiki/Unsharp_masking
   //https://imagingsolution.net/imaging/unsharpmasking/
   //元画像＋(元画像－平滑化画像)*k＝シャープ化画像
-  float k = 3.0;
+  float k = 2.0;
   vec4 col = -k/9.0*col1-k/9.0*col2-k/9.0*col3
             -k/9.0*col4+(k*8.0/9.0)*col5-k/9.0*col6
             -k/9.0*col7-k/9.0*col8-k/9.0*col9;
+
+  
 
   col += col5;
 

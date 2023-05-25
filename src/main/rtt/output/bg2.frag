@@ -10,6 +10,7 @@
   uniform vec2 size;
   uniform vec4 bgCol;
   uniform float alpha;
+  uniform float ratio;
 
   varying vec2 vUv;
 
@@ -24,20 +25,8 @@
       random( vUv.xy + vec2(0.0,99.0) ) * 0.001
     );
     
-    
     vec4 col1 = unsharp(tex,uvv,size,1.0);
-    
-    /*
-    vec4 col1 = texture2D(tex,uvv);
-    vec2 gradientValue = gradient(tex,uvv,size,1.0);
-    col1.x += gradientValue.x;
-    col1.y += gradientValue.x;
-    col1.z += gradientValue.x;
-    */
-
-    //vec4 col2 = texture2D(tex,vUv);
-    //vec4 col2 = texture2D(tex,vUv.xy + vec2(0.0, 5.0/size.y));//sizey
-    //vec4 col3 = texture2D(tex,vUv.xy + vec2(0.0, -5.0/size.y));
+    vec4 col2 =  texture2D(tex2,uvv);
 
     vec4 bgColor = bgCol;
     vec4 outputCol  = mix(
@@ -45,6 +34,8 @@
       col1,
       col1.a*alpha
     );
+
+    outputCol.rgb += 0.1*col2.rgb;
 
     //gl_FragColor = vec4(outputCol.rgb,1.0);
     gl_FragColor = vec4(outputCol.rgb,1.0);//col1.a*alpha);

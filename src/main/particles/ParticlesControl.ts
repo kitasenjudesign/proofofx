@@ -38,6 +38,9 @@ export class ParticleControl extends THREE.Object3D{
         this.line.tweenY();
     }
 
+    pause(){
+        this.line.pause();
+    }
 
     reset(){
         this.line.reset();

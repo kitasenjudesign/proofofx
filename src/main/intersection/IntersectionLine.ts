@@ -11,6 +11,7 @@ import { gsap } from "gsap";
 
 
 export class IntersectionLine extends Object3D{
+    tween: gsap.core.Tween;
 
 
     shapes      :Shape[][]
@@ -156,10 +157,14 @@ export class IntersectionLine extends Object3D{
         this.currentCrossPoints = this.GetCrossPoints();
     }
 
+    public pause(){
+        if(this.tween.paused()) this.tween.resume();
+        else this.tween.pause();
+    }
 
     public tweenY(){
         this.yy = window.innerHeight/2
-        gsap.to(this,{
+        this.tween = gsap.to(this,{
             yy:-window.innerHeight/2,
             duration:12.0,
             ease:"linear",

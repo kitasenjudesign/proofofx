@@ -8510,7 +8510,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\nvarying vec3 vColor;\nvarying vec4 vPosition;\nvarying vec3 localPos;\nvarying float vRandom;\nvarying float vOpacity;\n\nvarying vec2 vUv;\nvarying float vLife;\nuniform sampler2D tex;\nuniform float detail;\nuniform float border;\nuniform float highlight;\nuniform float opacity;\n\nvoid main() {\n\n    vec3 col = vColor;\n    //col.x += snoise3(vPosition.xyz*0.05);\n    //col.y += snoise3(vPosition.xyz*0.05);\n    //col.z += snoise3(vPosition.xyz*0.05);\n    //ブラシをもっとブラシいぽくする\n\n    vec3 offset     = vec3(vRandom,0.0,0.0);\n    vec4 texColor   = texture2D(tex, vUv);\n    float b         = snoise(vec3(vUv.x*detail,vPosition.xy*0.01));\n\n    if(b<(vLife-0.5)*2.0) discard;\n\n    //0.6,0.6,0.5\n\n    //vec3 added = b*vec3(0.6,0.6,0.3)*highlight;\n    vec3 added = b*vec3(0.3,0.3,0.3)*highlight;\n\n    //gl_FragColor = vec4(col.rgb, 0.5+0.5*snoise3(offset+vPosition.xyz*0.05)); // varying変数から頂点カラーを取得して出力\n\n    float fuchi = (1.0-border) + border * texColor.x;\n    gl_FragColor = vec4(col.rgb*fuchi+added,vOpacity); // varying変数から頂点カラーを取得して出力\n\n}");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g_0 = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g_0;\n  vec3 i1 = min( g_0.xyz, l.zxy );\n  vec3 i2 = max( g_0.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n// http://stackoverflow.com/a/9234854/1477002\nvec3 yiq(vec3 color, float hueShift){\n    const vec3  kRGBToYPrime = vec3 (0.299, 0.587, 0.114);\n    const vec3  kRGBToI     = vec3 (0.596, -0.275, -0.321);\n    const vec3  kRGBToQ     = vec3 (0.212, -0.523, 0.311);\n\n    const vec3  kYIQToR   = vec3 (1.0, 0.956, 0.621);\n    const vec3  kYIQToG   = vec3 (1.0, -0.272, -0.647);\n    const vec3  kYIQToB   = vec3 (1.0, -1.107, 1.704);\n\n    float   YPrime  = dot (color, kRGBToYPrime);\n    float   I      = dot (color, kRGBToI);\n    float   Q      = dot (color, kRGBToQ);\n\n    // Calculate the hue and chroma\n    float   hue     = atan (Q, I);\n    float   chroma  = sqrt (I * I + Q * Q);\n\n    hue += hueShift;\n\n    // Convert back to YIQ\n    Q = chroma * sin (hue);\n    I = chroma * cos (hue);\n\n    // Convert back to RGB\n    vec3    yIQ   = vec3 (YPrime, I, Q);\n    color.r = dot (yIQ, kYIQToR);\n    color.g = dot (yIQ, kYIQToG);\n    color.b = dot (yIQ, kYIQToB);\n\n    return color;\n}\n\nvarying vec3 vColor;\nvarying vec4 vPosition;\nvarying vec3 localPos;\nvarying float vRandom;\nvarying float vOpacity;\n\nvarying vec2 vUv;\nvarying float vLife;\nuniform sampler2D tex;\nuniform float detail;\nuniform float border;\nuniform float highlight;\nuniform float opacity;\n\nvoid main() {\n\n    vec3 col = vColor;\n    //col.x += snoise3(vPosition.xyz*0.05);\n    //col.y += snoise3(vPosition.xyz*0.05);\n    //col.z += snoise3(vPosition.xyz*0.05);\n    //ブラシをもっとブラシいぽくする\n\n    vec3 offset     = vec3(vRandom,0.0,0.0);\n    vec4 texColor   = texture2D(tex, vUv);\n    float b         = snoise(vec3(vUv.x*detail,vPosition.xy*0.01));\n\n    //if(b<(vLife-0.5)*2.0) discard;\n\n    //0.6,0.6,0.5\n\n    //vec3 added = b*vec3(0.6,0.6,0.3)*highlight;\n    vec3 added = b*vec3(0.3,0.3,0.3)*highlight;\n\n    //gl_FragColor = vec4(col.rgb, 0.5+0.5*snoise3(offset+vPosition.xyz*0.05)); // varying変数から頂点カラーを取得して出力\n\n    float fuchi = (1.0-border) + border * texColor.x;\n\n    vec3 cc = col.rgb*fuchi+added;\n\n    float kosa=0.1;//*(random(floor(vUv.xy*50.0))-0.5);\n    cc.xyz = yiq(cc.xyz,vLife*2.0*vRandom);//yiq\n\n    gl_FragColor = vec4(cc,vOpacity); // varying変数から頂点カラーを取得して出力\n\n}");
 
 /***/ }),
 
@@ -8540,7 +8540,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n    float random (vec2 st) {\n      return fract(sin(dot(st.xy,\n                           vec2(12.9898,78.233)))*\n          43758.5453123);\n    }\n\n    \n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, -pixelSize.y);\n  vec2 downOffset = vec2(0.0, pixelSize.y);\n  float left = texture2D(pTex,texCoord+leftOffset).x;\n  float right = texture2D(pTex,texCoord+rightOffset).r;\n  float up = texture2D(pTex,texCoord+upOffset).r;\n  float down = texture2D(pTex,texCoord+downOffset).r;\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n    uniform vec2 size;\n    uniform float time;\n    uniform float colorId;\n    //uniform float speed;\n    uniform sampler2D tex;\n    uniform sampler2D tex1;\n    uniform sampler2D tex2;\n    uniform float maxAlpha;\n    uniform float alphaSpeed;\n    uniform float alphaSpeed2;\n    uniform float gensui;\n\n    varying vec3 vNormal;\n    varying vec2 vUv;\n  \n\n    void main(void)\n    {\n      vec4 colBlur = texture2D(//ボケ用の数値\n        tex2,\n        vUv.xy\n      );\n      vec4 col=texture2D(//一個前の。\n        tex,\n        vUv.xy\n      );\n      //元の色,pigment\n      vec4 colPigment=texture2D(//pigment用\n        tex1,\n        vUv.xy\n      );\n      \n      //背景とブレンド\n      //暗い色を無視する\n      //float ratio = smoothstep(0.2,0.25,length(colPigment.rgb));\n      col.rgb = mix(\n        col.rgb,//一個前と変わらない色\n        colPigment.rgb,//繰り返すとおよそ　この色になる\n        clamp(colBlur.a*alphaSpeed2,0.0,1.0)//この値は乾いて０に近づいていく\n      );\n\n      //定着の割合、\n      vec2 nPos = (vUv.xy*30.0);\n      float paper=snoise(vec3(nPos,time*0.0));\n      //col.a += colBlur.a*(0.01+(0.005*paper))*alphaSpeed;\n      col.a += colBlur.a*(0.01)*alphaSpeed;\n\n      float maxAlpha1 = maxAlpha + 0.1*paper;\n      col.a = clamp(col.a,0.0,maxAlpha1);\n\n      //col.a = colBlur.a;\n      \n      col.a*=gensui;//*length(colPigment.rgb);\n\n      gl_FragColor=vec4(col.rgba);\n      //gl_FragColor = vec4(gradientValue.xy*10.0,0.0,1.0);\n\n    }\n\n");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n    float random (vec2 st) {\n      return fract(sin(dot(st.xy,\n                           vec2(12.9898,78.233)))*\n          43758.5453123);\n    }\n\n    \n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, -pixelSize.y);\n  vec2 downOffset = vec2(0.0, pixelSize.y);\n  float left = texture2D(pTex,texCoord+leftOffset).x;\n  float right = texture2D(pTex,texCoord+rightOffset).r;\n  float up = texture2D(pTex,texCoord+upOffset).r;\n  float down = texture2D(pTex,texCoord+downOffset).r;\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n    uniform vec2 size;\n    uniform float time;\n    uniform float colorId;\n    //uniform float speed;\n    uniform sampler2D tex;\n    uniform sampler2D tex1;\n    uniform sampler2D tex2;\n    uniform float maxAlpha;\n    uniform float alphaSpeed;\n    uniform float alphaSpeed2;\n    uniform float gensui;\n\n    varying vec3 vNormal;\n    varying vec2 vUv;\n  \n\n    void main(void)\n    {\n      vec4 colBlur = texture2D(//ボケ用の数値\n        tex2,\n        vUv.xy\n      );\n      vec4 col=texture2D(//一個前の。\n        tex,\n        vUv.xy\n      );\n      //元の色,pigment\n      vec4 colPigment=texture2D(//pigment用\n        tex1,\n        vUv.xy\n      );\n      \n      //背景とブレンド\n      //暗い色を無視する\n      //float ratio = smoothstep(0.2,0.25,length(colPigment.rgb));\n      col.rgb = mix(\n        col.rgb,//一個前と変わらない色\n        colPigment.rgb,//繰り返すとおよそ　この色になる\n        clamp(colBlur.a*alphaSpeed2,0.0,1.0)//この値は乾いて０に近づいていく\n      );\n\n      //定着の割合、\n      vec2 nPos = (vUv.xy*30.0);\n      float paper=snoise(vec3(nPos,time*0.0));\n      //col.a += colBlur.a*(0.01+(0.005*paper))*alphaSpeed;\n\n      //ブラーのアルファ分ふやす＝水が乾くまで\n      col.a += pow(colBlur.a,2.0)*(0.01)*alphaSpeed;\n\n      float maxAlpha1 = maxAlpha + 0.1*paper;\n      col.a = clamp(col.a,0.0,maxAlpha1);\n\n      //col.a = colBlur.a;\n      col.a*=gensui;//*length(colPigment.rgb);\n\n      gl_FragColor=vec4(col.rgba);\n      //gl_FragColor = vec4(gradientValue.xy*10.0,0.0,1.0);\n\n    }\n\n");
 
 /***/ }),
 
@@ -8570,7 +8570,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n    float random (vec2 st) {\n      return fract(sin(dot(st.xy,\n                           vec2(12.9898,78.233)))*\n          43758.5453123);\n    }\n\n    \n//#pragma glslify: gaussian = require(\"./gaussian.glsl\")\n\n    uniform vec2 size;\n    uniform float time;\n    uniform float colorId;\n    uniform float attenuationSpeed;\n    uniform float blurRatio;\n    uniform float blurScale;\n    uniform sampler2D tex;\n    uniform sampler2D tex2;\n    varying vec3 vNormal;\n    varying vec2 vUv;\n\n    void main(void)\n    {\n\n      //float amp = snoise3(vec3(vUv.xy*8.0,0.0))*0.0015;\n      //float rad = snoise3(vec3(vUv.xy*8.0,999.0))*3.1415*10.0;\n\n      vec2 ssize = 50.0*vec2(size.x/1000.0,size.y/1000.0);\n      vec2 offset = vec2(\n        0.0,0.0\n        //snoise3(vec3(vUv.xy*35.1,10.0))*0.0003,\n        //snoise3(vec3(vUv.xy*35.1,1110.0))*0.0003\n        //0.01*(random(floor(vUv.xy*ssize+vec2(0.0,0.0)))-0.5),\n        //0.01*(random(floor(vUv.xy*ssize+vec2(99.99,0.0)))-0.5)        \n      );\n\n      //vec4 col2 = texture2D(\n      //  tex2,\n      //  vUv.xy+offset\n      //);\n\n      vec2 pixel = vec2(\n        blurScale/size.x,\n        blurScale/size.y\n      );\n\n      vec2 uvv = vUv.xy;\n      \n      //float amp = snoise3(vec3(vUv.xy*8.0,0.0))*0.0015;\n      //float rad = snoise3(vec3(vUv.xy*8.0,999.0))*3.1415*10.0;\n      //uvv.x += amp * cos(rad);\n      //uvv.y += amp * sin(rad);\n\n      vec4 col1 = texture2D(tex,uvv.xy+vec2(-1.0,-1.0)*pixel+offset);\n      vec4 col2 = texture2D(tex,uvv.xy+vec2(0.0,-1.0) *pixel+offset);\n      vec4 col3 = texture2D(tex,uvv.xy+vec2(1.0,-1.0) *pixel+offset);\n      \n      vec4 col4 = texture2D(tex,uvv.xy+vec2(-1.0,0.0) *pixel+offset);\n      vec4 col5 = texture2D(tex,uvv.xy+vec2(0.0,0.0)  *pixel+offset);\n      vec4 col6 = texture2D(tex,uvv.xy+vec2(1.0,0.0)  *pixel+offset);\n\n      vec4 col7 = texture2D(tex,uvv.xy+vec2(-1.0,1.0) *pixel+offset);\n      vec4 col8 = texture2D(tex,uvv.xy+vec2(0.0,1.0)  *pixel+offset);\n      vec4 col9 = texture2D(tex,uvv.xy+vec2(1.0,1.0)  *pixel+offset);\n\n      vec4 col = \n        1.0*col1 + 2.0*col2 + 1.0*col3+\n        2.0*col4 + 4.0*col5 + 2.0*col6+\n        1.0*col7 + 2.0*col8 + 1.0*col9;\n        col/=(16.0);\n\n      float blurR = blurRatio;//vUv.x<0.5 ? 0.5 : 0.2;\n      //,blurRatio\n      float rr = step(0.5,random(floor(vUv.xy*100.0)));\n      col = mix(col5,col,blurR);\n      col.a-=attenuationSpeed;\n      col = max(vec4(0.0,0.0,0.0,0.0),col);\n\n      vec4 randCol = texture2D(tex,vUv.xy+vec2(\n        1.0/size.x*(random(vUv.xy+vec2(0.1*time,111.0))-0.5),\n        1.0/size.y*(random(vUv.xy+vec2(0.1*time,197.9))-0.5)  \n      ));\n\n      vec4 inputTex = texture2D(tex2,vUv);\n      col.rgb = mix(\n        //col.rgb,//col5.rgb,\n        col.rgb,//randCol.rgb,\n        inputTex.rgb,\n        inputTex.a\n      );\n      col.a = max(col.a,inputTex.a);\n\n      \n\n      //col*=0.999;\n      //col*=0.99;\n      //col*=0.99;\n\n      //col-=0.0005;\n        //col1.x-=0.005;\n        //col1.y-=0.005;\n        //col1.z-=0.005;\n        //col1.rgb *= col1.rgb*0.999;\n        //col.g=1.0;\n        //col1.rgb*=0.99+0.01*snoise3(vec3(vUv.xy*15.1,time*0.01));\n\n      gl_FragColor=col.rgba;//vec4(col.rgba);\n\n    }");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n    float random (vec2 st) {\n      return fract(sin(dot(st.xy,\n                           vec2(12.9898,78.233)))*\n          43758.5453123);\n    }\n\n    \n//#pragma glslify: gaussian = require(\"./gaussian.glsl\")\n\n    uniform vec2 size;\n    uniform float time;\n    uniform float colorId;\n    uniform float attenuationSpeed;\n    uniform float blurRatio;\n    uniform float blurScale;\n    uniform sampler2D tex;\n    uniform sampler2D tex2;\n    varying vec3 vNormal;\n    varying vec2 vUv;\n\n    void main(void)\n    {\n      \n      vec2 pixel = vec2(\n        blurScale/size.x,\n        blurScale/size.y\n      );\n\n      //float amp = snoise3(vec3(vUv.xy*8.0,0.0))*0.0015;\n      //float rad = snoise3(vec3(vUv.xy*8.0,999.0))*3.1415*10.0;\n\n      vec2 ssize = 50.0*vec2(size.x/1000.0,size.y/1000.0);\n      vec2 offset = vec2(\n        0.0,0.0\n        //snoise3(vec3(vUv.xy*35.1,10.0))*0.0001,\n        //snoise3(vec3(vUv.xy*35.1,1110.0))*0.0001\n        //0.001*(random(floor(vUv.xy*ssize+vec2(0.0,0.0)))-0.5),\n        //0.001*(random(floor(vUv.xy*ssize+vec2(99.99,0.0)))-0.5)        \n      );\n\n      //vec4 col2 = texture2D(\n      //  tex2,\n      //  vUv.xy+offset\n      //);\n\n      vec2 uvv = vUv.xy;\n      \n      /*\n      float amp = snoise3(vec3(vUv.xy*5.0,0.0))*0.0005;\n      float rad = snoise3(vec3(vUv.xy*5.0,999.0))*3.1415;\n      uvv.x += amp * cos(rad);\n      uvv.y += amp * sin(rad);*/\n\n      vec4 col1 = texture2D(tex,uvv.xy+vec2(-1.0,-1.0)*pixel+offset);\n      vec4 col2 = texture2D(tex,uvv.xy+vec2(0.0,-1.0) *pixel+offset);\n      vec4 col3 = texture2D(tex,uvv.xy+vec2(1.0,-1.0) *pixel+offset);\n      \n      vec4 col4 = texture2D(tex,uvv.xy+vec2(-1.0,0.0) *pixel+offset);\n      vec4 col5 = texture2D(tex,uvv.xy+vec2(0.0,0.0)  *pixel+offset);\n      vec4 col6 = texture2D(tex,uvv.xy+vec2(1.0,0.0)  *pixel+offset);\n\n      vec4 col7 = texture2D(tex,uvv.xy+vec2(-1.0,1.0) *pixel+offset);\n      vec4 col8 = texture2D(tex,uvv.xy+vec2(0.0,1.0)  *pixel+offset);\n      vec4 col9 = texture2D(tex,uvv.xy+vec2(1.0,1.0)  *pixel+offset);\n\n      vec4 col = \n        1.0*col1 + 2.0*col2 + 1.0*col3+\n        2.0*col4 + 4.0*col5 + 2.0*col6+\n        1.0*col7 + 2.0*col8 + 1.0*col9;\n        col/=(16.0);\n\n      float blurR = blurRatio;// : 0.0;\n      \n      //blurRatio;//vUv.x<0.5 ? 0.5 : 0.2;\n\n      //,blurRatio\n      float rr = step(0.5,random(floor(vUv.xy*100.0)));\n      col = mix(col5,col,blurR);//通常色とブラーの色\n      col.a-=attenuationSpeed;//色を減衰させていく\n      col = max(vec4(0.0,0.0,0.0,0.0),col);\n\n      //vec4 randCol = texture2D(tex,vUv.xy+vec2(\n      //  1.0/size.x*(random(vUv.xy+vec2(0.1*time,111.0))-0.5),\n      //  1.0/size.y*(random(vUv.xy+vec2(0.1*time,197.9))-0.5)  \n      //));\n\n      vec4 inputTex = texture2D(tex2,vUv);//input(brushScene画像)\n      col.rgb = mix(\n        //col.rgb,//col5.rgb,\n        col.rgb,//randCol.rgb,\n        inputTex.rgb,\n        inputTex.a\n      );\n      col.a = max(col.a,inputTex.a);\n\n      gl_FragColor=col.rgba;//vec4(col.rgba);\n\n    }");
 
 /***/ }),
 
@@ -8615,7 +8615,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\nhighp float random(vec2 co)\n{\n    highp float a = 12.9898;\n    highp float b = 78.233;\n    highp float c = 43758.5453;\n    highp float dt= dot(co.xy ,vec2(a,b));\n    highp float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, 0.0);//-pixelSize.y);\n  vec2 downOffset = vec2(0.0, 0.0);//pixelSize.y);\n  float left = length(texture2D(pTex,texCoord+leftOffset));\n  float right = length(texture2D(pTex,texCoord+rightOffset));\n  float up = length(texture2D(pTex,texCoord+upOffset));\n  float down = length(texture2D(pTex,texCoord+downOffset));\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n// 勾配計算関数\nvec4 unsharp(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixel = scale / resolution;\n  vec2 uvv = texCoord.xy;\n    \n  vec4 col1 = texture2D(pTex,uvv.xy+vec2(-1.0,-1.0)*pixel);\n  vec4 col2 = texture2D(pTex,uvv.xy+vec2(0.0,-1.0) *pixel);\n  vec4 col3 = texture2D(pTex,uvv.xy+vec2(1.0,-1.0) *pixel);\n      \n  vec4 col4 = texture2D(pTex,uvv.xy+vec2(-1.0,0.0) *pixel);\n  vec4 col5 = texture2D(pTex,uvv.xy+vec2(0.0,0.0)  *pixel);\n  vec4 col6 = texture2D(pTex,uvv.xy+vec2(1.0,0.0)  *pixel);\n\n  vec4 col7 = texture2D(pTex,uvv.xy+vec2(-1.0,1.0) *pixel);\n  vec4 col8 = texture2D(pTex,uvv.xy+vec2(0.0,1.0)  *pixel);\n  vec4 col9 = texture2D(pTex,uvv.xy+vec2(1.0,1.0)  *pixel);\n\n  //https://en.wikipedia.org/wiki/Unsharp_masking\n  //https://imagingsolution.net/imaging/unsharpmasking/\n  //元画像＋(元画像－平滑化画像)*k＝シャープ化画像\n  float k = 3.0;\n  vec4 col = -k/9.0*col1-k/9.0*col2-k/9.0*col3\n            -k/9.0*col4+(k*8.0/9.0)*col5-k/9.0*col6\n            -k/9.0*col7-k/9.0*col8-k/9.0*col9;\n\n  col += col5;\n\n  //col += (col5 - col6) * 0.5;\n\n  return col;\n}\n\n//#pragma glslify: snoise3 = require(glsl-noise/simplex/3d)\n\n  uniform sampler2D tex;\n  uniform sampler2D tex2;\n\n  uniform vec2 size;\n  uniform vec4 bgCol;\n  uniform float alpha;\n\n  varying vec2 vUv;\n\n  void main() {\n\n    //vec2 offset = texture2D()\n\n    vec2 uvv = vUv.xy;\n\n    vec2 offset = vec2(\n      random( vUv.xy + vec2(0.0,110.0) ) * 0.001,\n      random( vUv.xy + vec2(0.0,99.0) ) * 0.001\n    );\n    \n    \n    vec4 col1 = unsharp(tex,uvv,size,1.0);\n    \n    /*\n    vec4 col1 = texture2D(tex,uvv);\n    vec2 gradientValue = gradient(tex,uvv,size,1.0);\n    col1.x += gradientValue.x;\n    col1.y += gradientValue.x;\n    col1.z += gradientValue.x;\n    */\n\n    //vec4 col2 = texture2D(tex,vUv);\n    //vec4 col2 = texture2D(tex,vUv.xy + vec2(0.0, 5.0/size.y));//sizey\n    //vec4 col3 = texture2D(tex,vUv.xy + vec2(0.0, -5.0/size.y));\n\n    vec4 bgColor = bgCol;\n    vec4 outputCol  = mix(\n      bgColor,\n      col1,\n      col1.a*alpha\n    );\n\n    //gl_FragColor = vec4(outputCol.rgb,1.0);\n    gl_FragColor = vec4(outputCol.rgb,1.0);//col1.a*alpha);\n  \n  }");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\nhighp float random(vec2 co)\n{\n    highp float a = 12.9898;\n    highp float b = 78.233;\n    highp float c = 43758.5453;\n    highp float dt= dot(co.xy ,vec2(a,b));\n    highp float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, 0.0);//-pixelSize.y);\n  vec2 downOffset = vec2(0.0, 0.0);//pixelSize.y);\n  float left = length(texture2D(pTex,texCoord+leftOffset));\n  float right = length(texture2D(pTex,texCoord+rightOffset));\n  float up = length(texture2D(pTex,texCoord+upOffset));\n  float down = length(texture2D(pTex,texCoord+downOffset));\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n// 勾配計算関数\nvec4 unsharp(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixel = scale / resolution;\n  vec2 uvv = texCoord.xy;\n    \n  vec4 col1 = texture2D(pTex,uvv.xy+vec2(-1.0,-1.0)*pixel);\n  vec4 col2 = texture2D(pTex,uvv.xy+vec2(0.0,-1.0) *pixel);\n  vec4 col3 = texture2D(pTex,uvv.xy+vec2(1.0,-1.0) *pixel);\n      \n  vec4 col4 = texture2D(pTex,uvv.xy+vec2(-1.0,0.0) *pixel);\n  vec4 col5 = texture2D(pTex,uvv.xy+vec2(0.0,0.0)  *pixel);\n  vec4 col6 = texture2D(pTex,uvv.xy+vec2(1.0,0.0)  *pixel);\n\n  vec4 col7 = texture2D(pTex,uvv.xy+vec2(-1.0,1.0) *pixel);\n  vec4 col8 = texture2D(pTex,uvv.xy+vec2(0.0,1.0)  *pixel);\n  vec4 col9 = texture2D(pTex,uvv.xy+vec2(1.0,1.0)  *pixel);\n\n  //https://en.wikipedia.org/wiki/Unsharp_masking\n  //https://imagingsolution.net/imaging/unsharpmasking/\n  //元画像＋(元画像－平滑化画像)*k＝シャープ化画像\n  float k = 2.0;\n  vec4 col = -k/9.0*col1-k/9.0*col2-k/9.0*col3\n            -k/9.0*col4+(k*8.0/9.0)*col5-k/9.0*col6\n            -k/9.0*col7-k/9.0*col8-k/9.0*col9;\n\n  \n\n  col += col5;\n\n  //col += (col5 - col6) * 0.5;\n\n  return col;\n}\n\n//#pragma glslify: snoise3 = require(glsl-noise/simplex/3d)\n\n  uniform sampler2D tex;\n  uniform sampler2D tex2;\n\n  uniform vec2 size;\n  uniform vec4 bgCol;\n  uniform float alpha;\n  uniform float ratio;\n\n  varying vec2 vUv;\n\n  void main() {\n\n    //vec2 offset = texture2D()\n\n    vec2 uvv = vUv.xy;\n\n    vec2 offset = vec2(\n      random( vUv.xy + vec2(0.0,110.0) ) * 0.001,\n      random( vUv.xy + vec2(0.0,99.0) ) * 0.001\n    );\n    \n    vec4 col1 = unsharp(tex,uvv,size,1.0);\n    vec4 col2 =  texture2D(tex2,uvv);\n\n    vec4 bgColor = bgCol;\n    vec4 outputCol  = mix(\n      bgColor,\n      col1,\n      col1.a*alpha\n    );\n\n    outputCol.rgb += 0.1*col2.rgb;\n\n    //gl_FragColor = vec4(outputCol.rgb,1.0);\n    gl_FragColor = vec4(outputCol.rgb,1.0);//col1.a*alpha);\n  \n  }");
 
 /***/ }),
 
@@ -8630,7 +8630,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g_0 = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g_0;\n  vec3 i1 = min( g_0.xyz, l.zxy );\n  vec3 i2 = max( g_0.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n    float random (vec2 st) {\n      return fract(sin(dot(st.xy,\n                           vec2(12.9898,78.233)))*\n          43758.5453123);\n    }\n\n    \n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, -pixelSize.y);\n  vec2 downOffset = vec2(0.0, pixelSize.y);\n  float left = texture2D(pTex,texCoord+leftOffset).a;\n  float right = texture2D(pTex,texCoord+rightOffset).a;\n  float up = texture2D(pTex,texCoord+upOffset).a;\n  float down = texture2D(pTex,texCoord+downOffset).a;\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n// http://stackoverflow.com/a/9234854/1477002\nvec3 yiq(vec3 color, float hueShift){\n    const vec3  kRGBToYPrime = vec3 (0.299, 0.587, 0.114);\n    const vec3  kRGBToI     = vec3 (0.596, -0.275, -0.321);\n    const vec3  kRGBToQ     = vec3 (0.212, -0.523, 0.311);\n\n    const vec3  kYIQToR   = vec3 (1.0, 0.956, 0.621);\n    const vec3  kYIQToG   = vec3 (1.0, -0.272, -0.647);\n    const vec3  kYIQToB   = vec3 (1.0, -1.107, 1.704);\n\n    float   YPrime  = dot (color, kRGBToYPrime);\n    float   I      = dot (color, kRGBToI);\n    float   Q      = dot (color, kRGBToQ);\n\n    // Calculate the hue and chroma\n    float   hue     = atan (Q, I);\n    float   chroma  = sqrt (I * I + Q * Q);\n\n    hue += hueShift;\n\n    // Convert back to YIQ\n    Q = chroma * sin (hue);\n    I = chroma * cos (hue);\n\n    // Convert back to RGB\n    vec3    yIQ   = vec3 (YPrime, I, Q);\n    color.r = dot (yIQ, kYIQToR);\n    color.g = dot (yIQ, kYIQToG);\n    color.b = dot (yIQ, kYIQToB);\n\n    return color;\n}\n\n    uniform vec2 size;\n    uniform float time;\n    uniform float colorId;\n    uniform sampler2D tex;//past\n    uniform sampler2D tex1;//input\n    uniform sampler2D tex2;//blur\n    uniform vec2 displacement;\n    varying vec3 vNormal;\n    varying vec2 vUv;\n  \n        //this.uniforms.tex.value = this.getTex();//feedback\n        //this.uniforms.tex1.value = inputTex;\n        //this.uniforms.tex2.value = blurTex;\n\n    void main(void)\n    {\n      vec4 colBlur = texture2D(//ボケ用の数値\n        tex2,\n        vUv.xy\n      );\n\n      //勾配を取得する\n      vec2 gradientValue = gradient(tex2,vUv.xy,size,1.0);\n      \n      float nx = 1.0;\n      float ny = 1.0;\n\n      //勾配に応じて変位させる\n      vec2 offset = vec2(\n        gradientValue.x * displacement.x * nx,//gradientValue(-1,1)\n        gradientValue.y * displacement.y * ny\n      );\n\n      //一個前のを変位させる\n      vec4 col = texture2D(\n        tex,//一個前の。\n        vUv.xy+offset\n      );\n\n      //変位なしの色\n      vec4 col0 = texture2D(\n        tex,//一個前の。\n        vUv.xy\n      );\n\n      col=mix(\n        col0,\n        col,\n        col.a//変位したところの透明度\n      );\n\n      float kosa=0.0;//*(random(floor(vUv.xy*50.0))-0.5);\n      col.xyz = yiq(col.xyz,kosa);//yiq\n\n      vec4 inputCol=texture2D(\n        tex1,//ブラシinput\n        vUv.xy+offset//変位あり\n      );\n      vec4 inputCol0=texture2D(\n        tex1,//ブラシinput\n        vUv//変位なし\n      );\n\n      //元の色,pigment\n      col.rgb = mix(\n        col.rgb,//１個前の色\n        //colBlur.rgb,//ブラー側の色\n        inputCol.rgb,\n        //inputCol0.rgb,//ブラシinput\n        //colBlur.a\n        inputCol.a//ブラシinput\n      );\n      \n      //背景とブレンド\n      //col += colPigment * colBlur.a * 0.1;\n      //col.a += colBlur.a*0.01;\n\n      //col.a = colBlur.a;\n      //色が黒いのを調べる！！！！\n\n      gl_FragColor=vec4(col.rgb,1.0);\n      //gl_FragColor = vec4(gradientValue.xy*10.0,0.0,1.0);\n\n    }\n\n");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g_0 = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g_0;\n  vec3 i1 = min( g_0.xyz, l.zxy );\n  vec3 i2 = max( g_0.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\n    float random (vec2 st) {\n      return fract(sin(dot(st.xy,\n                           vec2(12.9898,78.233)))*\n          43758.5453123);\n    }\n\n    \n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, -pixelSize.y);\n  vec2 downOffset = vec2(0.0, pixelSize.y);\n  float left = texture2D(pTex,texCoord+leftOffset).a;\n  float right = texture2D(pTex,texCoord+rightOffset).a;\n  float up = texture2D(pTex,texCoord+upOffset).a;\n  float down = texture2D(pTex,texCoord+downOffset).a;\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n// http://stackoverflow.com/a/9234854/1477002\nvec3 yiq(vec3 color, float hueShift){\n    const vec3  kRGBToYPrime = vec3 (0.299, 0.587, 0.114);\n    const vec3  kRGBToI     = vec3 (0.596, -0.275, -0.321);\n    const vec3  kRGBToQ     = vec3 (0.212, -0.523, 0.311);\n\n    const vec3  kYIQToR   = vec3 (1.0, 0.956, 0.621);\n    const vec3  kYIQToG   = vec3 (1.0, -0.272, -0.647);\n    const vec3  kYIQToB   = vec3 (1.0, -1.107, 1.704);\n\n    float   YPrime  = dot (color, kRGBToYPrime);\n    float   I      = dot (color, kRGBToI);\n    float   Q      = dot (color, kRGBToQ);\n\n    // Calculate the hue and chroma\n    float   hue     = atan (Q, I);\n    float   chroma  = sqrt (I * I + Q * Q);\n\n    hue += hueShift;\n\n    // Convert back to YIQ\n    Q = chroma * sin (hue);\n    I = chroma * cos (hue);\n\n    // Convert back to RGB\n    vec3    yIQ   = vec3 (YPrime, I, Q);\n    color.r = dot (yIQ, kYIQToR);\n    color.g = dot (yIQ, kYIQToG);\n    color.b = dot (yIQ, kYIQToB);\n\n    return color;\n}\n\n    uniform vec2 size;\n    uniform float time;\n    uniform float colorId;\n    uniform sampler2D tex;//past\n    uniform sampler2D tex1;//input\n    uniform sampler2D tex2;//blur\n    uniform vec2 displacement;\n    varying vec3 vNormal;\n    varying vec2 vUv;\n  \n\n    void main(void)\n    {\n      //ボケ用の数値\n      vec4 colBlur = texture2D(\n        tex2,\n        vUv.xy\n      );\n\n      //勾配を取得する\n      vec2 gradientValue = gradient(tex2,vUv.xy,size,1.0);\n\n      //ボケの透明度によって強度を変える、あまり変化なし\n      //if(vUv.x<0.5){\n      //  gradientValue.x *= colBlur.a;\n      //  gradientValue.y *= colBlur.a;\n      //}\n\n      float nx = 1.0;\n      float ny = 1.0;\n\n      //勾配に応じて変位させる\n      vec2 offset = vec2(\n        gradientValue.x * displacement.x * nx,//gradientValue(-1,1)\n        gradientValue.y * displacement.y * ny\n      );\n\n      //一個前のを変位させる\n      vec4 col = texture2D(\n        tex,//一個前の。\n        vUv.xy+offset\n      );\n\n      //変位なしの色\n      vec4 col0 = texture2D(\n        tex,//一個前の。\n        vUv.xy\n      );\n\n      col=mix(\n        col0,\n        col,\n        col.a//変位したところの透明度\n      );\n\n      //色を変えたかったら\n      //float kosa=0.1;//*(random(floor(vUv.xy*50.0))-0.5);\n      //col.xyz = yiq(col.xyz,kosa);//yiq\n\n      vec4 inputCol=texture2D(\n        tex1,//ブラシinput\n        vUv.xy+offset//変位あり\n      );\n      vec4 inputCol0=texture2D(\n        tex1,//ブラシinput\n        vUv//変位なし\n      );\n\n      //元の色,pigment\n      col.rgb = mix(\n        col.rgb,      //１個前の色（変位あり）\n        //inputCol.rgb, //ブラシsceneのinputの色(変位あり)\n        //inputCol.a    //ブラシsceneのinputのアルファ(変位あり)\n        inputCol0.rgb, //ブラシsceneのinputの色(変位なし)\n        inputCol0.a    //ブラシsceneのinputのアルファ(変位なし)\n\n      );\n      \n      //背景とブレンド\n      //col += colPigment * colBlur.a * 0.1;\n      //col.a += colBlur.a*0.01;\n\n      //col.a = colBlur.a;\n      //色が黒いのを調べる！！！！\n\n      gl_FragColor=vec4(col.rgb,1.0);\n      //gl_FragColor = vec4(gradientValue.xy*10.0,0.0,1.0);\n\n    }\n\n");
 
 /***/ }),
 
@@ -8705,7 +8705,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n  highp float random(vec2 co)\n{\n    highp float a = 12.9898;\n    highp float b = 78.233;\n    highp float c = 43758.5453;\n    highp float dt= dot(co.xy ,vec2(a,b));\n    highp float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\n  uniform sampler2D tex;\n  varying vec2 vUv;\n  varying vec4 vPos;\n  varying vec4 vPos2;\n  \n  uniform float lineY;\n  uniform float time;\n  uniform vec4 textCol;\n\n  void main() {\n\n    vec4 color = textCol;\n    color.xyz += 0.005*cos(time*99.9);\n    \n    if(vPos2.y > lineY) {\n      //color = vec4(0.4,0.4,0.2,1.0);\n      //color = vec4(1.0,0.0,0.0,0.1);\n      discard;\n    }\n\n    //if(random(vUv) < 0.5) {\n    //  discard;\n    //}\n    \n    gl_FragColor = color;\n\n  \n  }");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\n  highp float random(vec2 co)\n{\n    highp float a = 12.9898;\n    highp float b = 78.233;\n    highp float c = 43758.5453;\n    highp float dt= dot(co.xy ,vec2(a,b));\n    highp float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\n  uniform sampler2D tex;\n  varying vec2 vUv;\n  varying vec4 vPos;\n  varying vec4 vPos2;\n  \n  uniform float lineY;\n  uniform float time;\n  uniform vec4 textCol;\n\n  void main() {\n\n    vec4 color = textCol;\n    color.a=1.0;\n    color.xyz += 0.005*cos(time*99.9);\n    \n    if(vPos2.y > lineY) {\n      //color = vec4(0.4,0.4,0.2,1.0);\n      color.a=0.2;\n      //color = vec4(0.0,0.0,0.0,0.1);\n      //discard;\n    }\n\n    //if(random(vUv) < 0.5) {\n    //  discard;\n    //}\n    \n    gl_FragColor = color;\n\n  \n  }");
 
 /***/ }),
 
@@ -8900,7 +8900,7 @@ class Main {
         //this.renderer.setPixelRatio(1);
         //console.log(hoge);
         this.scene = new three__WEBPACK_IMPORTED_MODULE_5__.Scene();
-        this.rttMain = new _rtt_RTTMain__WEBPACK_IMPORTED_MODULE_2__.RTTMain(() => {
+        this.rttMain = new _rtt_RTTMain__WEBPACK_IMPORTED_MODULE_2__.RTTMain(this.renderer, () => {
             this.init3();
         });
         this.scene.add(this.rttMain);
@@ -8939,6 +8939,15 @@ class Main {
         gui.add(this, "size", 0, 4).onChange(() => {
             this.onWindowResize();
         });
+        var uri = new URL(window.location.href);
+        if (uri.hostname == "127.0.0.1") {
+            document.addEventListener('keydown', (event) => {
+                const keyName = event.key;
+                if (keyName == "s") {
+                    this.pause();
+                }
+            });
+        }
     }
     regenerate() {
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.forcedRandom();
@@ -8970,10 +8979,8 @@ class Main {
         link.click();
     }
     pause() {
-        this.isPause = !this.isPause;
-        if (!this.isPause) {
-            this.tick();
-        }
+        //this.isPause = !this.isPause;
+        this.particles.pause();
     }
     tick() {
         if (this.isPause)
@@ -9275,9 +9282,15 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
     updateCrossPoints() {
         this.currentCrossPoints = this.GetCrossPoints();
     }
+    pause() {
+        if (this.tween.paused())
+            this.tween.resume();
+        else
+            this.tween.pause();
+    }
     tweenY() {
         this.yy = window.innerHeight / 2;
-        gsap__WEBPACK_IMPORTED_MODULE_7__.gsap.to(this, {
+        this.tween = gsap__WEBPACK_IMPORTED_MODULE_7__.gsap.to(this, {
             yy: -window.innerHeight / 2,
             duration: 12.0,
             ease: "linear",
@@ -9661,8 +9674,11 @@ class Particle {
         //this.position.z=this.count;
         //this.qPoint.x = this.position.x;
         //this.qPoint.y = this.position.y;
-        if (!this.visible)
+        let brushes = _brush_Brushes__WEBPACK_IMPORTED_MODULE_3__.Brushes.getInstance();
+        if (!this.visible) {
+            brushes.connect(this.index, new three__WEBPACK_IMPORTED_MODULE_8__.Vector3(0, 0, 0), new three__WEBPACK_IMPORTED_MODULE_8__.Vector3(0, 0, 0), 0, 0, 0, 0, 0, 0);
             return;
+        }
         this.count++;
         if (this.count > this.limit) {
             this.visible = false;
@@ -9686,8 +9702,7 @@ class Particle {
         let dy = this.position.y - this.pastPos.y;
         let dist = _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.UPDATE_DISTANCE;
         if (dx * dx + dy * dy > dist * dist) {
-            let t = _brush_Brushes__WEBPACK_IMPORTED_MODULE_3__.Brushes.getInstance();
-            if (t) {
+            if (brushes) {
                 let rr = this.colR; //this.vx;//this.R
                 let gg = this.colG; //this.vy;//this.G
                 let bb = this.colB;
@@ -9695,7 +9710,7 @@ class Particle {
                 //rr = 0.5+0.5*Math.cos(rad);
                 //gg = 0.5+0.5*Math.sin(rad);
                 //bb = 0;
-                t.connect(this.index, this.position, this.pastPos, rr, gg, bb, //this.colB,
+                brushes.connect(this.index, this.position, this.pastPos, rr, gg, bb, //this.colB,
                 this.width, this.count / this.limit, this.opacity);
             }
             this.pastPos.x = this.position.x;
@@ -9798,6 +9813,9 @@ class Particles extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         this.control.init(this);
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.gui.add(this.points, "visible").name("points.visible");
     }
+    pause() {
+        this.control.pause();
+    }
     reset() {
         console.log("reset");
         this.control.reset();
@@ -9875,6 +9893,9 @@ class ParticleControl extends three__WEBPACK_IMPORTED_MODULE_3__.Object3D {
         this.calc = new _PLifeCalc__WEBPACK_IMPORTED_MODULE_0__.PLifeCalc();
         this.calc.init(this.particles);
         this.line.tweenY();
+    }
+    pause() {
+        this.line.pause();
     }
     reset() {
         this.line.reset();
@@ -10065,8 +10086,9 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
                 colors[i * 12 + j * 3 + 1] = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
                 colors[i * 12 + j * 3 + 2] = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
             }
+            let ran = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
             for (let j = 0; j < 4; j++) { //4点
-                randoms[i * 12 + j * 3 + 0] = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
+                randoms[i * 12 + j * 3 + 0] = ran;
                 randoms[i * 12 + j * 3 + 1] = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
                 randoms[i * 12 + j * 3 + 2] = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
             }
@@ -10115,6 +10137,7 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
             fragmentShader: glslify__WEBPACK_IMPORTED_MODULE_3___default()(_brush_frag__WEBPACK_IMPORTED_MODULE_2__["default"]),
             //opacity: 0.5         
         });
+        //mat.wireframe=true;
         // 四角形のメッシュを作成し、シーンに追加
         super(geometry, mat);
         this.isDirty = false;
@@ -10209,10 +10232,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class BlurScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.FilpFlopSceneBase {
-    constructor() {
+    constructor(renderer) {
         let sizeX = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth;
         let sizeY = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight;
-        super(sizeX, sizeY, {
+        super(renderer, sizeX, sizeY, {
             uniforms: {
                 time: { value: 0 },
                 size: {
@@ -10231,13 +10254,15 @@ class BlurScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.FilpFlop
         let g = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.gui.addFolder("== BLUR ==");
         g.add(this.feedbackMaterial.uniforms.attenuationSpeed, "value", 0, 0.01).step(0.0005).name("attenuationSpeed");
         g.add(this.feedbackMaterial.uniforms.blurRatio, "value", 0.0, 1.0).step(0.001).name("BlurRatio");
-        g.add(this.feedbackMaterial.uniforms.blurScale, "value", 1.0, 3.0).step(1).name("BlurScale");
+        g.add(this.feedbackMaterial.uniforms.blurScale, "value", 0.1, 3.0).step(0.1).name("BlurScale");
         //Params.gui.add(this,"clearTargets");
     }
     update(renderer, inputTex) {
         this.uniforms.tex.value = this.getTex();
         this.uniforms.tex2.value = inputTex;
         this.uniforms.time.value += 0.01;
+        this.uniforms.size.value.x = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth;
+        this.uniforms.size.value.x = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight;
         super.render(renderer);
     }
 }
@@ -10332,9 +10357,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class FilpFlopSceneBase {
-    constructor(sizeX, sizeY, sharaderParams) {
-        //super();
+    constructor(renderer, sizeX, sizeY, sharaderParams) {
         this.pingpong = true;
+        //super();
+        this.mainRenderer = renderer;
         this.clearColor = 0x000000;
         this.clearOpacity = 0.0;
         this.scene = new three__WEBPACK_IMPORTED_MODULE_1__.Scene();
@@ -10369,7 +10395,8 @@ class FilpFlopSceneBase {
     clearTargets() {
         //console.log("a "+this.clearColor.toString(16));
         //console.log("b "+Params.bgColorHex.toString(16));
-        this.mainRenderer.setClearColor(_proof_data_Params__WEBPACK_IMPORTED_MODULE_0__.Params.bgColorHex, this.clearOpacity);
+        console.log("clearTargets " + this.clearColor);
+        this.mainRenderer.setClearColor(this.clearColor, this.clearOpacity);
         //this.mainRenderer.setClearColor(Params.bgColorHex,this.clearOpacity);//this.clearOpacity);
         this.mainRenderer.setRenderTarget(this.renderTarget1);
         this.mainRenderer.clear();
@@ -10429,8 +10456,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class LastCalcScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.FilpFlopSceneBase {
-    constructor() {
-        super(_proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight, {
+    constructor(webglRenderer) {
+        super(webglRenderer, _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight, {
             uniforms: {
                 time: { value: 0 },
                 size: {
@@ -10438,8 +10465,8 @@ class LastCalcScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.Filp
                 },
                 //alphaSpeed:{value:0.8},
                 alphaSpeed2: { value: 1 },
-                alphaSpeed: { value: 2.5 },
-                maxAlpha: { value: 0.9 },
+                alphaSpeed: { value: 5 },
+                maxAlpha: { value: 0.6 },
                 gensui: { value: 1 },
                 tex: { value: null },
                 tex1: { value: null },
@@ -10497,8 +10524,10 @@ class OutputPlane extends three__WEBPACK_IMPORTED_MODULE_4__.Mesh {
         let mat = new three__WEBPACK_IMPORTED_MODULE_4__.ShaderMaterial({
             uniforms: {
                 tex: { value: null },
+                tex2: { value: null },
                 size: { value: new three__WEBPACK_IMPORTED_MODULE_4__.Vector2(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight) },
                 alpha: { value: 1.0 },
+                ratio: { value: 0.0 },
                 bgCol: { value: new three__WEBPACK_IMPORTED_MODULE_4__.Vector4(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.r, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.g, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.b, 1.0) },
                 //textureSize: {value: new THREE.Vector2(textureWidth, textureWidth)}
             },
@@ -10518,9 +10547,13 @@ class OutputPlane extends three__WEBPACK_IMPORTED_MODULE_4__.Mesh {
         });
         let gg = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.gui.addFolder("== Output ==");
         gg.add(this.mat.uniforms.alpha, "value", 0.0, 1.0).step(0.01).name("alpha");
+        gg.add(this.mat.uniforms.ratio, "value", 0.0, 1.0).step(0.01).name("ratio");
     }
     setTex(t) {
         this.mat.uniforms.tex.value = t;
+    }
+    setTex2(t) {
+        this.mat.uniforms.tex2.value = t;
     }
     resize(scaleX, scaleY) {
         this.scale.set(scaleX, scaleY, 1);
@@ -10557,8 +10590,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class PigmentScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.FilpFlopSceneBase {
-    constructor() {
-        super(_proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight, {
+    constructor(webglRenderer) {
+        super(webglRenderer, _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.stageHeight, {
             uniforms: {
                 time: { value: 0 },
                 size: {
@@ -10568,7 +10601,7 @@ class PigmentScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.FilpF
                 tex: { value: null },
                 tex1: { value: null },
                 tex2: { value: null },
-                displacement: { value: new three__WEBPACK_IMPORTED_MODULE_5__.Vector2(0.01, 0.01) }
+                displacement: { value: new three__WEBPACK_IMPORTED_MODULE_5__.Vector2(0.001, 0.001) }
             },
             vertexShader: glslify__WEBPACK_IMPORTED_MODULE_3___default()(_feedback_simple_vert__WEBPACK_IMPORTED_MODULE_1__["default"]),
             fragmentShader: glslify__WEBPACK_IMPORTED_MODULE_3___default()(_pigment_pigment_frag__WEBPACK_IMPORTED_MODULE_2__["default"])
@@ -10580,8 +10613,9 @@ class PigmentScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.FilpF
         g.add(uniforms.displacement.value, "y", 0.0, 0.05).step(0.001).name("displacement y");
         //g.add(uniforms.attenuation, "value", 0.8, 1.0).step(0.001).name("attenuation");
         //ベースは背景と同じ色にする！！！
-        this.clearColor = 0xffffff;
+        this.clearColor = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.bgColorHex;
         this.clearOpacity = 1.0;
+        this.clearTargets();
     }
     update(renderer, inputTex, blurTex) {
         this.uniforms.tex.value = this.getTex(); //feedback
@@ -10621,7 +10655,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class RTTMain extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
-    constructor(callback) {
+    constructor(webglRenderer, callback) {
         super();
         this.outputPlane = new _OutputPlane__WEBPACK_IMPORTED_MODULE_0__.OutputPlane();
         this.outputPlane.position.set(0, 0, -10);
@@ -10630,13 +10664,13 @@ class RTTMain extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
             this.brushScene = new _BrushScene__WEBPACK_IMPORTED_MODULE_2__.BrushScene();
         }, 100);
         setTimeout(() => {
-            this.blurScene = new _BlurScene__WEBPACK_IMPORTED_MODULE_3__.BlurScene();
+            this.blurScene = new _BlurScene__WEBPACK_IMPORTED_MODULE_3__.BlurScene(webglRenderer);
         }, 200);
         setTimeout(() => {
-            this.pigmentScene = new _PigmentScene__WEBPACK_IMPORTED_MODULE_4__.PigmentScene();
+            this.pigmentScene = new _PigmentScene__WEBPACK_IMPORTED_MODULE_4__.PigmentScene(webglRenderer);
         }, 300);
         setTimeout(() => {
-            this.lastCalcScene = new _LastCalcScene__WEBPACK_IMPORTED_MODULE_5__.LastCalcScene();
+            this.lastCalcScene = new _LastCalcScene__WEBPACK_IMPORTED_MODULE_5__.LastCalcScene(webglRenderer);
         }, 400);
         setTimeout(() => {
             callback();
@@ -10657,15 +10691,19 @@ class RTTMain extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         switch (this.options.output) {
             case 'input':
                 this.outputPlane.setTex(this.brushScene.renderTarget.texture); //最終出力
+                this.outputPlane.setTex2(null);
                 break;
             case 'color':
                 this.outputPlane.setTex(this.pigmentScene.getTex());
+                this.outputPlane.setTex2(null);
                 break;
             case 'blur':
                 this.outputPlane.setTex(this.blurScene.getTex());
+                this.outputPlane.setTex2(null);
                 break;
             case 'last':
                 this.outputPlane.setTex(this.lastCalcScene.getTex()); //最終出力
+                this.outputPlane.setTex2(this.pigmentScene.getTex());
                 break;
         }
     }
@@ -10712,9 +10750,7 @@ class Colors {
         this.colorsObj = {};
         for (let i = 0; i < 4; i++) {
             let cc = new three__WEBPACK_IMPORTED_MODULE_2__.Color(0xffffff);
-            cc.setHSL(_main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(), 1, //0.6+0.4*SRandom.random(),//
-            0.5 //
-            );
+            cc.setHSL(0, 0, 0);
             let col = {
                 r: cc.r,
                 g: cc.g,
@@ -10744,9 +10780,11 @@ class Colors {
         this.logoColor.b = 0.5 + 0.5 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
         for (let i = 0; i < this.NUM; i++) {
             let col = this.colors[i];
-            col.r = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
-            col.g = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
-            col.b = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
+            let hsl = new three__WEBPACK_IMPORTED_MODULE_2__.Color(0xffffff);
+            hsl.setHSL(_main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(), 1, 0.5);
+            col.r = hsl.r;
+            col.g = hsl.g;
+            col.b = hsl.b;
         }
     }
     static rgb2hex(rgb) {
@@ -10872,8 +10910,6 @@ class Params {
         if (this.MODE_SQUIRE) {
             Params.stageWidth = Params.stageHeight;
         }
-        //console.log(webgl);
-        //console.log("this.PATH",this.PATH);
         let win = window;
         if (win.attribute == null) {
             win.attribute = {
@@ -10893,14 +10929,19 @@ class Params {
     static setParticleParam() {
         Params.intervalEmitting = 3;
         Params.numMabiki = 3;
-        if (_main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() < 0.5)
-            Params.numMabiki = 4;
-        this.masatsu = 0.8 + 0.2 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
-        this.radius = 40 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 20;
-        this.radius2 = 10 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 10;
-        this.strength = 0.8 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 0.3;
-        this.strength2 = 0.9 + _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 0.2;
-        this.widthRatio = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random() * 0.6 + 0.4;
+        let ran = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
+        if (ran < 0.333)
+            Params.numMabiki = 3;
+        else if (ran < 0.666)
+            Params.numMabiki = 3;
+        else
+            Params.numMabiki = 5;
+        this.masatsu = 0.8 + 0.05 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random(); //0.8+0.2*SRandom.random();
+        this.radius = 50; //40+SRandom.random()*20;
+        this.radius2 = 20; //12;//10+SRandom.random()*10;
+        this.strength = 0.8; //0.8+SRandom.random()*0.3;
+        this.strength2 = 0.9; //0.9+SRandom.random()*0.2;
+        //this.widthRatio = SRandom.random()*0.6+0.4;
     }
     static setRandomColor() {
         _Colors__WEBPACK_IMPORTED_MODULE_1__.Colors.reset();
@@ -10941,7 +10982,7 @@ Params.USER_NAME = "";
 Params.USER_HASH = "";
 Params.USER_TIME = 0;
 Params.maxLimit = 400;
-Params.widthRatio = 1;
+Params.widthRatio = 0.4;
 Params.DOM_WEBGL = "mainvisual_webgl";
 Params.DOM_TITLE = "mainvisual_title";
 Params.DOM_JS = "mainvisual_js";
@@ -11578,7 +11619,7 @@ class MySVGLogo extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         f.add(this.fillMesh, "visible").name("fillMesh.visible").listen();
         f.add(this.lineMesh, "visible").name("lineMesh.visible").listen();
         f.add(this, "opacity", 0, 1).name("opacity").listen();
-        this.visible = true;
+        this.visible = false;
         this.fillMesh.visible = false;
         this.lineMesh.visible = true;
         //setTimeout(()=>{
@@ -11663,6 +11704,7 @@ class MySVGLogo2 extends three__WEBPACK_IMPORTED_MODULE_5__.Object3D {
             fragmentShader: glslify__WEBPACK_IMPORTED_MODULE_3___default()(_logo2_frag__WEBPACK_IMPORTED_MODULE_2__["default"]),
             side: three__WEBPACK_IMPORTED_MODULE_5__.DoubleSide
         });
+        this.mat.transparent = true;
         for (let i = 0; i < logo.children.length; i++) {
             const mesh = logo.children[i];
             let m = new three__WEBPACK_IMPORTED_MODULE_5__.Mesh(mesh.geometry, this.mat);

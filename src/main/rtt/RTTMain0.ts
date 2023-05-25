@@ -16,7 +16,8 @@ export class RTTMain0 extends THREE.Object3D{
     rttScene        :RTTScene;
     rttScene2       :LastCalcScene;
     options         :any;
-    constructor(){
+
+    constructor(renderer:WebGLRenderer){
 
         super();
 
@@ -25,7 +26,7 @@ export class RTTMain0 extends THREE.Object3D{
         this.add(this.outputPlane);
         
         this.rttScene = new RTTScene();
-        this.rttScene2 = new LastCalcScene();
+        this.rttScene2 = new LastCalcScene(renderer);
 
 
         

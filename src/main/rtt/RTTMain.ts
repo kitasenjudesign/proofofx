@@ -20,7 +20,7 @@ export class RTTMain extends THREE.Object3D{
     options         :any;
 
 
-    constructor(callback:()=>void){
+    constructor(webglRenderer:WebGLRenderer,callback:()=>void){
 
         super();
 
@@ -32,13 +32,13 @@ export class RTTMain extends THREE.Object3D{
             this.brushScene     = new BrushScene();
         },100);
         setTimeout(()=>{
-            this.blurScene      = new BlurScene();
+            this.blurScene      = new BlurScene(webglRenderer);
         },200);
         setTimeout(()=>{
-            this.pigmentScene   = new PigmentScene();
+            this.pigmentScene   = new PigmentScene(webglRenderer);
         },300);
         setTimeout(()=>{
-            this.lastCalcScene  = new LastCalcScene();
+            this.lastCalcScene  = new LastCalcScene(webglRenderer);
         },400);
         setTimeout(()=>{
             callback();
@@ -78,15 +78,19 @@ export class RTTMain extends THREE.Object3D{
 
             case 'input':
                 this.outputPlane.setTex(this.brushScene.renderTarget.texture);//最終出力
+                this.outputPlane.setTex2(null);
                 break;
             case 'color':
                 this.outputPlane.setTex(this.pigmentScene.getTex());
+                this.outputPlane.setTex2(null);
                 break;
             case 'blur':
                 this.outputPlane.setTex(this.blurScene.getTex());
+                this.outputPlane.setTex2(null);
                 break;
             case 'last':
                 this.outputPlane.setTex(this.lastCalcScene.getTex());//最終出力
+                this.outputPlane.setTex2(this.pigmentScene.getTex());
                 break;
 
         }

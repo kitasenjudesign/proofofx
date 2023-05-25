@@ -46,18 +46,18 @@
         clamp(colBlur.a*alphaSpeed2,0.0,1.0)//この値は乾いて０に近づいていく
       );
 
-
       //定着の割合、
       vec2 nPos = (vUv.xy*30.0);
       float paper=snoise3(vec3(nPos,time*0.0));
       //col.a += colBlur.a*(0.01+(0.005*paper))*alphaSpeed;
-      col.a += colBlur.a*(0.01)*alphaSpeed;
+
+      //ブラーのアルファ分ふやす＝水が乾くまで
+      col.a += pow(colBlur.a,2.0)*(0.01)*alphaSpeed;
 
       float maxAlpha1 = maxAlpha + 0.1*paper;
       col.a = clamp(col.a,0.0,maxAlpha1);
 
       //col.a = colBlur.a;
-      
       col.a*=gensui;//*length(colPigment.rgb);
 
       gl_FragColor=vec4(col.rgba);

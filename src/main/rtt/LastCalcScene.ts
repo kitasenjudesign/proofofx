@@ -9,8 +9,9 @@ import { Params } from '../../proof/data/Params';
 
 export class LastCalcScene extends FilpFlopSceneBase{
 
-    constructor(){
+    constructor(webglRenderer:WebGLRenderer){
         super(
+            webglRenderer,
             Params.stageWidth,
             Params.stageHeight,
             {
@@ -21,8 +22,8 @@ export class LastCalcScene extends FilpFlopSceneBase{
                     },
                     //alphaSpeed:{value:0.8},
                     alphaSpeed2:{value:1},
-                    alphaSpeed:{value:2.5},
-                    maxAlpha:{value:0.9},
+                    alphaSpeed:{value:5},//5},
+                    maxAlpha:{value:0.6},//65},
                     gensui:{value:1},
                     tex:{value:null},
                     tex1:{value:null},

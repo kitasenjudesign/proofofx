@@ -19,8 +19,10 @@ export class OutputPlane extends THREE.Mesh{
         let mat = new THREE.ShaderMaterial({
           uniforms: {
               tex:{value:null},
+              tex2:{value:null},
               size:{value: new THREE.Vector2(Params.stageWidth,Params.stageHeight)},
               alpha:{value:1.0},
+              ratio:{value:0.0},
               bgCol:{value:new THREE.Vector4(
                 Params.bgColor.r,
                 Params.bgColor.g,
@@ -51,6 +53,8 @@ export class OutputPlane extends THREE.Mesh{
 
         let gg = Params.gui.addFolder("== Output ==");
         gg.add(this.mat.uniforms.alpha,"value",0.0,1.0).step(0.01).name("alpha");
+        gg.add(this.mat.uniforms.ratio,"value",0.0,1.0).step(0.01).name("ratio");
+
 
     }
 
@@ -61,6 +65,12 @@ export class OutputPlane extends THREE.Mesh{
 
     }
 
+    setTex2(t:Texture){
+      this.mat.uniforms.tex2.value = t;
+
+    }
+
+
     resize(scaleX:number,scaleY:number){
         
         this.scale.set(scaleX,scaleY,1);
@@ -68,6 +78,8 @@ export class OutputPlane extends THREE.Mesh{
     }
 
     update(){
+
+
 
     }
 

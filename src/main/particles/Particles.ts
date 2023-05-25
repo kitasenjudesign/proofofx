@@ -89,6 +89,10 @@ export class Particles extends THREE.Object3D{
 
     }
 
+    pause(){
+       this.control.pause(); 
+    }
+
     reset(){
         console.log("reset");
         this.control.reset();

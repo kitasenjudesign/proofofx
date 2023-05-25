@@ -60,7 +60,7 @@ export class Main{
         //console.log(hoge);
         this.scene = new THREE.Scene();
 
-        this.rttMain = new RTTMain(()=>{
+        this.rttMain = new RTTMain(this.renderer,()=>{
             this.init3();
         });
         this.scene.add(this.rttMain);
@@ -122,6 +122,18 @@ export class Main{
                 this.onWindowResize();
             });
 
+            var uri = new URL(window.location.href);
+            if(uri.hostname=="127.0.0.1"){
+    
+                document.addEventListener('keydown', (event) => {
+                    const keyName = event.key;
+                    if(keyName=="s"){
+                        this.pause();
+                    }
+                });
+        
+            }
+            
     }
 
 
@@ -169,10 +181,8 @@ export class Main{
 
 
     pause(){
-        this.isPause = !this.isPause;
-        if(!this.isPause){
-            this.tick()
-        }
+        //this.isPause = !this.isPause;
+        this.particles.pause();
     }
 
 

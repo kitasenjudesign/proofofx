@@ -26,9 +26,7 @@ export class Colors {
 
             let cc = new Color(0xffffff);
             cc.setHSL(
-                SRandom.random(),
-                1,//0.6+0.4*SRandom.random(),//
-                0.5//
+                0,0,0
             );
 
             let col = {
@@ -72,9 +70,16 @@ export class Colors {
         for(let i=0;i<this.NUM;i++){
 
             let col = this.colors[i];
-            col.r = SRandom.random();
-            col.g = SRandom.random();
-            col.b = SRandom.random();
+            let hsl = new Color(0xffffff);
+            hsl.setHSL(
+                SRandom.random(),
+                1,
+                0.5
+            );
+
+            col.r = hsl.r;
+            col.g = hsl.g;
+            col.b = hsl.b;
 
         }
 

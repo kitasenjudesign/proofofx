@@ -74,7 +74,7 @@ export class MySVGLogo extends THREE.Object3D{
             f.add(this.lineMesh,"visible").name("lineMesh.visible").listen();
             f.add(this,"opacity",0,1).name("opacity").listen();
 
-        this.visible=true;
+        this.visible=false;
         this.fillMesh.visible=false;
         this.lineMesh.visible=true;
 

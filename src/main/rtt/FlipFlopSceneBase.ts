@@ -18,13 +18,15 @@ export class FilpFlopSceneBase{
     clearOpacity: number;
 
     constructor(
+        renderer:WebGLRenderer,
         sizeX:number,
         sizeY:number,
         sharaderParams:THREE.ShaderMaterialParameters
     ){
         
         //super();
-        
+        this.mainRenderer = renderer;
+
         this.clearColor = 0x000000;
         this.clearOpacity = 0.0;
 
@@ -75,7 +77,8 @@ export class FilpFlopSceneBase{
         //console.log("a "+this.clearColor.toString(16));
         //console.log("b "+Params.bgColorHex.toString(16));
 
-        this.mainRenderer.setClearColor(Params.bgColorHex,this.clearOpacity);
+        console.log("clearTargets " +this.clearColor );
+        this.mainRenderer.setClearColor(this.clearColor,this.clearOpacity);
         //this.mainRenderer.setClearColor(Params.bgColorHex,this.clearOpacity);//this.clearOpacity);
 
         this.mainRenderer.setRenderTarget(this.renderTarget1);

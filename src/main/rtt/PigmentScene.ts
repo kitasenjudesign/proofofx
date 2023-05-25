@@ -8,9 +8,10 @@ import { Params } from '../../proof/data/Params';
 
 export class PigmentScene extends FilpFlopSceneBase{
 
-    constructor(){
+    constructor(webglRenderer:WebGLRenderer){
 
         super(
+            webglRenderer,
             Params.stageWidth,
             Params.stageHeight,
             {
@@ -23,7 +24,7 @@ export class PigmentScene extends FilpFlopSceneBase{
                     tex:{value:null},
                     tex1:{value:null},
                     tex2:{value:null},
-                    displacement:{value:new THREE.Vector2(0.01,0.01)}
+                    displacement:{value:new THREE.Vector2(0.001,0.001)}
                 },
                 vertexShader:   glslify(vert),
                 fragmentShader: glslify(frag)
@@ -39,8 +40,10 @@ export class PigmentScene extends FilpFlopSceneBase{
         //g.add(uniforms.attenuation, "value", 0.8, 1.0).step(0.001).name("attenuation");
         //ベースは背景と同じ色にする！！！
 
-        this.clearColor = 0xffffff;
+        this.clearColor = Params.bgColorHex;
         this.clearOpacity = 1.0;
+        
+        this.clearTargets();
 
     }
 

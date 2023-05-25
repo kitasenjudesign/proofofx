@@ -109,8 +109,17 @@ export class Particle{
         //this.position.z=this.count;
         //this.qPoint.x = this.position.x;
         //this.qPoint.y = this.position.y;
+        let brushes = Brushes.getInstance();
 
-        if(!this.visible) return;
+        if(!this.visible){
+            brushes.connect(
+                this.index,
+                new Vector3(0,0,0),
+                new Vector3(0,0,0),
+                0,0,0,0,0,0
+            );
+            return;
+        }
 
         this.count++;
         if(this.count>this.limit){
@@ -136,13 +145,14 @@ export class Particle{
             //return;
         }
 
+        
         let dx = this.position.x - this.pastPos.x;
         let dy = this.position.y - this.pastPos.y;
         let dist = Params.UPDATE_DISTANCE;
         if(dx*dx+dy*dy>dist*dist){
 
-            let t = Brushes.getInstance();
-            if(t){
+            
+            if(brushes){
                 let rr = this.colR;//this.vx;//this.R
                 let gg = this.colG;//this.vy;//this.G
                 let bb = this.colB;
@@ -151,7 +161,7 @@ export class Particle{
                 //gg = 0.5+0.5*Math.sin(rad);
                 //bb = 0;
 
-                t.connect(
+                brushes.connect(
                     this.index,
                     this.position,
                     this.pastPos,

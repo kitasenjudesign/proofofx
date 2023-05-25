@@ -64,8 +64,9 @@ export class Brushes extends THREE.Mesh{
                 colors[i*12+j*3+2] = SRandom.random();
             }
 
+            let ran = SRandom.random();
             for(let j=0;j<4;j++){//4点
-                randoms[i*12+j*3+0] = SRandom.random();
+                randoms[i*12+j*3+0] = ran;
                 randoms[i*12+j*3+1] = SRandom.random();
                 randoms[i*12+j*3+2] = SRandom.random();
             }
@@ -122,12 +123,12 @@ export class Brushes extends THREE.Mesh{
             fragmentShader: glslify(frag),
             //opacity: 0.5         
         });
+        //mat.wireframe=true;
 
         // 四角形のメッシュを作成し、シーンに追加
         super(geometry, mat);
         this.mat = mat;
 
-       
         //this.width      = SRandom.random()*0.5+0.5;
         //this.widthRatio = SRandom.random()*0.5+0.5;
         

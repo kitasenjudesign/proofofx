@@ -35,6 +35,7 @@ export class MySVGLogo2 extends THREE.Object3D{
             fragmentShader: glslify(myFrag),
             side: THREE.DoubleSide
         })
+        this.mat.transparent=true;
 
         for(let i=0;i<logo.children.length;i++){
             const mesh = logo.children[i] as THREE.Mesh;

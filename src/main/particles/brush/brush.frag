@@ -1,4 +1,5 @@
 #pragma glslify: snoise3 = require(glsl-noise/simplex/3d)
+#pragma glslify: yiq = require("./yiq.glsl")
 
 varying vec3 vColor;
 varying vec4 vPosition;
@@ -26,7 +27,7 @@ void main() {
     vec4 texColor   = texture2D(tex, vUv);
     float b         = snoise3(vec3(vUv.x*detail,vPosition.xy*0.01));
 
-    if(b<(vLife-0.5)*2.0) discard;
+    //if(b<(vLife-0.5)*2.0) discard;
 
     //0.6,0.6,0.5
 
@@ -36,6 +37,12 @@ void main() {
     //gl_FragColor = vec4(col.rgb, 0.5+0.5*snoise3(offset+vPosition.xyz*0.05)); // varying変数から頂点カラーを取得して出力
 
     float fuchi = (1.0-border) + border * texColor.x;
-    gl_FragColor = vec4(col.rgb*fuchi+added,vOpacity); // varying変数から頂点カラーを取得して出力
+
+    vec3 cc = col.rgb*fuchi+added;
+
+    float kosa=0.1;//*(random(floor(vUv.xy*50.0))-0.5);
+    cc.xyz = yiq(cc.xyz,vLife*2.0*vRandom);//yiq
+
+    gl_FragColor = vec4(cc,vOpacity); // varying変数から頂点カラーを取得して出力
 
 }

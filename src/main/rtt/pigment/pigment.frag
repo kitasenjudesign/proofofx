@@ -14,20 +14,24 @@
     varying vec3 vNormal;
     varying vec2 vUv;
   
-        //this.uniforms.tex.value = this.getTex();//feedback
-        //this.uniforms.tex1.value = inputTex;
-        //this.uniforms.tex2.value = blurTex;
 
     void main(void)
     {
-      vec4 colBlur = texture2D(//ボケ用の数値
+      //ボケ用の数値
+      vec4 colBlur = texture2D(
         tex2,
         vUv.xy
       );
 
       //勾配を取得する
       vec2 gradientValue = gradient(tex2,vUv.xy,size,1.0);
-      
+
+      //ボケの透明度によって強度を変える、あまり変化なし
+      //if(vUv.x<0.5){
+      //  gradientValue.x *= colBlur.a;
+      //  gradientValue.y *= colBlur.a;
+      //}
+
       float nx = 1.0;
       float ny = 1.0;
 
@@ -55,8 +59,9 @@
         col.a//変位したところの透明度
       );
 
-      float kosa=0.0;//*(random(floor(vUv.xy*50.0))-0.5);
-      col.xyz = yiq(col.xyz,kosa);//yiq
+      //色を変えたかったら
+      //float kosa=0.1;//*(random(floor(vUv.xy*50.0))-0.5);
+      //col.xyz = yiq(col.xyz,kosa);//yiq
 
 
       vec4 inputCol=texture2D(
@@ -70,12 +75,12 @@
 
       //元の色,pigment
       col.rgb = mix(
-        col.rgb,//１個前の色
-        //colBlur.rgb,//ブラー側の色
-        inputCol.rgb,
-        //inputCol0.rgb,//ブラシinput
-        //colBlur.a
-        inputCol.a//ブラシinput
+        col.rgb,      //１個前の色（変位あり）
+        //inputCol.rgb, //ブラシsceneのinputの色(変位あり)
+        //inputCol.a    //ブラシsceneのinputのアルファ(変位あり)
+        inputCol0.rgb, //ブラシsceneのinputの色(変位なし)
+        inputCol0.a    //ブラシsceneのinputのアルファ(変位なし)
+
       );
       
       //背景とブレンド
