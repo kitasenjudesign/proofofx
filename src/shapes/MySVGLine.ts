@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import vert from "./line/line.vert";
 import frag from "./line/line.frag";
 import glslify from 'glslify';
-import { SRandom } from '../main/data/SRandom';
 import { Colors } from '../proof/data/Colors';
 import { Params } from '../proof/data/Params';
 import { DataManager } from '../main/data/DataManager';
@@ -33,9 +32,9 @@ export class MySVGLine extends THREE.Object3D{
             positions[ i*3 + 0 ] = 9999;
             positions[ i*3 + 1 ] = 9999;
             positions[ i*3 + 2 ] = 9999;
-            colors[ i*3 + 0 ] = SRandom.random();
-            colors[ i*3 + 1 ] = SRandom.random();
-            colors[ i*3 + 2 ] = SRandom.random();
+            colors[ i*3 + 0 ] = 0;//
+            colors[ i*3 + 1 ] = 0;//
+            colors[ i*3 + 2 ] = 0;//
         }
 
         this.geo = new THREE.BufferGeometry();
@@ -106,7 +105,7 @@ export class MySVGLine extends THREE.Object3D{
             }
         }
 
-        console.log("--->"+this.counter);
+        //console.log("--->"+this.counter);
         
     }
 

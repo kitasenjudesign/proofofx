@@ -14,27 +14,22 @@ export class Colors {
 
     public static init(){
 
-        
-
         let gui = Params.gui.addFolder("== Colors ==");
         gui.close();
         this.colors=[];
         this.colorsObj={};
 
-       
         for(let i=0;i<4;i++){
 
             let cc = new Color(0xffffff);
             cc.setHSL(
                 0,0,0
             );
-
             let col = {
                 r:cc.r,
                 g:cc.g,
                 b:cc.b
             };
-            
             this.colorsObj["col_"+i] = col;
             this.colors.push(col);
             gui.addColor(this.colorsObj,"col_"+i).listen();
@@ -55,7 +50,7 @@ export class Colors {
         gui.add(Colors,"NUM");
         gui.add(Colors,"reset");
 
-        this.reset();
+        //this.reset();
 
     }
 

@@ -6,11 +6,12 @@ import { IntersectionLine } from '../intersection/IntersectionLine';
 import { DataManager } from '../data/DataManager';
 import { Particles } from './Particles';
 import { Params } from '../../proof/data/Params';
+import { ParticlesBase } from './ParticlesBase';
 
 //particleをコントロールする
 export class ParticleControl extends THREE.Object3D{
 
-    particleMain :Particles;
+    particleMain        :ParticlesBase;
     particles          :Particle[];
     line             :IntersectionLine;
     points           :THREE.Points;
@@ -26,7 +27,7 @@ export class ParticleControl extends THREE.Object3D{
         super();
     }
 
-    init(p:Particles){
+    init(p:ParticlesBase){
         
         this.particleMain=p;
         this.particles=p.particles;
@@ -62,13 +63,23 @@ export class ParticleControl extends THREE.Object3D{
 
                 let crossPoints = intesection.GetCurrentCrossPoints();
 
-                for(let i=0;i<crossPoints.length;i+=Params.numMabiki){
-                    let p = crossPoints[i];
-                    if(p){
-                        this.particles[this.particleIndex%this.particles.length].show(p);    
-                        this.particleIndex++;
-                    }
+                //for(let i=0;i<crossPoints.length;i+=Params.numMabiki){
+
+                let idx = 0;
+                if(crossPoints.length>0){
+                    while(true){
+                        let p = crossPoints[idx];
+                        if(p){
+                            this.particles[
+                                this.particleIndex%this.particles.length
+                            ].show(p);    
+                            this.particleIndex++;
+                        }
+                        idx+=Params.numMabiki;
+                        if(idx>=crossPoints.length) break;
+                    }    
                 }
+                //}
 
                 /*
                 for(let i=0;i<Params.numEmitting;i++){

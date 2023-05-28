@@ -1,7 +1,7 @@
-import { type } from 'os';
+
 import * as THREE from 'three';
 import { MeshBasicMaterial, Vector3 } from 'three';
-import { Forces } from '../Forces';
+//import { Forces } from '../Forces';
 import vert from "./brush.vert";
 import frag from "./brush.frag";
 
@@ -14,6 +14,7 @@ import { SRandom } from '../../data/SRandom';
 
 export class Brushes extends THREE.Mesh{
 
+    public static NUM:number = 300;
     vertices    :Float32Array;
     colors      :Float32Array;
     randoms     :Float32Array;
@@ -42,15 +43,15 @@ export class Brushes extends THREE.Mesh{
 
 
         // 頂点データを定義
-        let vertices = new Float32Array(Forces.NUM*3*4);//vec3が4個
-        let colors  = new Float32Array(Forces.NUM*3*4);//vec3が4個
-        let uvs     = new Float32Array(Forces.NUM*2*4);//vec2が4個
+        let vertices = new Float32Array(Brushes.NUM*3*4);//vec3が4個
+        let colors  = new Float32Array(Brushes.NUM*3*4);//vec3が4個
+        let uvs     = new Float32Array(Brushes.NUM*2*4);//vec2が4個
         // インデックスを定義（2つの三角形を指定）
-        let indices = new Uint16Array(Forces.NUM*6);//3角形が2個で6
-        let randoms = new Float32Array(Forces.NUM*3*4);
+        let indices = new Uint16Array(Brushes.NUM*6);//3角形が2個で6
+        let randoms = new Float32Array(Brushes.NUM*3*4);
 
 
-        for(let i=0;i<Forces.NUM;i++){
+        for(let i=0;i<Brushes.NUM;i++){
 
             for(let j=0;j<4;j++){//4点
                 vertices[i*12+j*3+0] = 0;

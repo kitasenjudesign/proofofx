@@ -7,8 +7,6 @@ import { DataManager } from './data/DataManager';
 import { RTTMain } from './rtt/RTTMain';
 import { Params } from '../proof/data/Params';
 import { DOMControl } from '../dom/DOMControl';
-import { Xorshift } from './data/Xorshift';
-import { SRandom } from './data/SRandom';
 import { Download } from './data/Download';
 
 
@@ -31,15 +29,8 @@ export class Main{
     timeoutId:number=0;
 
     init(){
-       // let svgLoader = new SVGLo
+
         Params.init();
-        /*
-        let r = new Xorshift(
-            "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c"
-        );
-        console.log(r.nextFloat());
-        console.log(r.nextFloat());
-        console.log(r.nextFloat());*/
         this.renderer = new THREE.WebGLRenderer({
             canvas: document.getElementById(Params.DOM_WEBGL),
             antialias: false,
@@ -92,9 +83,6 @@ export class Main{
         this.scene.add(
             DataManager.getInstance().svg.logo2
         );
-
-
-        //this.camera = new THREE.PerspectiveCamera(20, 640/480, 1, 10000);
         
         this.domControl = new DOMControl();
         DataManager.getInstance().domControl = this.domControl;
@@ -208,7 +196,7 @@ export class Main{
         Params.stageHeight=hh;
 
         window.clearTimeout(this.timeoutId);
-        this.timeoutId=window.setTimeout(()=>{
+        this.timeoutId = window.setTimeout(()=>{
             this.onWindowResize2(Params.stageWidth,Params.stageHeight);
             this.pastTime = new Date().getTime();
         },200);

@@ -8878,15 +8878,7 @@ class Main {
         this.timeoutId = 0;
     }
     init() {
-        // let svgLoader = new SVGLo
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.init();
-        /*
-        let r = new Xorshift(
-            "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c"
-        );
-        console.log(r.nextFloat());
-        console.log(r.nextFloat());
-        console.log(r.nextFloat());*/
         this.renderer = new three__WEBPACK_IMPORTED_MODULE_6__.WebGLRenderer({
             canvas: document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.DOM_WEBGL),
             antialias: false,
@@ -8919,7 +8911,6 @@ class Main {
         _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().particles = this.particles;
         this.rttMain.init();
         this.scene.add(_data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.logo2);
-        //this.camera = new THREE.PerspectiveCamera(20, 640/480, 1, 10000);
         this.domControl = new _dom_DOMControl__WEBPACK_IMPORTED_MODULE_4__.DOMControl();
         _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().domControl = this.domControl;
         this.camera.position.set(0, 0, 1000);
@@ -9624,19 +9615,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Particle": () => (/* binding */ Particle)
 /* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 /* harmony import */ var _Forces__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Forces */ "./src/main/particles/Forces.ts");
 /* harmony import */ var _data_DataManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../data/DataManager */ "./src/main/data/DataManager.ts");
-/* harmony import */ var _Tail__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tail */ "./src/main/particles/Tail.ts");
-/* harmony import */ var _brush_Brushes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./brush/Brushes */ "./src/main/particles/brush/Brushes.ts");
-/* harmony import */ var _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../proof/data/Colors */ "./src/proof/data/Colors.ts");
-/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../proof/data/Params */ "./src/proof/data/Params.ts");
-/* harmony import */ var _quadtree_QuadTreePoint__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../quadtree/QuadTreePoint */ "./src/quadtree/QuadTreePoint.ts");
-/* harmony import */ var _data_SRandom__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../data/SRandom */ "./src/main/data/SRandom.ts");
+/* harmony import */ var _brush_Brushes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./brush/Brushes */ "./src/main/particles/brush/Brushes.ts");
+/* harmony import */ var _proof_data_Colors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../proof/data/Colors */ "./src/proof/data/Colors.ts");
+/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../proof/data/Params */ "./src/proof/data/Params.ts");
+/* harmony import */ var _quadtree_QuadTreePoint__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../quadtree/QuadTreePoint */ "./src/quadtree/QuadTreePoint.ts");
+/* harmony import */ var _data_SRandom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../data/SRandom */ "./src/main/data/SRandom.ts");
 
 
 
-
+//import { Tail } from './Tail';
 
 
 
@@ -9652,6 +9642,7 @@ class Particle {
         this.positions = [];
         this.count = 0;
         this.limit = 0;
+        //tail    :Tail;
         this.colR = 0;
         this.colG = 0;
         this.colB = 0;
@@ -9659,54 +9650,55 @@ class Particle {
         this.index = 0;
         this.opacity = 1;
         this.multiply = 1;
-        if (_data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random() < 0.1) {
-            this.multiply = 1 + _data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random() * 3;
+        if (_data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random() < 0.1) {
+            this.multiply = 1 + _data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random() * 3;
         }
         this.index = idx;
         this.count = 0;
-        this.tail = new _Tail__WEBPACK_IMPORTED_MODULE_2__.Tail();
-        let col = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.getRandomColor();
+        //this.tail = new Tail();
+        let col = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_3__.Colors.getRandomColor();
         this.colR = col.r;
         this.colG = col.g;
         this.colB = col.b;
-        this.opacity = _data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random();
+        this.opacity = _data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random();
         this.visible = false;
-        this.width = 1 + 7 * _data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random();
-        if (_data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random() < 0.1)
+        this.width = 1 + 7 * _data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random();
+        if (_data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random() < 0.1)
             this.width = 1;
-        this.qPoint = new _quadtree_QuadTreePoint__WEBPACK_IMPORTED_MODULE_6__.QuadTreePoint(0, 0, this.index, this);
-        this.position = new three__WEBPACK_IMPORTED_MODULE_8__.Vector3();
+        this.qPoint = new _quadtree_QuadTreePoint__WEBPACK_IMPORTED_MODULE_5__.QuadTreePoint(0, 0, this.index, this);
+        this.position = new three__WEBPACK_IMPORTED_MODULE_7__.Vector3();
     }
     show(point) {
-        let col = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.getRandomColor();
+        console.log("show > " + this.index);
+        let col = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_3__.Colors.getRandomColor();
         this.colR = col.r;
         this.colG = col.g;
         this.colB = col.b;
-        this.limit = 10 + _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.maxLimit * Math.pow(_data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random(), 2);
+        this.limit = 10 + _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.maxLimit * Math.pow(_data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random(), 2);
         //if(SRandom.random()<0.1)this.limit= 10 + Params.maxLimit*SRandom.random()/4;
-        this.position.x = point.x + 5 * (_data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random() - 0.5);
-        this.position.y = point.y + 5 * (_data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random() - 0.5);
+        this.position.x = point.x + 5 * (_data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random() - 0.5);
+        this.position.y = point.y + 5 * (_data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random() - 0.5);
         this.count = 0;
-        this.type = Math.floor(_Forces__WEBPACK_IMPORTED_MODULE_0__.Forces.NUM * _data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random());
+        this.type = Math.floor(_Forces__WEBPACK_IMPORTED_MODULE_0__.Forces.NUM * _data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random());
         this.pastPos = this.position.clone();
         this.visible = true;
-        this.vx = 2 * (_data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random() - 0.5);
-        this.vy = 2 * (_data_SRandom__WEBPACK_IMPORTED_MODULE_7__.SRandom.random() - 0.5);
+        this.vx = 2 * (_data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random() - 0.5);
+        this.vy = 2 * (_data_SRandom__WEBPACK_IMPORTED_MODULE_6__.SRandom.random() - 0.5);
     }
     reset() {
         this.visible = false;
         this.position.x = 99999;
         this.position.y = 99999;
-        let t = _brush_Brushes__WEBPACK_IMPORTED_MODULE_3__.Brushes.getInstance();
+        let t = _brush_Brushes__WEBPACK_IMPORTED_MODULE_2__.Brushes.getInstance();
         t.connect(this.index, this.position, this.position, 0, 0, 0, 0, 0, 0);
     }
     update() {
         //this.position.z=this.count;
         //this.qPoint.x = this.position.x;
         //this.qPoint.y = this.position.y;
-        let brushes = _brush_Brushes__WEBPACK_IMPORTED_MODULE_3__.Brushes.getInstance();
+        let brushes = _brush_Brushes__WEBPACK_IMPORTED_MODULE_2__.Brushes.getInstance();
         if (!this.visible) {
-            brushes.connect(this.index, new three__WEBPACK_IMPORTED_MODULE_8__.Vector3(0, 0, 0), new three__WEBPACK_IMPORTED_MODULE_8__.Vector3(0, 0, 0), 0, 0, 0, 0, 0, 0);
+            brushes.connect(this.index, new three__WEBPACK_IMPORTED_MODULE_7__.Vector3(0, 0, 0), new three__WEBPACK_IMPORTED_MODULE_7__.Vector3(0, 0, 0), 0, 0, 0, 0, 0, 0);
             return;
         }
         this.count++;
@@ -9730,7 +9722,7 @@ class Particle {
         }
         let dx = this.position.x - this.pastPos.x;
         let dy = this.position.y - this.pastPos.y;
-        let dist = _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.UPDATE_DISTANCE;
+        let dist = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.UPDATE_DISTANCE;
         if (dx * dx + dy * dy > dist * dist) {
             if (brushes) {
                 let rr = this.colR; //this.vx;//this.R
@@ -9779,13 +9771,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Particles": () => (/* binding */ Particles)
 /* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 /* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Particle */ "./src/main/particles/Particle.ts");
 /* harmony import */ var _Forces__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Forces */ "./src/main/particles/Forces.ts");
 /* harmony import */ var _intersection_IntersectionLine__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../intersection/IntersectionLine */ "./src/main/intersection/IntersectionLine.ts");
 /* harmony import */ var _data_DataManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../data/DataManager */ "./src/main/data/DataManager.ts");
 /* harmony import */ var _ParticlesControl__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ParticlesControl */ "./src/main/particles/ParticlesControl.ts");
 /* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../proof/data/Params */ "./src/proof/data/Params.ts");
+/* harmony import */ var _ParticlesBase__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ParticlesBase */ "./src/main/particles/ParticlesBase.ts");
+/* harmony import */ var _proof_data_Colors__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../proof/data/Colors */ "./src/proof/data/Colors.ts");
 
 
 
@@ -9793,8 +9787,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class Particles extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
-    //lines           :Lines;
+
+
+class Particles extends _ParticlesBase__WEBPACK_IMPORTED_MODULE_6__.ParticlesBase {
     constructor() {
         super();
     }
@@ -9809,23 +9804,26 @@ class Particles extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
             let p = new _Particle__WEBPACK_IMPORTED_MODULE_0__.Particle(i);
             this.particles.push(p);
         }
-        const geometry = new three__WEBPACK_IMPORTED_MODULE_6__.BufferGeometry();
+        const geometry = new three__WEBPACK_IMPORTED_MODULE_8__.BufferGeometry();
         const vertices = [];
         for (let i = 0; i < _Forces__WEBPACK_IMPORTED_MODULE_1__.Forces.NUM; i++) {
             vertices.push(0, 0, 0);
         }
-        geometry.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_6__.Float32BufferAttribute(vertices, 3));
-        let loader = new three__WEBPACK_IMPORTED_MODULE_6__.TextureLoader();
-        let tex = loader.load(_proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.PATH + '128x128.png');
-        tex.magFilter = three__WEBPACK_IMPORTED_MODULE_6__.NearestFilter;
-        tex.minFilter = three__WEBPACK_IMPORTED_MODULE_6__.NearestFilter;
-        this.material = new three__WEBPACK_IMPORTED_MODULE_6__.PointsMaterial({
-            size: 8,
+        geometry.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_8__.Float32BufferAttribute(vertices, 3));
+        /*
+        let loader = new THREE.TextureLoader();
+        let tex = loader.load( Params.PATH + '128x128.png');
+        tex.magFilter = THREE.NearestFilter;
+        tex.minFilter = THREE.NearestFilter;
+        tex.generateMipmaps=false;
+        */
+        this.material = new three__WEBPACK_IMPORTED_MODULE_8__.PointsMaterial({
+            size: 6,
             sizeAttenuation: false,
-            color: 0xffffff,
-            alphaTest: 0.5,
-            map: tex
+            color: 0xffffff, //Colors.rgb2hex(Colors.colors[0]),
+            //transparent: true
         });
+        this.material;
         /*
         this.mat = new THREE.ShaderMaterial({
             uniforms: {
@@ -9836,8 +9834,9 @@ class Particles extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
             fragmentShader: glslify(myFrag),
             side: THREE.DoubleSide
           })*/
-        this.points = new three__WEBPACK_IMPORTED_MODULE_6__.Points(geometry, this.material);
+        this.points = new three__WEBPACK_IMPORTED_MODULE_8__.Points(geometry, this.material);
         this.points.frustumCulled = false;
+        this.points.position.z = 10;
         this.add(this.points);
         this.control = new _ParticlesControl__WEBPACK_IMPORTED_MODULE_4__.ParticleControl();
         this.control.init(this);
@@ -9856,11 +9855,7 @@ class Particles extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
     }
     update() {
         this.control.update();
-        this.material.color.setRGB(1, 1, 1
-        //Colors.colors[0].r,
-        //Colors.colors[0].g,
-        //Colors.colors[0].b
-        );
+        this.material.color.setRGB(_proof_data_Colors__WEBPACK_IMPORTED_MODULE_7__.Colors.colors[0].r, _proof_data_Colors__WEBPACK_IMPORTED_MODULE_7__.Colors.colors[0].g, _proof_data_Colors__WEBPACK_IMPORTED_MODULE_7__.Colors.colors[0].b);
         //POINTSの更新
         let list = this.points.geometry.attributes.position.array;
         for (let i = 0; i < list.length; i += 3) {
@@ -9879,6 +9874,33 @@ class Particles extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         }
         this.points.geometry.attributes.position.needsUpdate = true;
         //this.calc.calc(this.particles);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/main/particles/ParticlesBase.ts":
+/*!*********************************************!*\
+  !*** ./src/main/particles/ParticlesBase.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ParticlesBase": () => (/* binding */ ParticlesBase)
+/* harmony export */ });
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+
+class ParticlesBase extends three__WEBPACK_IMPORTED_MODULE_0__.Object3D {
+    init() {
+    }
+    update() {
+    }
+    pause() {
+    }
+    reset() {
     }
     resize() {
         //this.mat.uniforms.cameraConstant.value = window.innerHeight;
@@ -9938,13 +9960,21 @@ class ParticleControl extends three__WEBPACK_IMPORTED_MODULE_3__.Object3D {
                 this.line.updateCrossPoints();
                 let intesection = _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().instersection;
                 let crossPoints = intesection.GetCurrentCrossPoints();
-                for (let i = 0; i < crossPoints.length; i += _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.numMabiki) {
-                    let p = crossPoints[i];
-                    if (p) {
-                        this.particles[this.particleIndex % this.particles.length].show(p);
-                        this.particleIndex++;
+                //for(let i=0;i<crossPoints.length;i+=Params.numMabiki){
+                let idx = 0;
+                if (crossPoints.length > 0) {
+                    while (true) {
+                        let p = crossPoints[idx];
+                        if (p) {
+                            this.particles[this.particleIndex % this.particles.length].show(p);
+                            this.particleIndex++;
+                        }
+                        idx += _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.numMabiki;
+                        if (idx >= crossPoints.length)
+                            break;
                     }
                 }
+                //}
                 /*
                 for(let i=0;i<Params.numEmitting;i++){
                     let point = intesection.GetCurrentRandomPoint();
@@ -9979,93 +10009,6 @@ class ParticleControl extends three__WEBPACK_IMPORTED_MODULE_3__.Object3D {
 
 /***/ }),
 
-/***/ "./src/main/particles/Tail.ts":
-/*!************************************!*\
-  !*** ./src/main/particles/Tail.ts ***!
-  \************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Tail": () => (/* binding */ Tail)
-/* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
-/* harmony import */ var _data_SRandom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/SRandom */ "./src/main/data/SRandom.ts");
-
-
-class Tail extends three__WEBPACK_IMPORTED_MODULE_1__.Mesh {
-    constructor() {
-        // BufferGeometryを使って四角形を作成
-        const geometry = new three__WEBPACK_IMPORTED_MODULE_1__.BufferGeometry();
-        // 頂点データを定義
-        let vertices = new Float32Array([
-            -1.0, -1.0, 0.0,
-            1.0, -1.0, 0.0,
-            1.0, 1.0, 0.0,
-            -1.0, 1.0, 0.0 // 左上
-        ]);
-        const colors = new Float32Array([
-            1.0, 0.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 0.0, 1.0,
-            1.0, 1.0, 0.0 // 左上: イエロー
-        ]);
-        // 頂点データをBufferAttributeとしてgeometryに追加
-        geometry.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_1__.BufferAttribute(vertices, 3));
-        geometry.setAttribute('color', new three__WEBPACK_IMPORTED_MODULE_1__.BufferAttribute(colors, 3));
-        // インデックスを定義（2つの三角形を指定）
-        const indices = new Uint16Array([
-            0, 1, 2,
-            0, 2, 3 // 2番目の三角形
-        ]);
-        // インデックスをgeometryに追加
-        geometry.setIndex(new three__WEBPACK_IMPORTED_MODULE_1__.BufferAttribute(indices, 1));
-        // マテリアルを作成
-        const material = new three__WEBPACK_IMPORTED_MODULE_1__.MeshBasicMaterial({
-            color: 0xffffff,
-            side: three__WEBPACK_IMPORTED_MODULE_1__.DoubleSide,
-            vertexColors: true
-        });
-        // 四角形のメッシュを作成し、シーンに追加
-        super(geometry, material);
-        this.width = 1;
-        this.width = 3 + 30 * _data_SRandom__WEBPACK_IMPORTED_MODULE_0__.SRandom.random();
-        this.vertices = vertices;
-    }
-    setVertex(index, x, y, z) {
-        this.vertices[index * 3 + 0] = x;
-        this.vertices[index * 3 + 1] = y;
-        this.vertices[index * 3 + 2] = z;
-    }
-    update(p1, p2) {
-        this.position.copy(p1);
-        let dx = p2.x - p1.x;
-        let dy = p2.y - p1.y;
-        let rad = Math.atan2(dy, dx);
-        let amp = this.width;
-        let lx = amp * Math.cos(rad - Math.PI / 2);
-        let ly = amp * Math.sin(rad - Math.PI / 2);
-        let rx = amp * Math.cos(rad + Math.PI / 2);
-        let ry = amp * Math.sin(rad + Math.PI / 2);
-        this.setVertex(2, lx, ly, 0); //左上
-        this.setVertex(3, rx, ry, 0); //右上
-        this.setVertex(0, dx + rx, dy + ry, 0); //右下
-        this.setVertex(1, dx + lx, dy + ly, 0); //左下
-        /*
-        -1.0, -1.0, 0.0, // 左下
-        1.0, -1.0, 0.0,  // 右下
-        1.0, 1.0, 0.0,   // 右上
-        -1.0, 1.0, 0.0   // 左上
-        */
-        // 頂点データのBufferAttributeを更新
-        this.geometry.attributes.position.needsUpdate = true;
-    }
-}
-
-
-/***/ }),
-
 /***/ "./src/main/particles/brush/Brushes.ts":
 /*!*********************************************!*\
   !*** ./src/main/particles/brush/Brushes.ts ***!
@@ -10077,50 +10020,49 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Brushes": () => (/* binding */ Brushes)
 /* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
-/* harmony import */ var _Forces__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Forces */ "./src/main/particles/Forces.ts");
-/* harmony import */ var _brush_vert__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./brush.vert */ "./src/main/particles/brush/brush.vert");
-/* harmony import */ var _brush_frag__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./brush.frag */ "./src/main/particles/brush/brush.frag");
-/* harmony import */ var glslify__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js");
-/* harmony import */ var glslify__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(glslify__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../proof/data/Params */ "./src/proof/data/Params.ts");
-/* harmony import */ var _data_SRandom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../data/SRandom */ "./src/main/data/SRandom.ts");
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var _brush_vert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./brush.vert */ "./src/main/particles/brush/brush.vert");
+/* harmony import */ var _brush_frag__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./brush.frag */ "./src/main/particles/brush/brush.frag");
+/* harmony import */ var glslify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js");
+/* harmony import */ var glslify__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(glslify__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../proof/data/Params */ "./src/proof/data/Params.ts");
+/* harmony import */ var _data_SRandom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../data/SRandom */ "./src/main/data/SRandom.ts");
+
+//import { Forces } from '../Forces';
 
 
 
 
 
-
-
-class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
+class Brushes extends three__WEBPACK_IMPORTED_MODULE_5__.Mesh {
     constructor() {
         // BufferGeometryを使って四角形を作成
-        const geometry = new three__WEBPACK_IMPORTED_MODULE_6__.BufferGeometry();
+        const geometry = new three__WEBPACK_IMPORTED_MODULE_5__.BufferGeometry();
         //
         //this.widthRatio = 0.8+0.2*Math.random();
         // 頂点データを定義
-        let vertices = new Float32Array(_Forces__WEBPACK_IMPORTED_MODULE_0__.Forces.NUM * 3 * 4); //vec3が4個
-        let colors = new Float32Array(_Forces__WEBPACK_IMPORTED_MODULE_0__.Forces.NUM * 3 * 4); //vec3が4個
-        let uvs = new Float32Array(_Forces__WEBPACK_IMPORTED_MODULE_0__.Forces.NUM * 2 * 4); //vec2が4個
+        let vertices = new Float32Array(Brushes.NUM * 3 * 4); //vec3が4個
+        let colors = new Float32Array(Brushes.NUM * 3 * 4); //vec3が4個
+        let uvs = new Float32Array(Brushes.NUM * 2 * 4); //vec2が4個
         // インデックスを定義（2つの三角形を指定）
-        let indices = new Uint16Array(_Forces__WEBPACK_IMPORTED_MODULE_0__.Forces.NUM * 6); //3角形が2個で6
-        let randoms = new Float32Array(_Forces__WEBPACK_IMPORTED_MODULE_0__.Forces.NUM * 3 * 4);
-        for (let i = 0; i < _Forces__WEBPACK_IMPORTED_MODULE_0__.Forces.NUM; i++) {
+        let indices = new Uint16Array(Brushes.NUM * 6); //3角形が2個で6
+        let randoms = new Float32Array(Brushes.NUM * 3 * 4);
+        for (let i = 0; i < Brushes.NUM; i++) {
             for (let j = 0; j < 4; j++) { //4点
                 vertices[i * 12 + j * 3 + 0] = 0;
                 vertices[i * 12 + j * 3 + 1] = 0;
                 vertices[i * 12 + j * 3 + 2] = 0;
             }
             for (let j = 0; j < 4; j++) { //4点
-                colors[i * 12 + j * 3 + 0] = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
-                colors[i * 12 + j * 3 + 1] = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
-                colors[i * 12 + j * 3 + 2] = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
+                colors[i * 12 + j * 3 + 0] = _data_SRandom__WEBPACK_IMPORTED_MODULE_4__.SRandom.random();
+                colors[i * 12 + j * 3 + 1] = _data_SRandom__WEBPACK_IMPORTED_MODULE_4__.SRandom.random();
+                colors[i * 12 + j * 3 + 2] = _data_SRandom__WEBPACK_IMPORTED_MODULE_4__.SRandom.random();
             }
-            let ran = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
+            let ran = _data_SRandom__WEBPACK_IMPORTED_MODULE_4__.SRandom.random();
             for (let j = 0; j < 4; j++) { //4点
                 randoms[i * 12 + j * 3 + 0] = ran;
-                randoms[i * 12 + j * 3 + 1] = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
-                randoms[i * 12 + j * 3 + 2] = _data_SRandom__WEBPACK_IMPORTED_MODULE_5__.SRandom.random();
+                randoms[i * 12 + j * 3 + 1] = _data_SRandom__WEBPACK_IMPORTED_MODULE_4__.SRandom.random();
+                randoms[i * 12 + j * 3 + 2] = _data_SRandom__WEBPACK_IMPORTED_MODULE_4__.SRandom.random();
             }
             uvs[i * 8 + 0] = 0; //u//左上
             uvs[i * 8 + 1] = 0; //v
@@ -10144,16 +10086,16 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
         ]);
         */
         // 頂点データをBufferAttributeとしてgeometryに追加
-        geometry.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_6__.BufferAttribute(vertices, 3));
-        geometry.setAttribute('color', new three__WEBPACK_IMPORTED_MODULE_6__.BufferAttribute(colors, 3));
-        geometry.setAttribute('uvs', new three__WEBPACK_IMPORTED_MODULE_6__.BufferAttribute(uvs, 2));
-        geometry.setAttribute('randoms', new three__WEBPACK_IMPORTED_MODULE_6__.BufferAttribute(randoms, 3));
+        geometry.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_5__.BufferAttribute(vertices, 3));
+        geometry.setAttribute('color', new three__WEBPACK_IMPORTED_MODULE_5__.BufferAttribute(colors, 3));
+        geometry.setAttribute('uvs', new three__WEBPACK_IMPORTED_MODULE_5__.BufferAttribute(uvs, 2));
+        geometry.setAttribute('randoms', new three__WEBPACK_IMPORTED_MODULE_5__.BufferAttribute(randoms, 3));
         // インデックスをgeometryに追加
-        geometry.setIndex(new three__WEBPACK_IMPORTED_MODULE_6__.BufferAttribute(indices, 1));
+        geometry.setIndex(new three__WEBPACK_IMPORTED_MODULE_5__.BufferAttribute(indices, 1));
         // マテリアルを作成        
-        let tex1 = new three__WEBPACK_IMPORTED_MODULE_6__.TextureLoader().load(_proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.PATH + "brush.png");
-        let mat = new three__WEBPACK_IMPORTED_MODULE_6__.ShaderMaterial({
-            side: three__WEBPACK_IMPORTED_MODULE_6__.DoubleSide,
+        let tex1 = new three__WEBPACK_IMPORTED_MODULE_5__.TextureLoader().load(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.PATH + "brush.png");
+        let mat = new three__WEBPACK_IMPORTED_MODULE_5__.ShaderMaterial({
+            side: three__WEBPACK_IMPORTED_MODULE_5__.DoubleSide,
             uniforms: {
                 tex: { value: tex1 },
                 detail: { value: 5.0 },
@@ -10163,8 +10105,8 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
             },
             transparent: true,
             vertexColors: true,
-            vertexShader: glslify__WEBPACK_IMPORTED_MODULE_3___default()(_brush_vert__WEBPACK_IMPORTED_MODULE_1__["default"]),
-            fragmentShader: glslify__WEBPACK_IMPORTED_MODULE_3___default()(_brush_frag__WEBPACK_IMPORTED_MODULE_2__["default"]),
+            vertexShader: glslify__WEBPACK_IMPORTED_MODULE_2___default()(_brush_vert__WEBPACK_IMPORTED_MODULE_0__["default"]),
+            fragmentShader: glslify__WEBPACK_IMPORTED_MODULE_2___default()(_brush_frag__WEBPACK_IMPORTED_MODULE_1__["default"]),
             //opacity: 0.5         
         });
         //mat.wireframe=true;
@@ -10178,7 +10120,7 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
         this.colors = colors;
         this.randoms = randoms;
         this.geometry.attributes.position.needsUpdate = true;
-        let gui = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.gui.addFolder("==BRUSH==");
+        let gui = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.gui.addFolder("==BRUSH==");
         gui.close();
         //gui.add(this,"widthRatio",0,10).listen();
         gui.add(this.mat.uniforms.highlight, "value", 0, 1).name("highlight").listen();
@@ -10207,7 +10149,7 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
         let dx = p2.x - p1.x;
         let dy = p2.y - p1.y;
         let rad = Math.atan2(dy, dx);
-        let amp = ww * _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.widthRatio; //*(1-life);
+        let amp = ww * _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.widthRatio; //*(1-life);
         let lx = amp * Math.cos(rad - Math.PI / 2);
         let ly = amp * Math.sin(rad - Math.PI / 2);
         let rx = amp * Math.cos(rad + Math.PI / 2);
@@ -10233,6 +10175,7 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_6__.Mesh {
         }
     }
 }
+Brushes.NUM = 300;
 
 
 /***/ }),
@@ -10802,7 +10745,7 @@ class Colors {
         //gui.addColor(Colors.logoColor,"logoColor").listen();
         gui.add(Colors, "NUM");
         gui.add(Colors, "reset");
-        this.reset();
+        //this.reset();
     }
     static reset() {
         Colors.NUM = Math.floor(2 + 2 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random());
@@ -10958,15 +10901,15 @@ class Params {
         console.log("Params.USER_TIME", Params.USER_TIME);
     }
     static setParticleParam() {
-        Params.intervalEmitting = 3;
+        Params.intervalEmitting = 1;
         Params.numMabiki = 3;
         let ran = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
         if (ran < 0.333)
-            Params.numMabiki = 3;
+            Params.numMabiki = 2;
         else if (ran < 0.666)
             Params.numMabiki = 3;
         else
-            Params.numMabiki = 5;
+            Params.numMabiki = 4; //少ない
         this.masatsu = 0.8 + 0.05 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random(); //0.8+0.2*SRandom.random();
         this.radius = 50; //40+SRandom.random()*20;
         this.radius2 = 20; //12;//10+SRandom.random()*10;
@@ -11333,15 +11276,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "MySVGLine": () => (/* binding */ MySVGLine)
 /* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 /* harmony import */ var _line_line_vert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./line/line.vert */ "./src/shapes/line/line.vert");
 /* harmony import */ var _line_line_frag__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./line/line.frag */ "./src/shapes/line/line.frag");
 /* harmony import */ var glslify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js");
 /* harmony import */ var glslify__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(glslify__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _main_data_SRandom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../main/data/SRandom */ "./src/main/data/SRandom.ts");
-/* harmony import */ var _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../proof/data/Colors */ "./src/proof/data/Colors.ts");
-/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../proof/data/Params */ "./src/proof/data/Params.ts");
-/* harmony import */ var _main_data_DataManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../main/data/DataManager */ "./src/main/data/DataManager.ts");
+/* harmony import */ var _proof_data_Colors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../proof/data/Colors */ "./src/proof/data/Colors.ts");
+/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../proof/data/Params */ "./src/proof/data/Params.ts");
+/* harmony import */ var _main_data_DataManager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../main/data/DataManager */ "./src/main/data/DataManager.ts");
 
 
 
@@ -11349,8 +11291,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
+class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
     constructor() {
         super(...arguments);
         //ストロークを書く
@@ -11366,20 +11307,20 @@ class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
             positions[i * 3 + 0] = 9999;
             positions[i * 3 + 1] = 9999;
             positions[i * 3 + 2] = 9999;
-            colors[i * 3 + 0] = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_3__.SRandom.random();
-            colors[i * 3 + 1] = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_3__.SRandom.random();
-            colors[i * 3 + 2] = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_3__.SRandom.random();
+            colors[i * 3 + 0] = 0; //
+            colors[i * 3 + 1] = 0; //
+            colors[i * 3 + 2] = 0; //
         }
-        this.geo = new three__WEBPACK_IMPORTED_MODULE_7__.BufferGeometry();
-        this.geo.setAttribute('color1', new three__WEBPACK_IMPORTED_MODULE_7__.BufferAttribute(colors, 3, true));
-        this.geo.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_7__.BufferAttribute(positions, 3));
+        this.geo = new three__WEBPACK_IMPORTED_MODULE_6__.BufferGeometry();
+        this.geo.setAttribute('color1', new three__WEBPACK_IMPORTED_MODULE_6__.BufferAttribute(colors, 3, true));
+        this.geo.setAttribute('position', new three__WEBPACK_IMPORTED_MODULE_6__.BufferAttribute(positions, 3));
         //this.geo.setAttribute( 'scale', new THREE.BufferAttribute( scales, 1 ) );
         /*
         this.material = new THREE.LineBasicMaterial({
             color:0xffffff
         });*/
-        this.material = new three__WEBPACK_IMPORTED_MODULE_7__.ShaderMaterial({
-            side: three__WEBPACK_IMPORTED_MODULE_7__.DoubleSide,
+        this.material = new three__WEBPACK_IMPORTED_MODULE_6__.ShaderMaterial({
+            side: three__WEBPACK_IMPORTED_MODULE_6__.DoubleSide,
             uniforms: {
                 opacity: { value: 1.0 },
                 time: { value: 0.0 },
@@ -11392,14 +11333,14 @@ class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
             //opacity: 0.5         
         });
         //this.material.opacity=0.5;
-        this.strokes = new three__WEBPACK_IMPORTED_MODULE_7__.LineSegments(this.geo, this.material);
+        this.strokes = new three__WEBPACK_IMPORTED_MODULE_6__.LineSegments(this.geo, this.material);
         //scene.add( particles );
         this.positions = this.geo.attributes.position.array;
         this.colors = this.geo.attributes.color1.array;
         //this.scales = this.particles.geometry.attributes.scale.array as number[];
         this.add(this.strokes);
         this.hide();
-        _proof_data_Params__WEBPACK_IMPORTED_MODULE_5__.Params.gui.add(this.material.uniforms.lineY, "value", -2000, 2000).name("lineY").listen();
+        _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.gui.add(this.material.uniforms.lineY, "value", -2000, 2000).name("lineY").listen();
     }
     show() {
         this.strokes.visible = true;
@@ -11410,17 +11351,17 @@ class MySVGLine extends three__WEBPACK_IMPORTED_MODULE_7__.Object3D {
     updateLines() {
         console.log("updateLines");
         this.reset();
-        let points = _main_data_DataManager__WEBPACK_IMPORTED_MODULE_6__.DataManager.getInstance().svg.pointsForLine;
+        let points = _main_data_DataManager__WEBPACK_IMPORTED_MODULE_5__.DataManager.getInstance().svg.pointsForLine;
         for (let i = 0; i < points.length; i++) {
             let pts = points[i];
             for (let j = 0; j < pts.length - 1; j++) {
-                let col = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_4__.Colors.getRandomColor();
+                let col = _proof_data_Colors__WEBPACK_IMPORTED_MODULE_3__.Colors.getRandomColor();
                 let p1 = pts[j];
                 let p2 = pts[j + 1];
                 this.connectDots(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, col.r, col.g, col.b);
             }
         }
-        console.log("--->" + this.counter);
+        //console.log("--->"+this.counter);
     }
     reset() {
         this.counter = 0;

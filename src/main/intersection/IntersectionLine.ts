@@ -54,7 +54,8 @@ export class IntersectionLine extends Object3D{
         this.lineY = new LineSeg(
             -1000,this.yy,
             1000,this.yy
-        );        
+        );
+        
     }
 
     public Init(svg:MySVGLoader){

@@ -5,8 +5,6 @@ import { Colors } from './Colors';
 import { Vector3 } from 'three';
 import { SRandom } from '../../main/data/SRandom';
 
-
-
 export class Params{
 
     static gui      :GUI;
@@ -63,7 +61,6 @@ export class Params{
         Colors.init();
         this.setRandomParam();
 
-
         //パーティクルのパラメータ
         let g = this.gui.addFolder("== Particles ==");
             g.close();
@@ -77,25 +74,20 @@ export class Params{
             g.add(Params,"UPDATE_DISTANCE",0,50).listen();
             g.add(Params,"maxLimit",0,400).listen();
             g.add(Params,"widthRatio",0,1).listen();
-
     }
 
     public static forcedRandom(){
-
         if(this.MODE_NFT)return;//NFTモードなら何もしない
-
         this.setRandomParam();
-
     }
 
 
     public static setRandomParam(){
-
         this.setRandomColor();
         this.setParticleParam();
-
     }
 
+    
     public static initParams(){
 
         //DOM_JSにパスが書いてある
@@ -109,7 +101,6 @@ export class Params{
         }
 
         let win:any = window;
-
         if(win.attribute==null){
             win.attribute = {
               //hash: "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c",
@@ -122,23 +113,24 @@ export class Params{
         Params.USER_NAME = win.attribute.name;
         Params.USER_HASH = win.attribute.hash;
         Params.USER_TIME = win.attribute.mintedAt;
+        
         console.log("Params.USER_NAME",Params.USER_NAME);
         console.log("Params.USER_HASH",Params.USER_HASH);
         console.log("Params.USER_TIME",Params.USER_TIME);
+        
 
     }
 
 
-
     public static setParticleParam(){
 
-        Params.intervalEmitting =3;
+        Params.intervalEmitting =1;
         Params.numMabiki=3;
 
         let ran = SRandom.random();
-        if(ran<0.333)Params.numMabiki = 3;
+        if(ran<0.333)Params.numMabiki = 2;
         else if(ran<0.666)Params.numMabiki = 3;
-        else Params.numMabiki = 5;
+        else Params.numMabiki = 4;//少ない
 
         this.masatsu = 0.8+0.05*SRandom.random();//0.8+0.2*SRandom.random();
         this.radius=50;//40+SRandom.random()*20;

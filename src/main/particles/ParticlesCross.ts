@@ -7,16 +7,16 @@ import { DataManager } from '../data/DataManager';
 import { ParticleControl } from './ParticlesControl';
 import { Params } from '../../proof/data/Params';
 import { ParticlesBase } from './ParticlesBase';
-import { Colors } from '../../proof/data/Colors';
 
-export class Particles extends ParticlesBase{
+export class ParticlesCross extends ParticlesBase{
 
-
-    points           :THREE.Points;
+    public particles :Particle[];
+    line             :IntersectionLine;
+    points           :THREE.InstancedMesh;
     calc             :PLifeCalc;
     control          :ParticleControl;
-    mat             :THREE.ShaderMaterial;
-    material        :THREE.PointsMaterial;
+    mat             :THREE.MeshBasicMaterial;
+    material        :THREE.MeshBasicMaterial;
 
     constructor(){
         
@@ -49,23 +49,9 @@ export class Particles extends ParticlesBase{
 
         geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 
-        /*
-        let loader = new THREE.TextureLoader();
-        let tex = loader.load( Params.PATH + '128x128.png');
-        tex.magFilter = THREE.NearestFilter;
-        tex.minFilter = THREE.NearestFilter;
-        tex.generateMipmaps=false;
-        */
-
-        this.material = new THREE.PointsMaterial( {
-            size: 6,
-            sizeAttenuation: false,
-            color: 0xffffff,//Colors.rgb2hex(Colors.colors[0]),
-            //transparent: true
+        this.material = new THREE.MeshBasicMaterial( {
+            color: 0xffffff//Colors.rgb2hex(Colors.colors[0]),
         } );
-        this.material
-
-
 
         /*
         this.mat = new THREE.ShaderMaterial({
@@ -78,9 +64,8 @@ export class Particles extends ParticlesBase{
             side: THREE.DoubleSide
           })*/
 
-        this.points = new THREE.Points( geometry, this.material );
+        //this.points = new THREE.InstancedMesh( geometry, this.material );
         this.points.frustumCulled=false;
-        this.points.position.z = 10;
         this.add( this.points );
 
         this.control = new ParticleControl();
@@ -108,10 +93,11 @@ export class Particles extends ParticlesBase{
         
         this.control.update();
         this.material.color.setRGB(
-            Colors.colors[0].r,
-            Colors.colors[0].g,
-            Colors.colors[0].b
-        );
+            1,1,1
+            //Colors.colors[0].r,
+            //Colors.colors[0].g,
+            //Colors.colors[0].b
+        )
 
         //POINTSの更新
         let list = this.points.geometry.attributes.position.array as number[];

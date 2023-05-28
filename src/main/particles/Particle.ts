@@ -5,7 +5,7 @@ import { Forces } from './Forces';
 import { Lines } from './Lines';
 import { DataManager } from '../data/DataManager';
 import { Lines2 } from './Lines2';
-import { Tail } from './Tail';
+//import { Tail } from './Tail';
 import { Brushes } from './brush/Brushes';
 import { Colors } from '../../proof/data/Colors';
 import { Params } from '../../proof/data/Params';
@@ -24,7 +24,7 @@ export class Particle{
     pastPos :Vector3;
     count   :number = 0;
     limit   :number = 0;
-    tail    :Tail;
+    //tail    :Tail;
     colR :number = 0;
     colG :number = 0;
     colB :number = 0;
@@ -45,7 +45,7 @@ export class Particle{
 
         this.index = idx;
         this.count = 0;
-        this.tail = new Tail();
+        //this.tail = new Tail();
 
         let col = Colors.getRandomColor();
         this.colR = col.r;
@@ -67,6 +67,8 @@ export class Particle{
     }
 
     public show(point:THREE.Vector2){
+
+        console.log("show > " + this.index)
 
         let col = Colors.getRandomColor();
         this.colR = col.r;
