@@ -52,8 +52,6 @@ export class Main{
 
         this.renderer.render(this.scene, this.camera);
 
-
-
         let dataManager = DataManager.getInstance();
         dataManager.init(this,()=>{
             this.init2();
@@ -197,10 +195,19 @@ export class Main{
 
         window.clearTimeout(this.timeoutId);
         this.timeoutId = window.setTimeout(()=>{
-            this.onWindowResize2(Params.stageWidth,Params.stageHeight);
+            if(Params.MODE_NFT) this.onWindowResizeNFT(Params.stageWidth,Params.stageHeight);
+            else this.onWindowResize2(Params.stageWidth,Params.stageHeight);
             this.pastTime = new Date().getTime();
         },200);
 
+    }
+
+    onWindowResizeNFT(ww:number,hh:number){
+
+        console.log("resize")
+        this.onWindowResize2(ww,hh);
+        DataManager.getInstance().resetLine();
+        
     }
 
     onWindowResize2(ww:number,hh:number){

@@ -52,9 +52,6 @@ export class DOMControl{
 
         if(this.title.y>window.innerHeight-this.title.height){
             this.title.y = window.innerHeight-this.title.height;
-            
-            //DataManager.getInstance().regenerate();
-
         }
 
 

@@ -23,7 +23,7 @@ export class Params{
 
     static numMabiki      :number = 4;
     static intervalEmitting :number = 10;
-    static bgColor: { r: number; g: number; b: number; } = {r:0.7,g:0.7,b:0.6};
+    static bgColor: { r: number; g: number; b: number; } = {r:1,g:1,b:1};
     static bgColorAlpha:number = 0.5;
     static FILTER_FLIPFLOP  : THREE.TextureFilter = THREE.LinearFilter;
     static FILTER_DRAW      : THREE.TextureFilter = THREE.LinearFilter;
@@ -124,13 +124,13 @@ export class Params{
 
     public static setParticleParam(){
 
-        Params.intervalEmitting =1;
+        Params.intervalEmitting =3;
         Params.numMabiki=3;
 
         let ran = SRandom.random();
         if(ran<0.333)Params.numMabiki = 2;
         else if(ran<0.666)Params.numMabiki = 3;
-        else Params.numMabiki = 4;//少ない
+        else Params.numMabiki = 5;//少ない
 
         this.masatsu = 0.8+0.05*SRandom.random();//0.8+0.2*SRandom.random();
         this.radius=50;//40+SRandom.random()*20;
@@ -148,16 +148,16 @@ export class Params{
         let rand = SRandom.random();
         if(rand<0.333){
             this.bgColor.r = 255/255;
-            this.bgColor.g = 220/255;
+            this.bgColor.g = 235/255;
             this.bgColor.b = 255/255;
         }else if(0.666){
-            this.bgColor.r = 220/255;
+            this.bgColor.r = 235/255;
             this.bgColor.g = 255/255;
             this.bgColor.b = 255/255;
         }else{
             this.bgColor.r = 255/255;
             this.bgColor.g = 255/255
-            this.bgColor.b = 220/255
+            this.bgColor.b = 235/255
         }
 
     }

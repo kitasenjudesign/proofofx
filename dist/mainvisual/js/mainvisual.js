@@ -8833,7 +8833,6 @@ class DOMControl {
         )*/
         if (this.title.y > window.innerHeight - this.title.height) {
             this.title.y = window.innerHeight - this.title.height;
-            //DataManager.getInstance().regenerate();
         }
     }
     update() {
@@ -8991,9 +8990,17 @@ class Main {
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight = hh;
         window.clearTimeout(this.timeoutId);
         this.timeoutId = window.setTimeout(() => {
-            this.onWindowResize2(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight);
+            if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.MODE_NFT)
+                this.onWindowResizeNFT(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight);
+            else
+                this.onWindowResize2(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight);
             this.pastTime = new Date().getTime();
         }, 200);
+    }
+    onWindowResizeNFT(ww, hh) {
+        console.log("resize");
+        this.onWindowResize2(ww, hh);
+        _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().resetLine();
     }
     onWindowResize2(ww, hh) {
         var _a, _b;
@@ -9057,6 +9064,10 @@ class DataManager {
     }
     regenerate() {
         this.main.regenerate();
+    }
+    resetLine() {
+        this.instersection.reset();
+        this.instersection.tweenY();
     }
 }
 
@@ -9295,6 +9306,7 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         return crossPoints;
     }
     reset() {
+        //console.log("reset");
         this.yy = window.innerHeight / 2;
         for (let i = 0; i < this.linePoints.length; i++) {
             this.linePoints[i].enable = true;
@@ -9311,6 +9323,8 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
     }
     tweenY() {
         this.yy = window.innerHeight / 2;
+        if (this.tween)
+            this.tween.kill();
         this.tween = gsap__WEBPACK_IMPORTED_MODULE_7__.gsap.to(this, {
             yy: -window.innerHeight / 2,
             duration: 12.0,
@@ -10901,7 +10915,7 @@ class Params {
         console.log("Params.USER_TIME", Params.USER_TIME);
     }
     static setParticleParam() {
-        Params.intervalEmitting = 1;
+        Params.intervalEmitting = 3;
         Params.numMabiki = 3;
         let ran = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
         if (ran < 0.333)
@@ -10909,7 +10923,7 @@ class Params {
         else if (ran < 0.666)
             Params.numMabiki = 3;
         else
-            Params.numMabiki = 4; //少ない
+            Params.numMabiki = 5; //少ない
         this.masatsu = 0.8 + 0.05 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random(); //0.8+0.2*SRandom.random();
         this.radius = 50; //40+SRandom.random()*20;
         this.radius2 = 20; //12;//10+SRandom.random()*10;
@@ -10922,11 +10936,11 @@ class Params {
         let rand = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
         if (rand < 0.333) {
             this.bgColor.r = 255 / 255;
-            this.bgColor.g = 220 / 255;
+            this.bgColor.g = 235 / 255;
             this.bgColor.b = 255 / 255;
         }
         else if (true) {
-            this.bgColor.r = 220 / 255;
+            this.bgColor.r = 235 / 255;
             this.bgColor.g = 255 / 255;
             this.bgColor.b = 255 / 255;
         }
@@ -10946,7 +10960,7 @@ Params.stageWidth = 0;
 Params.stageHeight = 0;
 Params.numMabiki = 4;
 Params.intervalEmitting = 10;
-Params.bgColor = { r: 0.7, g: 0.7, b: 0.6 };
+Params.bgColor = { r: 1, g: 1, b: 1 };
 Params.bgColorAlpha = 0.5;
 Params.FILTER_FLIPFLOP = three__WEBPACK_IMPORTED_MODULE_3__.LinearFilter;
 Params.FILTER_DRAW = three__WEBPACK_IMPORTED_MODULE_3__.LinearFilter;

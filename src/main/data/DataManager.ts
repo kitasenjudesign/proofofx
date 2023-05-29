@@ -46,11 +46,15 @@ export class DataManager{
      
   }
 
-  
   public regenerate(){
 
     this.main.regenerate();
 
+  }
+
+  public resetLine(){
+    this.instersection.reset();
+    this.instersection.tweenY();
   }
 
 

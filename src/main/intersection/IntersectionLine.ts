@@ -148,6 +148,7 @@ export class IntersectionLine extends Object3D{
 
 
     reset(){
+        //console.log("reset");
         this.yy=window.innerHeight/2;
         for(let i=0;i<this.linePoints.length;i++){
             this.linePoints[i].enable=true;
@@ -164,7 +165,9 @@ export class IntersectionLine extends Object3D{
     }
 
     public tweenY(){
-        this.yy = window.innerHeight/2
+        this.yy = window.innerHeight/2;
+        if(this.tween) this.tween.kill();
+
         this.tween = gsap.to(this,{
             yy:-window.innerHeight/2,
             duration:12.0,
