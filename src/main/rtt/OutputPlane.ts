@@ -44,10 +44,8 @@ export class OutputPlane extends THREE.Mesh{
         let g = Params.gui.addFolder("== Output ==");
         g.addColor(Params,"bgColor").onChange(()=>{
 
-          this.mat.uniforms.bgCol.value.x = Params.bgColor.r;
-          this.mat.uniforms.bgCol.value.y = Params.bgColor.g;
-          this.mat.uniforms.bgCol.value.z = Params.bgColor.b;
-          this.mat.uniforms.bgCol.value.w = Params.bgColorAlpha;
+
+          
 
         })
 
@@ -79,7 +77,11 @@ export class OutputPlane extends THREE.Mesh{
 
     update(){
 
-
+      console.log("update bg ",Params.bgColor);
+      this.mat.uniforms.bgCol.value.x = Params.bgColor.r;
+      this.mat.uniforms.bgCol.value.y = Params.bgColor.g;
+      this.mat.uniforms.bgCol.value.z = Params.bgColor.b;
+      this.mat.uniforms.bgCol.value.w = Params.bgColorAlpha;
 
     }
 

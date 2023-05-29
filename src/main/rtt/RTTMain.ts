@@ -79,6 +79,7 @@ export class RTTMain extends THREE.Object3D{
             case 'input':
                 this.outputPlane.setTex(this.brushScene.renderTarget.texture);//最終出力
                 this.outputPlane.setTex2(null);
+                
                 break;
             case 'color':
                 this.outputPlane.setTex(this.pigmentScene.getTex());
@@ -94,6 +95,7 @@ export class RTTMain extends THREE.Object3D{
                 break;
 
         }
+        this.outputPlane.update();
 
     }
 
@@ -116,12 +118,10 @@ export class RTTMain extends THREE.Object3D{
         )
         
         this.brushScene?.resize(camera);
-
         this.blurScene?.resize(camera);
         this.pigmentScene?.resize(camera);
         this.lastCalcScene?.resize(camera);
         
-
     }
 
 

@@ -74,17 +74,20 @@ export class Params{
             g.add(Params,"UPDATE_DISTANCE",0,50).listen();
             g.add(Params,"maxLimit",0,400).listen();
             g.add(Params,"widthRatio",0,1).listen();
+
     }
 
-    public static forcedRandom(){
+    public static forcedRandom(){        
         if(this.MODE_NFT)return;//NFTモードなら何もしない
         this.setRandomParam();
     }
 
 
     public static setRandomParam(){
+        
         this.setRandomColor();
         this.setParticleParam();
+
     }
 
     
@@ -118,7 +121,6 @@ export class Params{
         console.log("Params.USER_HASH",Params.USER_HASH);
         console.log("Params.USER_TIME",Params.USER_TIME);
         
-
     }
 
 
@@ -141,6 +143,9 @@ export class Params{
 
     }
 
+    /**
+     * 
+     */
     public static setRandomColor(){
 
         Colors.reset();
@@ -148,16 +153,16 @@ export class Params{
         let rand = SRandom.random();
         if(rand<0.333){
             this.bgColor.r = 255/255;
-            this.bgColor.g = 235/255;
+            this.bgColor.g = 240/255;
             this.bgColor.b = 255/255;
-        }else if(0.666){
-            this.bgColor.r = 235/255;
+        }else if(rand<0.666){
+            this.bgColor.r = 240/255;
             this.bgColor.g = 255/255;
             this.bgColor.b = 255/255;
         }else{
             this.bgColor.r = 255/255;
             this.bgColor.g = 255/255
-            this.bgColor.b = 235/255
+            this.bgColor.b = 240/255
         }
 
     }

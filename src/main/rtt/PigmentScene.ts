@@ -40,7 +40,7 @@ export class PigmentScene extends FilpFlopSceneBase{
         //g.add(uniforms.attenuation, "value", 0.8, 1.0).step(0.001).name("attenuation");
         //ベースは背景と同じ色にする！！！
 
-        this.clearColor = Params.bgColorHex;
+        
         this.clearOpacity = 1.0;
         
         this.clearTargets();
@@ -52,6 +52,7 @@ export class PigmentScene extends FilpFlopSceneBase{
         inputTex:Texture,
         blurTex:Texture
     ): void {   
+        this.clearColor = Params.bgColorHex;
         this.uniforms.tex.value = this.getTex();//feedback
         this.uniforms.tex1.value = inputTex;
         this.uniforms.tex2.value = blurTex;

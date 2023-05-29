@@ -197,6 +197,7 @@ export class Main{
         this.timeoutId = window.setTimeout(()=>{
             if(Params.MODE_NFT) this.onWindowResizeNFT(Params.stageWidth,Params.stageHeight);
             else this.onWindowResize2(Params.stageWidth,Params.stageHeight);
+            
             this.pastTime = new Date().getTime();
         },200);
 
@@ -207,7 +208,7 @@ export class Main{
         console.log("resize")
         this.onWindowResize2(ww,hh);
         DataManager.getInstance().resetLine();
-        
+
     }
 
     onWindowResize2(ww:number,hh:number){

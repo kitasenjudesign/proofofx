@@ -10527,10 +10527,6 @@ class OutputPlane extends three__WEBPACK_IMPORTED_MODULE_4__.Mesh {
         this.mat = mat;
         let g = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.gui.addFolder("== Output ==");
         g.addColor(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params, "bgColor").onChange(() => {
-            this.mat.uniforms.bgCol.value.x = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.r;
-            this.mat.uniforms.bgCol.value.y = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.g;
-            this.mat.uniforms.bgCol.value.z = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.b;
-            this.mat.uniforms.bgCol.value.w = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColorAlpha;
         });
         let gg = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.gui.addFolder("== Output ==");
         gg.add(this.mat.uniforms.alpha, "value", 0.0, 1.0).step(0.01).name("alpha");
@@ -10546,6 +10542,11 @@ class OutputPlane extends three__WEBPACK_IMPORTED_MODULE_4__.Mesh {
         this.scale.set(scaleX, scaleY, 1);
     }
     update() {
+        console.log("update bg ", _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor);
+        this.mat.uniforms.bgCol.value.x = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.r;
+        this.mat.uniforms.bgCol.value.y = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.g;
+        this.mat.uniforms.bgCol.value.z = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColor.b;
+        this.mat.uniforms.bgCol.value.w = _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.bgColorAlpha;
     }
 }
 
@@ -10600,11 +10601,11 @@ class PigmentScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.FilpF
         g.add(uniforms.displacement.value, "y", 0.0, 0.05).step(0.001).name("displacement y");
         //g.add(uniforms.attenuation, "value", 0.8, 1.0).step(0.001).name("attenuation");
         //ベースは背景と同じ色にする！！！
-        this.clearColor = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.bgColorHex;
         this.clearOpacity = 1.0;
         this.clearTargets();
     }
     update(renderer, inputTex, blurTex) {
+        this.clearColor = _proof_data_Params__WEBPACK_IMPORTED_MODULE_4__.Params.bgColorHex;
         this.uniforms.tex.value = this.getTex(); //feedback
         this.uniforms.tex1.value = inputTex;
         this.uniforms.tex2.value = blurTex;
@@ -10693,6 +10694,7 @@ class RTTMain extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
                 this.outputPlane.setTex2(this.pigmentScene.getTex());
                 break;
         }
+        this.outputPlane.update();
     }
     resetAll() {
         this.brushScene.reset();
@@ -10931,20 +10933,27 @@ class Params {
         this.strength2 = 0.9; //0.9+SRandom.random()*0.2;
         //this.widthRatio = SRandom.random()*0.6+0.4;
     }
+    /**
+     *
+     */
     static setRandomColor() {
         _Colors__WEBPACK_IMPORTED_MODULE_1__.Colors.reset();
         let rand = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_2__.SRandom.random();
         if (rand < 0.333) {
             this.bgColor.r = 255 / 255;
-            this.bgColor.g = 235 / 255;
+            this.bgColor.g = 240 / 255;
             this.bgColor.b = 255 / 255;
         }
-        else if (true) {
-            this.bgColor.r = 235 / 255;
+        else if (rand < 0.666) {
+            this.bgColor.r = 240 / 255;
             this.bgColor.g = 255 / 255;
             this.bgColor.b = 255 / 255;
         }
-        else {}
+        else {
+            this.bgColor.r = 255 / 255;
+            this.bgColor.g = 255 / 255;
+            this.bgColor.b = 240 / 255;
+        }
     }
 }
 Params.NUM_DOTS = 150;
