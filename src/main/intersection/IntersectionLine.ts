@@ -183,7 +183,7 @@ export class IntersectionLine extends Object3D{
             setTimeout(()=>{
                 DataManager.getInstance().regenerate();
                 this.tweenY();
-            },1000);    
+            },2000);
         }
     }
 

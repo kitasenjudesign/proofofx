@@ -9339,7 +9339,7 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
             setTimeout(() => {
                 _data_DataManager__WEBPACK_IMPORTED_MODULE_2__.DataManager.getInstance().regenerate();
                 this.tweenY();
-            }, 1000);
+            }, 2000);
         }
     }
     //crossPointを取得する
@@ -10453,7 +10453,7 @@ class LastCalcScene extends _FlipFlopSceneBase__WEBPACK_IMPORTED_MODULE_0__.Filp
                 //alphaSpeed:{value:0.8},
                 alphaSpeed2: { value: 1 },
                 alphaSpeed: { value: 5 },
-                maxAlpha: { value: 0.6 },
+                maxAlpha: { value: 0.92 },
                 gensui: { value: 1 },
                 tex: { value: null },
                 tex1: { value: null },
