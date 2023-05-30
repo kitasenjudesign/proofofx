@@ -58,17 +58,20 @@ export class Colors {
 
         Colors.NUM = Math.floor( 2 + 2 * SRandom.random() );
 
-        this.logoColor.r = 0.5+0.5*SRandom.random();
-        this.logoColor.g = 0.5+0.5*SRandom.random();
-        this.logoColor.b = 0.5+0.5*SRandom.random();
+        //this.logoColor.r = 0.5+0.5*SRandom.random();
+        //this.logoColor.g = 0.5+0.5*SRandom.random();
+        //this.logoColor.b = 0.5+0.5*SRandom.random();
+
+        let startCol = SRandom.random();
+
 
         for(let i=0;i<this.NUM;i++){
 
             let col = this.colors[i];
             let hsl = new Color(0xffffff);
             hsl.setHSL(
-                SRandom.random(),
-                1,
+                startCol+i/this.NUM*0.5,
+                0.8,
                 0.5
             );
 

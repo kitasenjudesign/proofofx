@@ -10765,13 +10765,14 @@ class Colors {
     }
     static reset() {
         Colors.NUM = Math.floor(2 + 2 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random());
-        this.logoColor.r = 0.5 + 0.5 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
-        this.logoColor.g = 0.5 + 0.5 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
-        this.logoColor.b = 0.5 + 0.5 * _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
+        //this.logoColor.r = 0.5+0.5*SRandom.random();
+        //this.logoColor.g = 0.5+0.5*SRandom.random();
+        //this.logoColor.b = 0.5+0.5*SRandom.random();
+        let startCol = _main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random();
         for (let i = 0; i < this.NUM; i++) {
             let col = this.colors[i];
             let hsl = new three__WEBPACK_IMPORTED_MODULE_2__.Color(0xffffff);
-            hsl.setHSL(_main_data_SRandom__WEBPACK_IMPORTED_MODULE_1__.SRandom.random(), 1, 0.5);
+            hsl.setHSL(startCol + i / this.NUM * 0.5, 0.8, 0.5);
             col.r = hsl.r;
             col.g = hsl.g;
             col.b = hsl.b;
