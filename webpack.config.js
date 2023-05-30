@@ -3,8 +3,8 @@ const path = require("path");
  
 module.exports = {
   // モードを開発モードにする
-  //mode: "production",
-  mode: "development",
+  mode: "production",
+  //mode: "development",
   // 入力ファイル設定
   entry: [path.resolve(__dirname, "./src/index.ts")],
   // 出力ファイル設定

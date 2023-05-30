@@ -108,7 +108,7 @@ export class Params{
             win.attribute = {
               //hash: "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c",
               hash: ""+Math.random()+""+Math.random(),
-              name: "PoX太郎2",
+              name: "PoX",
               mintedAt: 1681036222612
             };
         }

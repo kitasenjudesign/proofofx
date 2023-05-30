@@ -77,7 +77,7 @@ export class OutputPlane extends THREE.Mesh{
 
     update(){
 
-      console.log("update bg ",Params.bgColor);
+      //console.log("update bg ",Params.bgColor);
       this.mat.uniforms.bgCol.value.x = Params.bgColor.r;
       this.mat.uniforms.bgCol.value.y = Params.bgColor.g;
       this.mat.uniforms.bgCol.value.z = Params.bgColor.b;
