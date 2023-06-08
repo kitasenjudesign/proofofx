@@ -115,7 +115,7 @@ export class Brushes extends THREE.Mesh{
                 tex     :{value:tex1},
                 detail  :{value:5.0},
                 border: {value:0},
-                highlight: {value: 0.5},
+                highlight: {value: 0.4},
                 opacity: {value: 1.0}
             },
             transparent: true,

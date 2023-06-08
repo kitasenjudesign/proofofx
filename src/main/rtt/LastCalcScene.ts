@@ -23,7 +23,7 @@ export class LastCalcScene extends FilpFlopSceneBase{
                     //alphaSpeed:{value:0.8},
                     alphaSpeed2:{value:1},
                     alphaSpeed:{value:5},//5},
-                    maxAlpha:{value:0.85},//65},
+                    maxAlpha:{value:0.9},//65},
                     gensui:{value:1},
                     tex:{value:null},
                     tex1:{value:null},

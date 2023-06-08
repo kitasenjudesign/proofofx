@@ -18,7 +18,7 @@ export class DOMControl{
             999
         );
         this.title.text =
-            "PROOF OF X - KEY VISUAL"+
+            "PROOF OF X"+
             " MINTED AT "+
             UNIXTimeFormatter.formatUnixTime(Params.USER_TIME) +
             " BY "+ Params.USER_NAME;

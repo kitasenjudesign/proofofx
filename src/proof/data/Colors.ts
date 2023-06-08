@@ -69,11 +69,25 @@ export class Colors {
 
             let col = this.colors[i];
             let hsl = new Color(0xffffff);
+            
             hsl.setHSL(
                 startCol+i/this.NUM*0.5,
                 0.8,
                 0.5
             );
+
+            //このコードでは、
+            //Lが0〜100、
+            //aとbがおおよそ-128〜127の範囲のLAB値を想定しています。
+            //RGBは0〜255の範囲の整数値を返します。
+            
+            /*
+            let rr=(startCol+i/this.NUM*0.5)*2*Math.PI;
+            let lab = this.labToRgb(
+                50,
+                128*Math.cos(rr),
+                128*Math.sin(rr)
+            );*/
 
             col.r = hsl.r;
             col.g = hsl.g;
@@ -100,5 +114,36 @@ export class Colors {
         return this.colors[Math.floor(SRandom.random()*this.NUM)];
 
     }
+
+
+    public static labToRgb(l:number, a:number, b:number): {r:number,g:number,b:number} {
+        // Step 1: LAB to XYZ
+        let y = (l + 16) / 116;
+        let x = a / 500 + y;
+        let z = y - b / 200;
+    
+        [x, y, z] = [x, y, z].map(v => {
+            return Math.pow(v, 3) > 0.008856 ? Math.pow(v, 3) : (v - 16 / 116) / 7.787;
+        });
+    
+        // D65 standard referent
+        x *= 0.95047;
+        y *= 1.00;
+        z *= 1.08883;
+    
+        // Step 2: XYZ to RGB
+        let rr=0,gg=0,bb=0;
+        [rr, gg, bb] = [3.2406 * x - 1.5372 * y - 0.4986 * z,
+                     -0.9689 * x + 1.8758 * y + 0.0415 * z,
+                     0.0557 * x - 0.2040 * y + 1.0570 * z];
+    
+        // assume sRGB
+        [rr, gg,bb] = [rr, gg, bb].map(v => {
+            return v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055;
+        });
+    
+        return {r:rr,g:gg,b:bb};
+    }
+    
 
 }

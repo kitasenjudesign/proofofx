@@ -2,7 +2,7 @@ export class UNIXTimeFormatter{
 
     static formatUnixTime(unixTime:number):string {
 
-        const date = new Date(unixTime);
+        const date = new Date(unixTime*1000);
 
         const year      = date.getUTCFullYear();
         const month     = this.padZero(date.getUTCMonth() + 1);

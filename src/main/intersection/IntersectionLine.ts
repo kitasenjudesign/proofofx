@@ -184,6 +184,8 @@ export class IntersectionLine extends Object3D{
                 DataManager.getInstance().regenerate();
                 this.tweenY();
             },2000);
+        }else{
+            this.visible=false;
         }
     }
 

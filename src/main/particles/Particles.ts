@@ -63,7 +63,7 @@ export class Particles extends ParticlesBase{
             color: 0xffffff,//Colors.rgb2hex(Colors.colors[0]),
             //transparent: true
         } );
-        this.material
+        //this.material
 
 
 
