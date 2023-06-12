@@ -68,7 +68,7 @@ export class Particle{
 
     public show(point:THREE.Vector2){
 
-        console.log("show > " + this.index)
+        //console.log("show > " + this.index)
 
         let col = Colors.getRandomColor();
         this.colR = col.r;

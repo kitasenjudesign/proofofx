@@ -1,6 +1,8 @@
 #pragma glslify: random = require(glsl-random)
 #pragma glslify: gradient = require("./gradient3.glsl")
-#pragma glslify: unsharp = require("./unsharp.glsl")
+//#pragma glslify: unsharp = require("./unsharp.glsl")
+#pragma glslify: unsharp = require("./unsharp2.glsl")
+
 
 //#pragma glslify: snoise3 = require(glsl-noise/simplex/3d)
 
@@ -26,7 +28,7 @@
     );
     
     vec4 col1 = unsharp(tex,uvv,size,1.0);
-    vec4 col2 =  texture2D(tex2,uvv);
+    vec4 col2 = texture2D(tex2,uvv);
 
     vec4 bgColor = bgCol;
     vec4 outputCol  = mix(

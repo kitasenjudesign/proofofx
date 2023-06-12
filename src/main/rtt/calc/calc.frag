@@ -23,6 +23,7 @@
 
     void main(void)
     {
+
       vec4 colBlur = texture2D(//ボケ用の数値
         tex2,
         vUv.xy
@@ -31,8 +32,7 @@
         tex,
         vUv.xy
       );
-      //元の色,pigment
-      vec4 colPigment=texture2D(//pigment用
+      vec4 colPigment=texture2D(//元の色,pigment用
         tex1,
         vUv.xy
       );
@@ -41,8 +41,8 @@
       //暗い色を無視する
       //float ratio = smoothstep(0.2,0.25,length(colPigment.rgb));
       col.rgb = mix(
-        col.rgb,//一個前と変わらない色
-        colPigment.rgb,//繰り返すとおよそ　この色になる
+        col.rgb,        //一個前と変わらない色
+        colPigment.rgb, //繰り返すとおよそ　この色になる
         clamp(colBlur.a*alphaSpeed2,0.0,1.0)//この値は乾いて０に近づいていく
       );
 

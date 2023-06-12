@@ -32,6 +32,7 @@ export class Params{
     public static PATH:string = "";
     public static USER_NAME:string="";
     public static USER_HASH:string="";
+    public static USER_ROLE:string="";
     public static USER_TIME:number=0;
     public static maxLimit: number = 400;
     public static widthRatio: number = 0.4;
@@ -40,9 +41,11 @@ export class Params{
     public static DOM_TITLE="mainvisual_title"
     public static DOM_JS="mainvisual_js"
 
-    public static MODE_NFT:boolean=false;
-    public static MODE_WEBSITE:boolean=false;
-    public static MODE_SQUIRE:boolean=false;
+    public static MODE_NFT      :boolean=false;
+    public static MODE_WEBSITE  :boolean=false;
+    public static MODE_SQUIRE   :boolean=false;
+    public static MODE_STAFF    :boolean=false;
+    //public static MODE_STAFF    :boolean=false;
 
     // Getter宣言
     public static get bgColorHex(): number {
@@ -94,12 +97,12 @@ export class Params{
     public static initParams(){
 
         //DOM_JSにパスが書いてある
-        const webgl = document.getElementById(this.DOM_JS);
-        this.PATH = webgl.dataset.baseurl+"img/"
-        this.MODE_NFT = webgl.dataset.mode=="nft";//"nft","website","squire"
-        this.MODE_SQUIRE = webgl.dataset.mode=="squire";//"nft","website","squire"
-        this.MODE_WEBSITE = webgl.dataset.mode=="website";
-        if(this.MODE_SQUIRE){
+        const webgl = document.getElementById(Params.DOM_JS);
+        Params.PATH = webgl.dataset.baseurl+"img/"
+        Params.MODE_NFT = webgl.dataset.mode=="nft";//"nft","website","squire"
+        Params.MODE_SQUIRE = webgl.dataset.mode=="squire";//"nft","website","squire"
+        Params.MODE_WEBSITE = webgl.dataset.mode=="website";
+        if(Params.MODE_SQUIRE){
             Params.stageWidth=Params.stageHeight;
         }
 
@@ -109,18 +112,27 @@ export class Params{
               //hash: "0x115044fc9f4b40dc9d4971a9e5c8a5863bd4ef7ccdd30db4f4ca04786457f88c",
               hash: ""+Math.random()+""+Math.random(),
               name: "PoX",
-              mintedAt: 1681036222612
+              mintedAt: 1681036222612,
+              role: "",
             };
         }
 
         Params.USER_NAME = win.attribute.name;
         Params.USER_HASH = win.attribute.hash;
         Params.USER_TIME = win.attribute.mintedAt;
-        
+        Params.USER_ROLE = win.attribute.role;
+
+        if(Params.USER_ROLE){
+            Params.USER_ROLE = Params.USER_ROLE.toUpperCase();//大文字化
+        }
+
+        Params.MODE_STAFF = Params.USER_ROLE.indexOf("STAFF")>=0;
+
         console.log("Params.USER_NAME",Params.USER_NAME);
         console.log("Params.USER_HASH",Params.USER_HASH);
         console.log("Params.USER_TIME",Params.USER_TIME);
-        
+        console.log("Params.USER_ROLE",Params.USER_ROLE);
+
     }
 
 
@@ -164,6 +176,13 @@ export class Params{
             this.bgColor.g = 255/255
             this.bgColor.b = 240/255
         }
+
+        /*
+        if(Params.MODE_STAFF){
+            this.bgColor.r = 240/255;
+            this.bgColor.g = 240/255;
+            this.bgColor.b = 240/255;
+        }*/
 
     }
 

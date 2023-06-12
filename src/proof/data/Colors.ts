@@ -1,6 +1,7 @@
 import { Color } from "three";
 import { Params } from "./Params";
 import { SRandom } from "../../main/data/SRandom";
+import { LabColor } from "./LabColor";
 
 
 export class Colors {
@@ -22,6 +23,9 @@ export class Colors {
         for(let i=0;i<4;i++){
 
             let cc = new Color(0xffffff);
+
+
+
             cc.setHSL(
                 0,0,0
             );
@@ -68,13 +72,28 @@ export class Colors {
         for(let i=0;i<this.NUM;i++){
 
             let col = this.colors[i];
-            let hsl = new Color(0xffffff);
+            //let hsl = new Color(0xffffff);
             
+            let amp = 120;
+            let rad = (startCol+i/this.NUM*0.5)*2*Math.PI;
+            let hsl = this.labToRgb(
+                50+30*SRandom.random(),
+                amp*Math.cos(rad),
+                amp*Math.sin(rad)
+                /*
+                50,
+                -100+200*SRandom.random(),
+                -100+200*SRandom.random()
+                */
+            );
+
+            
+            /*
             hsl.setHSL(
                 startCol+i/this.NUM*0.5,
                 0.8,
                 0.5
-            );
+            );*/
 
             //このコードでは、
             //Lが0〜100、
@@ -115,33 +134,33 @@ export class Colors {
 
     }
 
-
-    public static labToRgb(l:number, a:number, b:number): {r:number,g:number,b:number} {
+    
+    
+    static labToRgb(l:number, a:number, b:number):{r:number,g:number,b:number} {
         // Step 1: LAB to XYZ
         let y = (l + 16) / 116;
         let x = a / 500 + y;
         let z = y - b / 200;
-    
+
         [x, y, z] = [x, y, z].map(v => {
             return Math.pow(v, 3) > 0.008856 ? Math.pow(v, 3) : (v - 16 / 116) / 7.787;
         });
-    
+
         // D65 standard referent
         x *= 0.95047;
         y *= 1.00;
         z *= 1.08883;
-    
+
         // Step 2: XYZ to RGB
-        let rr=0,gg=0,bb=0;
-        [rr, gg, bb] = [3.2406 * x - 1.5372 * y - 0.4986 * z,
-                     -0.9689 * x + 1.8758 * y + 0.0415 * z,
-                     0.0557 * x - 0.2040 * y + 1.0570 * z];
-    
+        let [rr, gg, bb] = [3.2406 * x - 1.5372 * y - 0.4986 * z,
+                    -0.9689 * x + 1.8758 * y + 0.0415 * z,
+                    0.0557 * x - 0.2040 * y + 1.0570 * z];
+
         // assume sRGB
-        [rr, gg,bb] = [rr, gg, bb].map(v => {
+        [rr, gg, bb] = [rr, gg, bb].map(v => {
             return v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055;
         });
-    
+
         return {r:rr,g:gg,b:bb};
     }
     

@@ -58,7 +58,7 @@ export class Particles extends ParticlesBase{
         */
 
         this.material = new THREE.PointsMaterial( {
-            size: 6,
+            size: 4,
             sizeAttenuation: false,
             color: 0xffffff,//Colors.rgb2hex(Colors.colors[0]),
             //transparent: true

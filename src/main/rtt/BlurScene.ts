@@ -27,8 +27,8 @@ export class BlurScene extends FilpFlopSceneBase{
                     size:{
                         value: new THREE.Vector2(sizeX,sizeY)
                     },
-                    blurRatio:{value:0.2},
-                    attenuationSpeed: {value: 0.002},
+                    blurRatio:{value:0.15},
+                    attenuationSpeed: {value: 0.008},//{value: 0.002},
                     blurScale: {value: 1},
                     tex:{value:null},
                     //tex1:{value:null},

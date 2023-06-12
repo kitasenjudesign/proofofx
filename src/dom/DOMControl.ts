@@ -18,13 +18,19 @@ export class DOMControl{
             999
         );
         this.title.text =
-            "PROOF OF X"+
+            "PROOF OF X | "+
             " MINTED AT "+
             UNIXTimeFormatter.formatUnixTime(Params.USER_TIME) +
             " BY "+ Params.USER_NAME;
+        
+            if(Params.MODE_STAFF){
+                this.title.text += " | STAFF";
+            }
+        
+
 
         if(Params.MODE_NFT){
-            this.title.text += " HASH:" + Params.USER_HASH;
+            this.title.text += "<br/>HASH:" + Params.USER_HASH;
         }
         if(Params.MODE_WEBSITE){
             this.title.text = ""
@@ -41,19 +47,12 @@ export class DOMControl{
         while(hex.length<6){
             hex = "0"+hex;
         }
-
-        this.title.color = "#"+hex;
-           
-        /*
-        console.log(
-            Colors.rgb2hex(Colors.colors[0]),
-            Colors.rgb2hex(Colors.colors[0]).toString(16)
-        )*/
+        this.title.color="#333"
+        //this.title.color = "#"+hex;
 
         if(this.title.y>window.innerHeight-this.title.height){
             this.title.y = window.innerHeight-this.title.height;
         }
-
 
     }
 

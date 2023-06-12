@@ -1,10 +1,14 @@
 // pathモジュールの読み込み
 const path = require("path");
- 
+
+//const webpack = require('webpack');
+
+//const isProduction = env.production === true;
+
 module.exports = {
   // モードを開発モードにする
-  mode: "production",
-  //mode: "development",
+  //mode: "production",
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',//"development",
   // 入力ファイル設定
   entry: [path.resolve(__dirname, "./src/index.ts")],
   // 出力ファイル設定

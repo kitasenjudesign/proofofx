@@ -6,6 +6,7 @@ import vert from "./calc/calc.vert";
 import frag from "./calc/calc.frag";
 import glslify from 'glslify';
 import { Params } from '../../proof/data/Params';
+import { Colors } from '../../proof/data/Colors';
 
 export class LastCalcScene extends FilpFlopSceneBase{
 
@@ -42,7 +43,11 @@ export class LastCalcScene extends FilpFlopSceneBase{
         g.add(uniforms.alphaSpeed,"value",0,5).name("alphaSpeed");
         g.add(uniforms.maxAlpha,"value",0,1).name("maxAlpha");
         g.add(uniforms.gensui,"value",0,1).name("gensui");
-
+        
+        //this.clearColor = Params.bgColorHex;
+        this.clearColor = Params.bgColorHex;
+        this.clearOpacity = 0;
+        this.clearTargets();
         //Params.gui.add(this,"clearTargets");
     }
 
