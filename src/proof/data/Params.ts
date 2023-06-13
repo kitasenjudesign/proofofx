@@ -177,13 +177,13 @@ export class Params{
             this.bgColor.b = 240/255
         }
 
-        /*
+        
         if(Params.MODE_STAFF){
-            this.bgColor.r = 240/255;
-            this.bgColor.g = 240/255;
-            this.bgColor.b = 240/255;
-        }*/
-
+            this.bgColor.r = 245/255;
+            this.bgColor.g = 245/255;
+            this.bgColor.b = 245/255;
+        }
+        
     }
 
 

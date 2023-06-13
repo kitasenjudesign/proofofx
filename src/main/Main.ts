@@ -162,7 +162,7 @@ export class Main{
     tick(){
         if(this.isPause)return;
 
-        if(window.scrollY<window.innerHeight/2){
+        if(window.scrollY<window.innerHeight*0.8){
             
             DataManager.getInstance().svg.update();
             this.particles.update();

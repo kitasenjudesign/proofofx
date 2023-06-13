@@ -8965,7 +8965,7 @@ class Main {
     tick() {
         if (this.isPause)
             return;
-        if (window.scrollY < window.innerHeight / 2) {
+        if (window.scrollY < window.innerHeight * 0.8) {
             _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance().svg.update();
             this.particles.update();
             this.rttMain.update(this.renderer);
@@ -11016,12 +11016,11 @@ class Params {
             this.bgColor.g = 255 / 255;
             this.bgColor.b = 240 / 255;
         }
-        /*
-        if(Params.MODE_STAFF){
-            this.bgColor.r = 240/255;
-            this.bgColor.g = 240/255;
-            this.bgColor.b = 240/255;
-        }*/
+        if (Params.MODE_STAFF) {
+            this.bgColor.r = 245 / 255;
+            this.bgColor.g = 245 / 255;
+            this.bgColor.b = 245 / 255;
+        }
     }
 }
 Params.NUM_DOTS = 150;
