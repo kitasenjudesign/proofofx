@@ -30,7 +30,7 @@ export class DOMControl{
 
 
         if(Params.MODE_NFT){
-            this.title.text += "<br/>HASH:" + Params.USER_HASH;
+            this.title.text += "<br/>" + Params.USER_HASH;
         }
         if(Params.MODE_WEBSITE){
             this.title.text = ""

@@ -11,7 +11,7 @@ export class UNIXTimeFormatter{
         const minutes   = this.padZero(date.getUTCMinutes());
         const seconds   = this.padZero(date.getUTCSeconds());
 
-        return `${year}.${month}.${day}. ${hours}:${minutes}:${seconds}`;
+        return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
     }
 
     static padZero(value: number): string {

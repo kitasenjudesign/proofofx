@@ -8815,7 +8815,7 @@ class DOMControl {
             this.title.text += " | " + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_ROLE.toUpperCase();
         }
         if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.MODE_NFT) {
-            this.title.text += "<br/>HASH:" + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_HASH;
+            this.title.text += "<br/>" + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_HASH;
         }
         if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.MODE_WEBSITE) {
             this.title.text = "";
@@ -9157,7 +9157,7 @@ class UNIXTimeFormatter {
         const hours = this.padZero(date.getUTCHours());
         const minutes = this.padZero(date.getUTCMinutes());
         const seconds = this.padZero(date.getUTCSeconds());
-        return `${year}.${month}.${day}. ${hours}:${minutes}:${seconds}`;
+        return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
     }
     static padZero(value) {
         return value.toString().padStart(2, '0');
