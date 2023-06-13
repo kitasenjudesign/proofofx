@@ -11020,7 +11020,7 @@ class Params {
             this.bgColor.g = 255 / 255;
             this.bgColor.b = 240 / 255;
         }
-        if (Params.MODE_STAFF) {
+        if (Params.MODE_STAFF || Params.MODE_ARTIST) {
             this.bgColor.r = 245 / 255;
             this.bgColor.g = 245 / 255;
             this.bgColor.b = 245 / 255;

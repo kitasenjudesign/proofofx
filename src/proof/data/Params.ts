@@ -129,7 +129,7 @@ export class Params{
 
         Params.MODE_STAFF = Params.USER_ROLE.indexOf("STAFF")>=0;
         Params.MODE_ARTIST = Params.USER_ROLE.indexOf("ARTIST")>=0;
-        
+
         console.log("Params.USER_NAME",Params.USER_NAME);
         console.log("Params.USER_HASH",Params.USER_HASH);
         console.log("Params.USER_TIME",Params.USER_TIME);
@@ -180,7 +180,7 @@ export class Params{
         }
 
         
-        if(Params.MODE_STAFF){
+        if(Params.MODE_STAFF || Params.MODE_ARTIST){
             this.bgColor.r = 245/255;
             this.bgColor.g = 245/255;
             this.bgColor.b = 245/255;
