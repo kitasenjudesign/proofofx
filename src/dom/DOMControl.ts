@@ -24,7 +24,7 @@ export class DOMControl{
             " BY "+ Params.USER_NAME;
         
             if(Params.MODE_STAFF){
-                this.title.text += " | STAFF";
+                this.title.text += " | "+Params.USER_ROLE.toUpperCase();
             }
         
 
@@ -47,7 +47,7 @@ export class DOMControl{
         while(hex.length<6){
             hex = "0"+hex;
         }
-        this.title.color="#333"
+        this.title.color="rgba(0,0,0,0.6)"
         //this.title.color = "#"+hex;
 
         if(this.title.y>window.innerHeight-this.title.height){

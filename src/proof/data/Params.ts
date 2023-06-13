@@ -45,6 +45,7 @@ export class Params{
     public static MODE_WEBSITE  :boolean=false;
     public static MODE_SQUIRE   :boolean=false;
     public static MODE_STAFF    :boolean=false;
+    public static MODE_ARTIST   :boolean=false;
     //public static MODE_STAFF    :boolean=false;
 
     // Getter宣言
@@ -127,7 +128,8 @@ export class Params{
         }
 
         Params.MODE_STAFF = Params.USER_ROLE.indexOf("STAFF")>=0;
-
+        Params.MODE_ARTIST = Params.USER_ROLE.indexOf("ARTIST")>=0;
+        
         console.log("Params.USER_NAME",Params.USER_NAME);
         console.log("Params.USER_HASH",Params.USER_HASH);
         console.log("Params.USER_TIME",Params.USER_TIME);

@@ -8812,7 +8812,7 @@ class DOMControl {
                 _main_data_UNITTimeFormatter__WEBPACK_IMPORTED_MODULE_0__.UNIXTimeFormatter.formatUnixTime(_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_TIME) +
                 " BY " + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_NAME;
         if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.MODE_STAFF) {
-            this.title.text += " | STAFF";
+            this.title.text += " | " + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_ROLE.toUpperCase();
         }
         if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.MODE_NFT) {
             this.title.text += "<br/>HASH:" + _proof_data_Params__WEBPACK_IMPORTED_MODULE_2__.Params.USER_HASH;
@@ -8828,7 +8828,7 @@ class DOMControl {
         while (hex.length < 6) {
             hex = "0" + hex;
         }
-        this.title.color = "#333";
+        this.title.color = "rgba(0,0,0,0.6)";
         //this.title.color = "#"+hex;
         if (this.title.y > window.innerHeight - this.title.height) {
             this.title.y = window.innerHeight - this.title.height;
@@ -9322,16 +9322,18 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
     }
     tweenY() {
         this.yy = window.innerHeight / 2;
-        if (this.tween)
-            this.tween.kill();
-        this.tween = gsap__WEBPACK_IMPORTED_MODULE_7__.gsap.to(this, {
-            yy: -window.innerHeight / 2,
-            duration: 12.0,
-            ease: "linear",
-            onComplete: () => {
-                this.onTweenY();
-            }
-        });
+        if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.MODE_WEBSITE) {
+            if (this.tween)
+                this.tween.kill();
+            this.tween = gsap__WEBPACK_IMPORTED_MODULE_7__.gsap.to(this, {
+                yy: -window.innerHeight / 2,
+                duration: 12.0,
+                ease: "linear",
+                onComplete: () => {
+                    this.onTweenY();
+                }
+            });
+        }
     }
     onTweenY() {
         if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.MODE_WEBSITE) {
@@ -9351,9 +9353,12 @@ class IntersectionLine extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         //yをよくする
         let h = _data_DataManager__WEBPACK_IMPORTED_MODULE_2__.DataManager.getInstance().domControl.title.height;
         _data_DataManager__WEBPACK_IMPORTED_MODULE_2__.DataManager.getInstance().domControl.setTitleY(-this.yy + window.innerHeight / 2 - h);
-        //this.yy-=1.7;
-        if (this.yy < -window.innerHeight / 2) {
-            //this.yy=window.innerHeight/2;
+        if (_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.MODE_NFT) {
+            this.yy -= 1.7;
+            if (this.yy < -window.innerHeight / 2) {
+                //this.yy=window.innerHeight/2;
+                this.visible = false;
+            }
         }
         this.count++;
         this.lineMesh.position.y = this.yy;
@@ -10054,8 +10059,6 @@ class Brushes extends three__WEBPACK_IMPORTED_MODULE_5__.Mesh {
     constructor() {
         // BufferGeometryを使って四角形を作成
         const geometry = new three__WEBPACK_IMPORTED_MODULE_5__.BufferGeometry();
-        //
-        //this.widthRatio = 0.8+0.2*Math.random();
         // 頂点データを定義
         let vertices = new Float32Array(Brushes.NUM * 3 * 4); //vec3が4個
         let colors = new Float32Array(Brushes.NUM * 3 * 4); //vec3が4個
@@ -10973,6 +10976,7 @@ class Params {
             Params.USER_ROLE = Params.USER_ROLE.toUpperCase(); //大文字化
         }
         Params.MODE_STAFF = Params.USER_ROLE.indexOf("STAFF") >= 0;
+        Params.MODE_ARTIST = Params.USER_ROLE.indexOf("ARTIST") >= 0;
         console.log("Params.USER_NAME", Params.USER_NAME);
         console.log("Params.USER_HASH", Params.USER_HASH);
         console.log("Params.USER_TIME", Params.USER_TIME);
@@ -11055,6 +11059,7 @@ Params.MODE_NFT = false;
 Params.MODE_WEBSITE = false;
 Params.MODE_SQUIRE = false;
 Params.MODE_STAFF = false;
+Params.MODE_ARTIST = false;
 
 
 /***/ }),

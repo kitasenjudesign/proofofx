@@ -166,16 +166,18 @@ export class IntersectionLine extends Object3D{
 
     public tweenY(){
         this.yy = window.innerHeight/2;
-        if(this.tween) this.tween.kill();
 
-        this.tween = gsap.to(this,{
-            yy:-window.innerHeight/2,
-            duration:12.0,
-            ease:"linear",
-            onComplete:()=>{
-                this.onTweenY();
-            }
-        });
+        if(Params.MODE_WEBSITE){
+            if(this.tween) this.tween.kill();
+            this.tween = gsap.to(this,{
+                yy:-window.innerHeight/2,
+                duration:12.0,
+                ease:"linear",
+                onComplete:()=>{
+                    this.onTweenY();
+                }
+            });
+        }
     }
 
     public onTweenY(){
@@ -205,10 +207,14 @@ export class IntersectionLine extends Object3D{
             -this.yy+window.innerHeight/2-h
         ) 
             
-        //this.yy-=1.7;
-        if(this.yy<-window.innerHeight/2){
-            //this.yy=window.innerHeight/2;
+        if(Params.MODE_NFT){
+            this.yy-=1.7;
+            if(this.yy<-window.innerHeight/2){
+                //this.yy=window.innerHeight/2;
+                this.visible=false;
+            }            
         }
+        
         this.count++;
 
         this.lineMesh.position.y = this.yy;

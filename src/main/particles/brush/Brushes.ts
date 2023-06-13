@@ -38,10 +38,6 @@ export class Brushes extends THREE.Mesh{
         // BufferGeometryを使って四角形を作成
         const geometry = new THREE.BufferGeometry();
 
-        //
-        //this.widthRatio = 0.8+0.2*Math.random();
-
-
         // 頂点データを定義
         let vertices = new Float32Array(Brushes.NUM*3*4);//vec3が4個
         let colors  = new Float32Array(Brushes.NUM*3*4);//vec3が4個
