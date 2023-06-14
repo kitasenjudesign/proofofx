@@ -44,15 +44,11 @@ export class OutputPlane extends THREE.Mesh{
         let g = Params.gui.addFolder("== Output ==");
         g.addColor(Params,"bgColor").onChange(()=>{
 
-
-          
-
         })
 
         let gg = Params.gui.addFolder("== Output ==");
         gg.add(this.mat.uniforms.alpha,"value",0.0,1.0).step(0.01).name("alpha");
         gg.add(this.mat.uniforms.ratio,"value",0.0,1.0).step(0.01).name("ratio");
-
 
     }
 

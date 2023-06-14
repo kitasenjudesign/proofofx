@@ -36,6 +36,7 @@ export class Params{
     public static USER_TIME:number=0;
     public static maxLimit: number = 400;
     public static widthRatio: number = 0.4;
+    public static isMobile: boolean = false;
 
     public static DOM_WEBGL="mainvisual_webgl";
     public static DOM_TITLE="mainvisual_title"
@@ -46,6 +47,7 @@ export class Params{
     public static MODE_SQUIRE   :boolean=false;
     public static MODE_STAFF    :boolean=false;
     public static MODE_ARTIST   :boolean=false;
+    public static MODE_LITE     :boolean=false;
     //public static MODE_STAFF    :boolean=false;
 
     // Getter宣言
@@ -129,6 +131,7 @@ export class Params{
 
         Params.MODE_STAFF = Params.USER_ROLE.indexOf("STAFF")>=0;
         Params.MODE_ARTIST = Params.USER_ROLE.indexOf("ARTIST")>=0;
+        Params.MODE_LITE    = Params.MODE_NFT;//NFTモードならLiteモード
 
         console.log("Params.USER_NAME",Params.USER_NAME);
         console.log("Params.USER_HASH",Params.USER_HASH);

@@ -8,6 +8,7 @@ import { RTTMain } from './rtt/RTTMain';
 import { Params } from '../proof/data/Params';
 import { DOMControl } from '../dom/DOMControl';
 import { Download } from './data/Download';
+import { RTTMainLyte } from './rtt/RTTMainLyte';
 
 
 export class Main{
@@ -63,9 +64,17 @@ export class Main{
 
         this.clock = new THREE.Clock(true);
         this.clock.start();
-        this.rttMain = new RTTMain(this.renderer,()=>{
-            this.init3();
-        });
+
+        if( !Params.MODE_LITE ){
+            this.rttMain = new RTTMain(this.renderer,()=>{
+                this.init3();
+            });
+        }else{
+            this.rttMain = new RTTMainLyte(this.renderer,()=>{
+                this.init3();
+            });
+        }
+
         this.scene.add(this.rttMain);
 
     }

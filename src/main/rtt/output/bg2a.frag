@@ -27,7 +27,7 @@
       random( vUv.xy + vec2(0.0,99.0) ) * 0.001
     );
     
-    vec4 col1 = texture2D(tex,uvv);//unsharp(tex,uvv,size,1.0);
+    vec4 col1 = unsharp(tex,uvv,size,1.0);
     vec4 col2 = texture2D(tex2,uvv);
 
     vec4 bgColor = bgCol;

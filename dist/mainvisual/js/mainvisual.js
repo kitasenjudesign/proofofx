@@ -8615,7 +8615,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\nhighp float random(vec2 co)\n{\n    highp float a = 12.9898;\n    highp float b = 78.233;\n    highp float c = 43758.5453;\n    highp float dt= dot(co.xy ,vec2(a,b));\n    highp float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, 0.0);//-pixelSize.y);\n  vec2 downOffset = vec2(0.0, 0.0);//pixelSize.y);\n  float left = length(texture2D(pTex,texCoord+leftOffset));\n  float right = length(texture2D(pTex,texCoord+rightOffset));\n  float up = length(texture2D(pTex,texCoord+upOffset));\n  float down = length(texture2D(pTex,texCoord+downOffset));\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n//#pragma glslify: unsharp = require(\"./unsharp.glsl\")\n// 勾配計算関数\nvec4 unsharp(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixel = scale / resolution;\n  vec2 uvv = texCoord.xy;\n    \n  vec4 col1 = texture2D(pTex,uvv.xy+vec2(-1.0,-1.0)*pixel);\n  vec4 col2 = texture2D(pTex,uvv.xy+vec2(0.0,-1.0) *pixel);\n  vec4 col3 = texture2D(pTex,uvv.xy+vec2(1.0,-1.0) *pixel);\n      \n  vec4 col4 = texture2D(pTex,uvv.xy+vec2(-1.0,0.0) *pixel);\n  vec4 col5 = texture2D(pTex,uvv.xy+vec2(0.0,0.0)  *pixel);\n  vec4 col6 = texture2D(pTex,uvv.xy+vec2(1.0,0.0)  *pixel);\n\n  vec4 col7 = texture2D(pTex,uvv.xy+vec2(-1.0,1.0) *pixel);\n  vec4 col8 = texture2D(pTex,uvv.xy+vec2(0.0,1.0)  *pixel);\n  vec4 col9 = texture2D(pTex,uvv.xy+vec2(1.0,1.0)  *pixel);\n\n  //https://en.wikipedia.org/wiki/Unsharp_masking\n  //https://imagingsolution.net/imaging/unsharpmasking/\n  //元画像＋(元画像－平滑化画像)*k＝シャープ化画像\n  float k = 2.0;\n  vec4 col = abs(col4-col6)*1.0;\n\n  col = col5;// - col;\n\n  //col = col5 - col;\n\n  //col += (col5 - col6) * 0.5;\n\n  return col;\n}\n\n//#pragma glslify: snoise3 = require(glsl-noise/simplex/3d)\n\n  uniform sampler2D tex;\n  uniform sampler2D tex2;\n\n  uniform vec2 size;\n  uniform vec4 bgCol;\n  uniform float alpha;\n  uniform float ratio;\n\n  varying vec2 vUv;\n\n  void main() {\n\n    //vec2 offset = texture2D()\n\n    vec2 uvv = vUv.xy;\n\n    vec2 offset = vec2(\n      random( vUv.xy + vec2(0.0,110.0) ) * 0.001,\n      random( vUv.xy + vec2(0.0,99.0) ) * 0.001\n    );\n    \n    vec4 col1 = unsharp(tex,uvv,size,1.0);\n    vec4 col2 = texture2D(tex2,uvv);\n\n    vec4 bgColor = bgCol;\n    vec4 outputCol  = mix(\n      bgColor,\n      col1,\n      col1.a*alpha\n    );\n\n    outputCol.rgb += 0.1*col2.rgb;\n\n    //gl_FragColor = vec4(outputCol.rgb,1.0);\n    gl_FragColor = vec4(outputCol.rgb,1.0);//col1.a*alpha);\n  \n  }");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("#define GLSLIFY 1\nhighp float random(vec2 co)\n{\n    highp float a = 12.9898;\n    highp float b = 78.233;\n    highp float c = 43758.5453;\n    highp float dt= dot(co.xy ,vec2(a,b));\n    highp float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\n// 勾配計算関数\nvec2 gradient(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixelSize = scale / resolution;\n\n  vec2 leftOffset = vec2(-pixelSize.x, 0.0);\n  vec2 rightOffset = vec2(pixelSize.x, 0.0);\n  vec2 upOffset = vec2(0.0, 0.0);//-pixelSize.y);\n  vec2 downOffset = vec2(0.0, 0.0);//pixelSize.y);\n  float left = length(texture2D(pTex,texCoord+leftOffset));\n  float right = length(texture2D(pTex,texCoord+rightOffset));\n  float up = length(texture2D(pTex,texCoord+upOffset));\n  float down = length(texture2D(pTex,texCoord+downOffset));\n\n  vec2 grad;\n  grad.x = (right - left) * 0.5;\n  grad.y = (down - up) * 0.5;\n    \n  return grad;\n\n}\n\n//#pragma glslify: unsharp = require(\"./unsharp.glsl\")\n// 勾配計算関数\nvec4 unsharp(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {\n\n  vec2 pixel = scale / resolution;\n  vec2 uvv = texCoord.xy;\n    \n  vec4 col1 = texture2D(pTex,uvv.xy+vec2(-1.0,-1.0)*pixel);\n  vec4 col2 = texture2D(pTex,uvv.xy+vec2(0.0,-1.0) *pixel);\n  vec4 col3 = texture2D(pTex,uvv.xy+vec2(1.0,-1.0) *pixel);\n      \n  vec4 col4 = texture2D(pTex,uvv.xy+vec2(-1.0,0.0) *pixel);\n  vec4 col5 = texture2D(pTex,uvv.xy+vec2(0.0,0.0)  *pixel);\n  vec4 col6 = texture2D(pTex,uvv.xy+vec2(1.0,0.0)  *pixel);\n\n  vec4 col7 = texture2D(pTex,uvv.xy+vec2(-1.0,1.0) *pixel);\n  vec4 col8 = texture2D(pTex,uvv.xy+vec2(0.0,1.0)  *pixel);\n  vec4 col9 = texture2D(pTex,uvv.xy+vec2(1.0,1.0)  *pixel);\n\n  //https://en.wikipedia.org/wiki/Unsharp_masking\n  //https://imagingsolution.net/imaging/unsharpmasking/\n  //元画像＋(元画像－平滑化画像)*k＝シャープ化画像\n  float k = 2.0;\n  vec4 col = abs(col4-col6)*1.0;\n\n  col = col5 - col;\n\n  //col = col5 - col;\n\n  //col += (col5 - col6) * 0.5;\n\n  return col;\n}\n\n//#pragma glslify: snoise3 = require(glsl-noise/simplex/3d)\n\n  uniform sampler2D tex;\n  uniform sampler2D tex2;\n\n  uniform vec2 size;\n  uniform vec4 bgCol;\n  uniform float alpha;\n  uniform float ratio;\n\n  varying vec2 vUv;\n\n  void main() {\n\n    //vec2 offset = texture2D()\n\n    vec2 uvv = vUv.xy;\n\n    vec2 offset = vec2(\n      random( vUv.xy + vec2(0.0,110.0) ) * 0.001,\n      random( vUv.xy + vec2(0.0,99.0) ) * 0.001\n    );\n    \n    vec4 col1 = texture2D(tex,uvv);//unsharp(tex,uvv,size,1.0);\n    vec4 col2 = texture2D(tex2,uvv);\n\n    vec4 bgColor = bgCol;\n    vec4 outputCol  = mix(\n      bgColor,\n      col1,\n      col1.a*alpha\n    );\n\n    outputCol.rgb += 0.1*col2.rgb;\n\n    //gl_FragColor = vec4(outputCol.rgb,1.0);\n    gl_FragColor = vec4(outputCol.rgb,1.0);//col1.a*alpha);\n  \n  }");
 
 /***/ }),
 
@@ -8853,13 +8853,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Main": () => (/* binding */ Main)
 /* harmony export */ });
-/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var three__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 /* harmony import */ var _particles_Particles__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./particles/Particles */ "./src/main/particles/Particles.ts");
 /* harmony import */ var _data_DataManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./data/DataManager */ "./src/main/data/DataManager.ts");
 /* harmony import */ var _rtt_RTTMain__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./rtt/RTTMain */ "./src/main/rtt/RTTMain.ts");
 /* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../proof/data/Params */ "./src/proof/data/Params.ts");
 /* harmony import */ var _dom_DOMControl__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../dom/DOMControl */ "./src/dom/DOMControl.ts");
 /* harmony import */ var _data_Download__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./data/Download */ "./src/main/data/Download.ts");
+/* harmony import */ var _rtt_RTTMainLyte__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./rtt/RTTMainLyte */ "./src/main/rtt/RTTMainLyte.ts");
+
 
 
 
@@ -8877,17 +8879,17 @@ class Main {
     }
     init() {
         _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.init();
-        this.renderer = new three__WEBPACK_IMPORTED_MODULE_6__.WebGLRenderer({
+        this.renderer = new three__WEBPACK_IMPORTED_MODULE_7__.WebGLRenderer({
             canvas: document.getElementById(_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.DOM_WEBGL),
             antialias: false,
             preserveDrawingBuffer: true
         });
         this.renderer.setPixelRatio(1);
-        this.renderer.setClearColor(new three__WEBPACK_IMPORTED_MODULE_6__.Color(0xffffff));
+        this.renderer.setClearColor(new three__WEBPACK_IMPORTED_MODULE_7__.Color(0xffffff));
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.camera = new three__WEBPACK_IMPORTED_MODULE_6__.OrthographicCamera(-_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth / 2, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth / 2, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight / 2, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight / 2, 1, 3000);
+        this.camera = new three__WEBPACK_IMPORTED_MODULE_7__.OrthographicCamera(-_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth / 2, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageWidth / 2, _proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight / 2, -_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.stageHeight / 2, 1, 3000);
         this.onWindowResize();
-        this.scene = new three__WEBPACK_IMPORTED_MODULE_6__.Scene();
+        this.scene = new three__WEBPACK_IMPORTED_MODULE_7__.Scene();
         this.renderer.render(this.scene, this.camera);
         let dataManager = _data_DataManager__WEBPACK_IMPORTED_MODULE_1__.DataManager.getInstance();
         dataManager.init(this, () => {
@@ -8895,11 +8897,18 @@ class Main {
         });
     }
     init2() {
-        this.clock = new three__WEBPACK_IMPORTED_MODULE_6__.Clock(true);
+        this.clock = new three__WEBPACK_IMPORTED_MODULE_7__.Clock(true);
         this.clock.start();
-        this.rttMain = new _rtt_RTTMain__WEBPACK_IMPORTED_MODULE_2__.RTTMain(this.renderer, () => {
-            this.init3();
-        });
+        if (!_proof_data_Params__WEBPACK_IMPORTED_MODULE_3__.Params.MODE_LITE) {
+            this.rttMain = new _rtt_RTTMain__WEBPACK_IMPORTED_MODULE_2__.RTTMain(this.renderer, () => {
+                this.init3();
+            });
+        }
+        else {
+            this.rttMain = new _rtt_RTTMainLyte__WEBPACK_IMPORTED_MODULE_6__.RTTMainLyte(this.renderer, () => {
+                this.init3();
+            });
+        }
         this.scene.add(this.rttMain);
     }
     init3() {
@@ -8916,7 +8925,7 @@ class Main {
             this.onWindowResize();
         }, false);
         this.onWindowResize();
-        let d = new three__WEBPACK_IMPORTED_MODULE_6__.DirectionalLight(0xffffff);
+        let d = new three__WEBPACK_IMPORTED_MODULE_7__.DirectionalLight(0xffffff);
         d.position.x = 10;
         d.position.y = 10;
         this.scene.add(d);
@@ -10654,6 +10663,8 @@ __webpack_require__.r(__webpack_exports__);
 class RTTMain extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
     constructor(webglRenderer, callback) {
         super();
+        if (webglRenderer == null)
+            return;
         this.outputPlane = new _OutputPlane__WEBPACK_IMPORTED_MODULE_0__.OutputPlane();
         this.outputPlane.position.set(0, 0, -10);
         this.add(this.outputPlane);
@@ -10718,6 +10729,88 @@ class RTTMain extends three__WEBPACK_IMPORTED_MODULE_6__.Object3D {
         (_c = this.blurScene) === null || _c === void 0 ? void 0 : _c.resize(camera);
         (_d = this.pigmentScene) === null || _d === void 0 ? void 0 : _d.resize(camera);
         (_e = this.lastCalcScene) === null || _e === void 0 ? void 0 : _e.resize(camera);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/main/rtt/RTTMainLyte.ts":
+/*!*************************************!*\
+  !*** ./src/main/rtt/RTTMainLyte.ts ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "RTTMainLyte": () => (/* binding */ RTTMainLyte)
+/* harmony export */ });
+/* harmony import */ var _OutputPlane__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./OutputPlane */ "./src/main/rtt/OutputPlane.ts");
+/* harmony import */ var _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../proof/data/Params */ "./src/proof/data/Params.ts");
+/* harmony import */ var _BrushScene__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./BrushScene */ "./src/main/rtt/BrushScene.ts");
+/* harmony import */ var _RTTMain__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./RTTMain */ "./src/main/rtt/RTTMain.ts");
+
+
+
+
+class RTTMainLyte extends _RTTMain__WEBPACK_IMPORTED_MODULE_3__.RTTMain {
+    constructor(webglRenderer, callback) {
+        super(null, null);
+        this.outputPlane = new _OutputPlane__WEBPACK_IMPORTED_MODULE_0__.OutputPlane();
+        this.outputPlane.position.set(0, 0, -10);
+        this.add(this.outputPlane);
+        setTimeout(() => {
+            this.brushScene = new _BrushScene__WEBPACK_IMPORTED_MODULE_2__.BrushScene();
+        }, 100);
+        setTimeout(() => {
+            this.brushScene.isClear = false;
+            callback();
+        }, 200);
+        this.options = { output: 'input' };
+        _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.gui.add(this.options, 'output', ['input', 'blur', 'color', 'last']);
+        //Params.gui.add( this, "resetAll")
+        //gui.add( this.options, 'speed', { Slow: 0.1, Normal: 1, Fast: 5 } )
+    }
+    init() {
+        //this.rttScene.init();
+    }
+    update(w) {
+        this.brushScene.update(w);
+        /*
+            this.blurScene.update(
+                w,
+                this.brushScene.renderTarget.texture
+            );
+            this.pigmentScene.update(
+                w,
+                this.brushScene.renderTarget.texture,
+                this.blurScene.getTex()
+            );
+            this.lastCalcScene.update(
+                w,
+                this.pigmentScene.getTex(),
+                this.blurScene.getTex()
+            );
+        */
+        switch (this.options.output) {
+            case 'input':
+                this.outputPlane.setTex(this.brushScene.renderTarget.texture); //最終出力
+                this.outputPlane.setTex2(null);
+                break;
+        }
+        this.outputPlane.update();
+    }
+    resetAll() {
+        this.brushScene.reset();
+        //this.blurScene.clearTargets();
+        //this.pigmentScene.clearTargets();
+        //this.lastCalcScene.clearTargets();
+    }
+    resize(camera) {
+        var _a, _b;
+        (_a = this.outputPlane) === null || _a === void 0 ? void 0 : _a.resize(_proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageWidth / 100, _proof_data_Params__WEBPACK_IMPORTED_MODULE_1__.Params.stageHeight / 100);
+        (_b = this.brushScene) === null || _b === void 0 ? void 0 : _b.resize(camera);
     }
 }
 
@@ -10977,6 +11070,7 @@ class Params {
         }
         Params.MODE_STAFF = Params.USER_ROLE.indexOf("STAFF") >= 0;
         Params.MODE_ARTIST = Params.USER_ROLE.indexOf("ARTIST") >= 0;
+        Params.MODE_LITE = Params.MODE_NFT; //NFTモードならLiteモード
         console.log("Params.USER_NAME", Params.USER_NAME);
         console.log("Params.USER_HASH", Params.USER_HASH);
         console.log("Params.USER_TIME", Params.USER_TIME);
@@ -11052,6 +11146,7 @@ Params.USER_ROLE = "";
 Params.USER_TIME = 0;
 Params.maxLimit = 400;
 Params.widthRatio = 0.4;
+Params.isMobile = false;
 Params.DOM_WEBGL = "mainvisual_webgl";
 Params.DOM_TITLE = "mainvisual_title";
 Params.DOM_JS = "mainvisual_js";
@@ -11060,6 +11155,7 @@ Params.MODE_WEBSITE = false;
 Params.MODE_SQUIRE = false;
 Params.MODE_STAFF = false;
 Params.MODE_ARTIST = false;
+Params.MODE_LITE = false;
 
 
 /***/ }),

@@ -11,7 +11,7 @@ export class BrushScene {
     scene           :Scene;
     camera          :OrthographicCamera;
     sizeRatio       :number = 1;
-    isClear         :boolean = true;
+    public isClear         :boolean = true;
     mainRenderer: WebGLRenderer;
 
     constructor(){

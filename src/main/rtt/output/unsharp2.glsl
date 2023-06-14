@@ -22,7 +22,7 @@ vec4 unsharp(sampler2D pTex, vec2 texCoord, vec2 resolution, float scale) {
   float k = 2.0;
   vec4 col = abs(col4-col6)*1.0;
 
-  col = col5;// - col;
+  col = col5 - col;
 
   //col = col5 - col;
 
