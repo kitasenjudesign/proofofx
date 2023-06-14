@@ -28,7 +28,6 @@ export class RTTScene extends RTTSceneBase{
             Params.stageHeight*1
         );
         this.renderTargetC.texture.generateMipmaps = false;
-
         //this.lines=new Lines2();
         //this.scene.add(this.lines);
         //let particles = DataManager.getInstance().particles.particles;
@@ -36,8 +35,8 @@ export class RTTScene extends RTTSceneBase{
         for(let i=0;i<particles.length;i++){
             this.scene.add( particles[i].tail );
         }*/
-        Params.gui.add(this,"isClearC");
 
+        Params.gui.add(this,"isClearC");
    }
 
     init(){

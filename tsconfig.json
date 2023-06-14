@@ -15,5 +15,6 @@
       "noImplicitAny": true,
       "allowSyntheticDefaultImports": true,
       "moduleResolution": "node"
-    }
+    },
+    "exclude": ["**/*.tsx", "**/*.js"]    
   }

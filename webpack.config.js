@@ -4,11 +4,18 @@ const path = require("path");
 //const webpack = require('webpack');
 
 //const isProduction = env.production === true;
+console.log("process.env.NODE_ENV",process.env);
 
-module.exports = {
+module.exports = (env) =>{
+  
+  console.log('env: ', env);
+  //console.log('argv: ', argv);
+  
+  let obj = {
+
   // モードを開発モードにする
   //mode: "production",
-  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',//"development",
+  mode: env.production ? 'production' : 'development',//"development",
   // 入力ファイル設定
   entry: [path.resolve(__dirname, "./src/index.ts")],
   // 出力ファイル設定
@@ -41,10 +48,18 @@ module.exports = {
     extensions: [".ts", ".js", ".json"]
   },
  
-  devtool: "source-map",
+ 
 
   devServer: {
     contentBase: "./dist",
     open: true
   }
+}
+
+if(env.development){
+  obj.devtool='source-map';//"source-map",
+}
+
+return obj;
+
 };
