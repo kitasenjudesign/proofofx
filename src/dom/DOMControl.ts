@@ -17,18 +17,17 @@ export class DOMControl{
             document.getElementById(Params.DOM_TITLE),
             999
         );
-        this.title.text =
-            "PROOF OF X | "+
-            " MINTED AT "+
-            UNIXTimeFormatter.formatUnixTime(Params.USER_TIME) +
+        this.title.text = "PROOF OF X | ";
+        this.title.text += " MINTED AT " + UNIXTimeFormatter.formatUnixTime(Params.USER_TIME);
+
+        if(Params.USER_NAME){
             " BY "+ Params.USER_NAME;
+        }
         
-            if(Params.MODE_STAFF){
-                this.title.text += " | "+Params.USER_ROLE.toUpperCase();
-            }
+        if(Params.MODE_STAFF){
+            this.title.text += " | "+Params.USER_ROLE.toUpperCase();
+        }
         
-
-
         if(Params.MODE_NFT){
             this.title.text += "<br/>" + Params.USER_HASH;
         }

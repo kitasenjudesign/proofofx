@@ -131,7 +131,7 @@ export class Params{
 
         Params.MODE_STAFF = Params.USER_ROLE.indexOf("STAFF")>=0;
         Params.MODE_ARTIST = Params.USER_ROLE.indexOf("ARTIST")>=0;
-        Params.MODE_LITE    = Params.MODE_NFT;//NFTモードならLiteモード
+        Params.MODE_LITE    = false;//Params.MODE_NFT;//NFTモードならLiteモード
 
         console.log("Params.USER_NAME",Params.USER_NAME);
         console.log("Params.USER_HASH",Params.USER_HASH);
