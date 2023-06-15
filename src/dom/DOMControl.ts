@@ -21,10 +21,10 @@ export class DOMControl{
         this.title.text += " MINTED AT " + UNIXTimeFormatter.formatUnixTime(Params.USER_TIME);
 
         if(Params.USER_NAME){
-            " BY "+ Params.USER_NAME;
+            this.title.text += " | "+ Params.USER_NAME;
         }
         
-        if(Params.MODE_STAFF){
+        if(Params.MODE_STAFF || Params.MODE_ARTIST){
             this.title.text += " | "+Params.USER_ROLE.toUpperCase();
         }
         
