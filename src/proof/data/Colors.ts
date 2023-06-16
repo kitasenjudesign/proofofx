@@ -23,9 +23,6 @@ export class Colors {
         for(let i=0;i<4;i++){
 
             let cc = new Color(0xffffff);
-
-
-
             cc.setHSL(
                 0,0,0
             );
@@ -75,7 +72,8 @@ export class Colors {
             //let hsl = new Color(0xffffff);
             
             let amp = 120;
-            let rad = (startCol+i/this.NUM*0.5)*2*Math.PI;
+            let haba = SRandom.random() > 0.5 ? 1 : SRandom.random();
+            let rad = (startCol+i/this.NUM*0.5)*2*Math.PI*haba;
             let hsl = this.labToRgb(
                 50+30*SRandom.random(),
                 amp*Math.cos(rad),
